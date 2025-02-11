@@ -3,9 +3,19 @@
   <div class="bottom"></div>
   <div class="center">
     <h2>Please Sign In</h2>
-    <input type="email" placeholder="email" />
-    <input type="password" placeholder="password" />
-    <h2>&nbsp;</h2>
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="loginObj.UserName"
+      placeholder="email"
+    />
+    <input
+      type="password"
+      name="password"
+      [(ngModel)]="loginObj.Password"
+      placeholder="password"
+    />
+    <button type="submit" (click)="onLogin()">Login</button>
   </div>
 </div>
 <router-outlet></router-outlet>
