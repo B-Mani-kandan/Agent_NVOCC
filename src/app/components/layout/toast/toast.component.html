@@ -1,0 +1,14 @@
+<div class="notifications">
+  <div
+    *ngFor="let toast of toastService.toasts$ | async"
+    class="toast"
+    [ngClass]="toast.type"
+  >
+    <i [class]="toast.icon"></i>
+    <div class="content">
+      <div class="title">{{ toast.title }}</div>
+      <span>{{ toast.text }}</span>
+    </div>
+    <i class="fa-solid fa-xmark" (click)="toastService.removeToast(toast)"></i>
+  </div>
+</div>

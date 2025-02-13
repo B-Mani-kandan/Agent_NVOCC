@@ -7,7 +7,6 @@ import { isPlatformBrowser, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [RouterOutlet, FormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -24,7 +23,6 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       const Token = localStorage.getItem('authToken');
-      console.log(Token);
       if (Token != null || Token != '') {
         this.router.navigateByUrl('/layout');
       } else {
