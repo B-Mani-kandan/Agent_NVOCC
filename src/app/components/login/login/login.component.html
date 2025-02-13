@@ -1,21 +1,87 @@
-<div class="container" onclick="onclick">
+<!-- <div class="container" onclick="onclick">
   <div class="top"></div>
   <div class="bottom"></div>
   <div class="center">
-    <h2>Please Sign In</h2>
-    <input
-      type="email"
-      name="email"
-      [(ngModel)]="loginObj.UserName"
-      placeholder="email"
-    />
-    <input
-      type="password"
-      name="password"
-      [(ngModel)]="loginObj.Password"
-      placeholder="password"
-    />
-    <button type="submit" (click)="onLogin()">Login</button>
+    <div class="Logo">
+      <img src="../../../../assets/Images/invosys.png" alt="" />
+    </div>
+    <form action="#">
+      <div class="form-control">
+        <input
+          type="text"
+          name="email"
+          autocomplete="off"
+          [(ngModel)]="loginObj.UserName"
+          required
+        />
+        <label>User Name</label>
+      </div>
+      <div class="form-control">
+        <input
+          [type]="fieldTextType ? 'text' : 'password'"
+          type="password"
+          name="password"
+          autocomplete="off"
+          [(ngModel)]="loginObj.Password"
+          required
+        />
+
+        <label>Password</label>
+      </div>
+      <button type="submit" (click)="onLogin()">Sign In</button>
+    </form>
+  </div>
+</div>
+<router-outlet></router-outlet> -->
+
+<div class="container">
+  <div class="top"></div>
+  <div class="bottom"></div>
+  <div class="center">
+    <div class="Logo">
+      <img src="../../../../assets/Images/invosys.png" alt="" />
+    </div>
+    <form #loginForm="ngForm" (ngSubmit)="onLogin()">
+      <div class="form-control">
+        <input
+          type="text"
+          name="email"
+          autocomplete="off"
+          [(ngModel)]="loginObj.UserName"
+          required
+          #username="ngModel"
+        />
+        <label>User Name</label>
+        <span class="error" *ngIf="username.invalid && username.touched"
+          >Username is required</span
+        >
+      </div>
+
+      <div class="form-control">
+        <input
+          [type]="fieldTextType ? 'text' : 'password'"
+          name="password"
+          autocomplete="off"
+          [(ngModel)]="loginObj.Password"
+          required
+          #password="ngModel"
+        />
+        <label>Password</label>
+        <button
+          type="button"
+          class="eye-btn"
+          (click)="togglePasswordVisibility()"
+        >
+          <i [class]="fieldTextType ? 'ri-eye-line' : 'ri-eye-off-line'"></i>
+        </button>
+
+        <span class="error" *ngIf="password.invalid && password.touched"
+          >Password is required</span
+        >
+      </div>
+
+      <button type="submit" class="form-button">Sign In</button>
+    </form>
   </div>
 </div>
 <router-outlet></router-outlet>

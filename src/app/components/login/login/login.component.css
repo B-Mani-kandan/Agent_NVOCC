@@ -8,7 +8,7 @@
 
 body {
   min-height: 100vh;
-  font-family: "Raleway", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .container {
@@ -82,26 +82,106 @@ body {
   position: absolute;
   width: 400px;
   height: 400px;
-  top: 50%;
+  top: 45%;
   left: 50%;
   margin-left: -200px;
   margin-top: -200px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
   padding: 30px;
   opacity: 0;
   transition: all 0.5s cubic-bezier(0.445, 0.05, 0, 1);
   transition-delay: 0s;
   color: #333;
+}
 
-  input {
-    width: 100%;
-    padding: 15px;
-    margin: 5px;
-    border-radius: 1px;
-    border: 1px solid #ccc;
-    font-family: inherit;
-  }
+.center .Logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center img {
+  width: 140px;
+  margin-bottom: 7%;
+}
+
+.center h2 {
+  color: #f7f7f7;
+  font-size: 2rem;
+}
+
+form .form-control {
+  height: 50px;
+  position: relative;
+  margin-bottom: 16px;
+}
+.form-control input {
+  height: 100%;
+  width: 100%;
+  border: 1px solid #dfdfdf;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  outline: none;
+  border-radius: 4px;
+  color: #5a5959;
+  font-size: 1rem;
+  padding: 0 20px;
+}
+.form-control input:is(:focus, :valid) {
+  padding: 16px 20px 0;
+}
+.form-control label {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  pointer-events: none;
+  color: #8c8c8c;
+  transition: all 0.1s ease;
+}
+.form-control input:is(:focus, :valid) ~ label {
+  font-size: 0.75rem;
+  transform: translateY(-130%);
+}
+form .form-button {
+  width: 100%;
+  padding: 16px 0;
+  font-size: 1rem;
+  background: #5976c5;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  margin: 7px 0 10px;
+  cursor: pointer;
+  transition: 0.1s ease;
+}
+form .form-button:hover {
+  background: #3745b5;
+}
+
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  display: block;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.eye-btn i {
+  font-size: 1rem;
+  color: #5a5959;
 }
