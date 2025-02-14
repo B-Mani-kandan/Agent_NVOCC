@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AuthenticationService } from '../../../services/authentication.service';
 import CryptoJS from 'crypto-js';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { ToastComponent } from '../../layout/toast/toast.component';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterOutlet, FormsModule, CommonModule],
+  imports: [RouterOutlet, FormsModule, CommonModule, ToastComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -18,7 +20,10 @@ export class LoginComponent implements OnInit {
     Password: '',
   };
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -38,7 +43,11 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     if (!this.loginObj.UserName || !this.loginObj.Password) {
-      alert('Please enter both username and password.');
+      this.toastService.addToast(
+        'error',
+        'Error',
+        'Please enter both username and password.'
+      );
       return;
     }
     const iv = CryptoJS.lib.WordArray.random(16);

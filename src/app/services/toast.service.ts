@@ -1,9 +1,17 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import {
+  faCircleExclamation,
+  faTriangleExclamation,
+  faCircleInfo,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface Toast {
   type: 'success' | 'error' | 'warning' | 'info';
-  icon: string;
+  icon: IconDefinition;
   title: string;
   text: string;
 }
@@ -16,11 +24,11 @@ export class ToastService {
   toasts$ = this.toastSubject.asObservable();
 
   addToast(type: Toast['type'], title: string, text: string) {
-    const icons = {
-      success: 'fa-solid fa-circle-check',
-      error: 'fa-solid fa-circle-exclamation',
-      warning: 'fa-solid fa-triangle-exclamation',
-      info: 'fa-solid fa-circle-info',
+    const icons: Record<Toast['type'], IconDefinition> = {
+      success: faThumbsUp,
+      error: faCircleExclamation,
+      warning: faTriangleExclamation,
+      info: faCircleInfo,
     };
 
     const newToast: Toast = {

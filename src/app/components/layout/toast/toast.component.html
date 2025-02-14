@@ -4,11 +4,14 @@
     class="toast"
     [ngClass]="toast.type"
   >
-    <i [class]="toast.icon"></i>
+    <fa-icon [icon]="toast.icon"></fa-icon>
     <div class="content">
       <div class="title">{{ toast.title }}</div>
       <span>{{ toast.text }}</span>
     </div>
-    <i class="fa-solid fa-xmark" (click)="toastService.removeToast(toast)"></i>
+    <fa-icon
+      [icon]="faCancel"
+      (click)="toastService.removeToast(toast)"
+    ></fa-icon>
   </div>
 </div>

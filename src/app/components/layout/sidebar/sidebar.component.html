@@ -1,0 +1,85 @@
+<div class="nav-container" [class.expanded]="isExpanded">
+  <div class="sidebar-header">
+    <img
+      *ngIf="isExpanded"
+      src="https://images.unsplash.com/photo-1572177191856-3cde618dee1f?w=100"
+      alt="Logo"
+      class="logo"
+    />
+    <button
+      (click)="toggleSidebar()"
+      class="toggle-btn"
+      [attr.aria-label]="isExpanded ? 'Collapse Sidebar' : 'Expand Sidebar'"
+    >
+      <i class="material-icons">{{
+        isExpanded ? "chevron_left" : "chevron_right"
+      }}</i>
+    </button>
+  </div>
+
+  <div class="search-box" *ngIf="isExpanded">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Search..."
+      (input)="filterMenuItems()"
+    />
+    <i class="material-icons search-icon">search</i>
+  </div>
+
+  <nav class="nav-menu" role="navigation">
+    <ng-container *ngFor="let item of filteredMenuItems">
+      <div
+        class="nav-item"
+        [class.active]="item.isActive"
+        [class.expanded]="item.isExpanded"
+      >
+        <div
+          class="nav-item-header"
+          (click)="toggleMenuItem(item)"
+          [attr.aria-expanded]="item.isExpanded"
+        >
+          <i class="material-icons">{{ item.icon }}</i>
+          <span class="nav-label" *ngIf="isExpanded">{{ item.label }}</span>
+          <span class="badge" *ngIf="isExpanded && item.badge">{{
+            item.badge
+          }}</span>
+          <i
+            *ngIf="item.children?.length && isExpanded"
+            class="material-icons expand-icon"
+            >{{ item.isExpanded ? "expand_less" : "expand_more" }}</i
+          >
+        </div>
+
+        <div
+          class="submenu"
+          *ngIf="item.children?.length && item.isExpanded && isExpanded"
+          [@submenuAnimation]
+        >
+          <div
+            class="nav-item sub-item"
+            *ngFor="let child of item.children"
+            (click)="selectMenuItem(child)"
+            [class.active]="child.isActive"
+          >
+            <i class="material-icons">{{ child.icon }}</i>
+            <span class="nav-label">{{ child.label }}</span>
+            <span class="badge" *ngIf="child.badge">{{ child.badge }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </nav>
+
+  <div class="sidebar-footer" *ngIf="isExpanded">
+    <div class="user-info">
+      <img
+        src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50"
+        alt="User Avatar"
+        class="avatar"
+      />
+      <span class="username">John Doe</span>
+    </div>
+  </div>
+</div>
+<!-- <router-outlet></router-outlet> -->

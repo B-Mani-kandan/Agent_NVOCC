@@ -1,0 +1,155 @@
+.nav-container {
+  height: 100vh;
+  background: #1a1a1a;
+  color: #ffffff;
+  transition: width 0.3s ease;
+  width: 250px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.nav-container.expanded {
+  width: 250px;
+}
+
+.nav-container:not(.expanded) {
+  width: 60px;
+}
+
+.sidebar-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  justify-content: space-between;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+.logo {
+  height: 35px;
+  width: auto;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.toggle-btn:hover {
+  background-color: #2d2d2d;
+}
+
+.search-box {
+  padding: 15px;
+  position: relative;
+}
+
+.search-box input {
+  width: 84%;
+  padding: 8px 30px 8px 10px;
+  border-radius: 5px;
+  border: none;
+  background: #2d2d2d;
+  color: #ffffff;
+}
+
+.search-icon {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.nav-menu {
+  overflow-y: auto;
+  height: calc(100vh - 180px);
+}
+
+.nav-item {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.nav-item-header {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-item:hover {
+  background-color: #2d2d2d;
+}
+
+.nav-item.active {
+  background-color: #3a3a3a;
+}
+
+.nav-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  background: #ff4081;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.submenu {
+  background: #232323;
+}
+
+.sub-item {
+  padding-left: 30px;
+}
+
+.expand-icon {
+  transition: transform 0.3s;
+}
+
+.nav-item.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 15px;
+  border-top: 1px solid #2d2d2d;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    transform: translateX(-100%);
+  }
+
+  .nav-container.expanded {
+    transform: translateX(0);
+  }
+}
