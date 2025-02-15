@@ -2,7 +2,7 @@
   <div class="sidebar-header">
     <img
       *ngIf="isExpanded"
-      src="https://images.unsplash.com/photo-1572177191856-3cde618dee1f?w=100"
+      src="../../../../assets/Images/invosys.png"
       alt="Logo"
       class="logo"
     />
@@ -11,9 +11,13 @@
       class="toggle-btn"
       [attr.aria-label]="isExpanded ? 'Collapse Sidebar' : 'Expand Sidebar'"
     >
-      <i class="material-icons">{{
-        isExpanded ? "chevron_left" : "chevron_right"
-      }}</i>
+      <i
+        [ngClass]="
+          isExpanded
+            ? 'ri-arrow-left-double-fill'
+            : 'ri-arrow-right-double-fill'
+        "
+      ></i>
     </button>
   </div>
 
@@ -24,7 +28,7 @@
       placeholder="Search..."
       (input)="filterMenuItems()"
     />
-    <i class="material-icons search-icon">search</i>
+    <i class="ri-search-2-line search-icon"></i>
   </div>
 
   <nav class="nav-menu" role="navigation">
@@ -39,16 +43,15 @@
           (click)="toggleMenuItem(item)"
           [attr.aria-expanded]="item.isExpanded"
         >
-          <i class="material-icons">{{ item.icon }}</i>
+          <i class="{{ item.icon }}"></i>
           <span class="nav-label" *ngIf="isExpanded">{{ item.label }}</span>
           <span class="badge" *ngIf="isExpanded && item.badge">{{
             item.badge
           }}</span>
           <i
             *ngIf="item.children?.length && isExpanded"
-            class="material-icons expand-icon"
-            >{{ item.isExpanded ? "expand_less" : "expand_more" }}</i
-          >
+            class="ri-arrow-drop-down-line expand-icon"
+          ></i>
         </div>
 
         <div
@@ -62,7 +65,7 @@
             (click)="selectMenuItem(child)"
             [class.active]="child.isActive"
           >
-            <i class="material-icons">{{ child.icon }}</i>
+            <i class="{{ child.icon }} child-icon"></i>
             <span class="nav-label">{{ child.label }}</span>
             <span class="badge" *ngIf="child.badge">{{ child.badge }}</span>
           </div>
@@ -74,12 +77,11 @@
   <div class="sidebar-footer" *ngIf="isExpanded">
     <div class="user-info">
       <img
-        src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50"
-        alt="User Avatar"
+        src="../../../../assets/Images/user.jpg"
+        alt="UserAvatar"
         class="avatar"
       />
-      <span class="username">John Doe</span>
+      <span class="username">Manikandan</span>
     </div>
   </div>
 </div>
-<!-- <router-outlet></router-outlet> -->

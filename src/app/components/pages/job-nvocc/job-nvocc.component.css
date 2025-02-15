@@ -1,0 +1,24 @@
+.search-box input {
+  width: 250px;
+}
+
+table {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th {
+  background-color: #f8f9fa;
+}
+
+.badge {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.btn-light {
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}

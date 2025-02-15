@@ -1,0 +1,10 @@
+<div id="layout-wrapper">
+  <app-sidebar (sidebarToggled)="adjustContent($event)"></app-sidebar>
+  <div class="main-content" [ngClass]="{ collapsed: !isSidebarExpanded }">
+    <div class="page-content">
+      <div class="container-fluid">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

@@ -39,6 +39,7 @@
   color: #ffffff;
   cursor: pointer;
   padding: 5px;
+  font-size: 22px;
   border-radius: 50%;
   transition: background-color 0.3s;
 }
@@ -53,7 +54,7 @@
 }
 
 .search-box input {
-  width: 84%;
+  width: -webkit-fill-available;
   padding: 8px 30px 8px 10px;
   border-radius: 5px;
   border: none;
@@ -80,7 +81,7 @@
 }
 
 .nav-item-header {
-  padding: 12px 15px;
+  padding: 15px 15px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -113,11 +114,17 @@
 }
 
 .sub-item {
-  padding-left: 30px;
+  padding: 10px;
+  padding-left: 40px;
 }
 
 .expand-icon {
   transition: transform 0.3s;
+}
+
+.child-icon {
+  position: relative;
+  right: 4%;
 }
 
 .nav-item.expanded .expand-icon {
@@ -127,7 +134,7 @@
 .sidebar-footer {
   position: absolute;
   bottom: 0;
-  width: 100%;
+  width: 85%;
   padding: 15px;
   border-top: 1px solid #2d2d2d;
 }
@@ -152,4 +159,9 @@
   .nav-container.expanded {
     transform: translateX(0);
   }
+}
+
+.nav-menu {
+  scrollbar-width: none;
+  scrollbar-color: #555 #1a1a1a;
 }

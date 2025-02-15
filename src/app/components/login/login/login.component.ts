@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       const Token = localStorage.getItem('authToken');
       if (Token != null || Token != '') {
-        this.router.navigateByUrl('/layout');
+        this.router.navigateByUrl('/dashboard');
       } else {
         this.router.navigateByUrl('/login');
       }
@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
     this.agentLogin.agentLogin(loginData).subscribe((res: any) => {
       if (res.Status === 'Success') {
         localStorage.setItem('authToken', res.Token);
-        this.router.navigateByUrl('/layout');
+        this.router.navigateByUrl('/dashboard');
       }
     });
   }

@@ -1,36 +1,19 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-sidebar',
-//   imports: [],
-//   templateUrl: './sidebar.component.html',
-//   styleUrl: './sidebar.component.css'
-// })
-// export class SidebarComponent {
-
-// }
-
 import {
   Component,
   OnInit,
   ChangeDetectionStrategy,
   Input,
   inject,
+  EventEmitter,
+  Output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
-
-interface MenuItem {
-  label: string;
-  icon: string;
-  isActive?: boolean;
-  isExpanded?: boolean;
-  badge?: string;
-  children?: MenuItem[];
-}
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MENU_ITEMS, MenuItem } from './menu-items';
 
 @Component({
   selector: 'app-sidebar',
@@ -38,7 +21,7 @@ interface MenuItem {
   styleUrls: ['./sidebar.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, RouterModule],
   animations: [
     trigger('submenuAnimation', [
       transition(':enter', [
@@ -53,51 +36,21 @@ interface MenuItem {
   ],
 })
 export class SidebarComponent implements OnInit {
-  @Input() menuItems: MenuItem[] = [
-    {
-      label: 'Dashboard',
-      icon: 'dashboard',
-      isActive: true,
-    },
-    {
-      label: 'User Management',
-      icon: 'people',
-      children: [
-        { label: 'User List', icon: 'list', badge: '99+' },
-        { label: 'Roles', icon: 'security' },
-        { label: 'Permissions', icon: 'lock' },
-      ],
-    },
-    {
-      label: 'Settings',
-      icon: 'settings',
-      children: [
-        { label: 'Account', icon: 'account_circle' },
-        { label: 'Preferences', icon: 'tune' },
-      ],
-    },
-    {
-      label: 'Analytics',
-      icon: 'analytics',
-      badge: 'New',
-    },
-    {
-      label: 'Help & Support',
-      icon: 'help',
-    },
-  ];
+  @Input() menuItems: MenuItem[] = MENU_ITEMS;
 
   isExpanded = true;
   searchTerm = '';
   filteredMenuItems: MenuItem[] = [];
   router = inject(Router);
+  @Output() sidebarToggled = new EventEmitter<boolean>();
 
   ngOnInit() {
-    this.filteredMenuItems = [...this.menuItems];
+    this.sortMenuItems();
   }
 
   toggleSidebar() {
     this.isExpanded = !this.isExpanded;
+    this.sidebarToggled.emit(this.isExpanded);
   }
 
   toggleMenuItem(item: MenuItem) {
@@ -108,7 +61,21 @@ export class SidebarComponent implements OnInit {
     }
   }
 
+  sortMenuItems() {
+    this.menuItems.sort((a, b) => a.position - b.position);
+    this.menuItems.forEach((item) => {
+      if (item.children) {
+        item.children.sort((a, b) => a.position - b.position);
+      }
+    });
+    this.filteredMenuItems = [...this.menuItems];
+  }
+
   selectMenuItem(item: MenuItem) {
+    if (item.route) {
+      this.router.navigate([item.route]);
+      console.log(item.route);
+    }
     this.menuItems.forEach((menuItem) => {
       menuItem.isActive = false;
       menuItem.children?.forEach((child) => (child.isActive = false));
