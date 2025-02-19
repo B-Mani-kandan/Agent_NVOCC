@@ -8,6 +8,7 @@
   <table class="table align-middle">
     <thead>
       <tr>
+        <th>Select</th>
         <th>JobNo</th>
         <th>JobDate</th>
         <th>ClientName</th>
@@ -24,8 +25,17 @@
           let BookingData of NvoccBookingData?.Nvocc_Booking;
           let i = index
         "
-        (click)="onJobSelect(BookingData.JobID)"
       >
+        <td>
+          <img
+            src="../../../../assets/Images/choice.png"
+            width="30px"
+            height="30px"
+            alt=""
+            (click)="onJobSelect(BookingData.JobID)"
+            style="cursor: pointer"
+          />
+        </td>
         <td>{{ BookingData.OrderJobNo }}</td>
         <td>{{ BookingData.OrderJobDate }}</td>
         <td>{{ BookingData.ClientName }}</td>

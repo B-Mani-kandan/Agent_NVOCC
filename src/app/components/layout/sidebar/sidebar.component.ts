@@ -80,7 +80,6 @@ export class SidebarComponent implements OnInit {
   selectMenuItem(item: MenuItem) {
     if (item.route) {
       this.router.navigate([item.route]);
-      console.log(item.route);
     }
     this.menuItems.forEach((menuItem) => {
       menuItem.isActive = false;

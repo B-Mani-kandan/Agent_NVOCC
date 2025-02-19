@@ -142,7 +142,6 @@ export class JobNvoccComponent implements OnInit {
   }
 
   onJobSelect(JobID: any): void {
-    console.log('Selected JobID:', JobID);
     this.isShowVisible = true;
     this.GetBookingJobData(JobID);
   }
@@ -192,10 +191,11 @@ export class JobNvoccComponent implements OnInit {
             'Success',
             'Data Saved Successfully'
           );
-          const currentUrl = this.router.url;
-          this.router.navigate(['/dummy']).then(() => {
-            this.router.navigate([currentUrl]);
-          });
+          this.router
+            .navigateByUrl('/', { skipLocationChange: true })
+            .then(() => {
+              this.router.navigate([this.router.url]);
+            });
         } else {
           this._notify.addToast('error', 'Failed', response.Message);
         }
