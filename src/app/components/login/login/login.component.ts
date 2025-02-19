@@ -73,6 +73,9 @@ export class LoginComponent implements OnInit {
     this.agentLogin.agentLogin(loginData).subscribe((res: any) => {
       if (res.Status === 'Success') {
         localStorage.setItem('authToken', res.Token);
+        localStorage.setItem('AgentID', res.AgentID);
+        localStorage.setItem('CompanyID', res.CompanyId);
+        localStorage.setItem('AgentName', res.AgentName);
         this.router.navigateByUrl('/dashboard');
       }
     });

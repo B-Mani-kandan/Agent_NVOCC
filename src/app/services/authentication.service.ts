@@ -8,7 +8,7 @@ export class AuthenticationService {
   _http = inject(HttpClient);
   agentLogin(obj: any) {
     return this._http.post(
-      'https://agencyapi.f-studio.in/Service/Agent_ValidateLogin.ashx',
+      'https://client.f-studio.in/ServiceNVOC/ValidateLogin_NVOCC.ashx',
       obj
     );
   }

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="login-container">
   <div class="top"></div>
   <div class="bottom"></div>
   <div class="center">
@@ -6,7 +6,7 @@
       <img src="../../../../assets/Images/invosys.png" alt="" />
     </div>
     <form #loginForm="ngForm" (ngSubmit)="onLogin()">
-      <div class="form-control">
+      <div class="login-form-control">
         <input
           type="text"
           name="email"
@@ -21,7 +21,7 @@
         >
       </div>
 
-      <div class="form-control">
+      <div class="login-form-control">
         <input
           [type]="fieldTextType ? 'text' : 'password'"
           name="password"
