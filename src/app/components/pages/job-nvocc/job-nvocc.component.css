@@ -20,7 +20,7 @@ body {
   display: none;
 }
 
-table {
+.table {
   border-collapse: collapse;
   width: 100%;
   text-align: left;
@@ -28,20 +28,20 @@ table {
   vertical-align: middle;
 }
 
-table thead {
+.table thead {
   box-shadow: 0 5px 10px #e1e5ee;
   background-color: #343a40;
   color: white;
 }
 
-table th {
+.table th {
   font-size: 15px;
   letter-spacing: 1.2px;
   font-weight: 600;
 }
 
-table th,
-table td {
+.table th,
+.table td {
   padding: 14px 15px;
 }
 
