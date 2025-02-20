@@ -86,11 +86,6 @@ export class JobNvoccComponent implements OnInit {
       (response) => {
         this.NvoccBookingData = response;
         if (this.NvoccBookingData?.Nvocc_Booking?.length > 0) {
-          this._notify.addToast(
-            'success',
-            'Success',
-            'Data fetched successfully.'
-          );
         } else {
           this._notify.addToast('error', 'Error', 'No data available.');
         }
