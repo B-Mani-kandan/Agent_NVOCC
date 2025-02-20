@@ -1,7 +1,11 @@
 .nav-container {
   height: 100vh;
-  background: #1a1a1a;
-  color: #ffffff;
+  background: linear-gradient(
+    to bottom,
+    rgb(255, 255, 255) -8%,
+    rgb(55, 72, 132) 20%
+  );
+  color: #a0a9cb;
   transition: width 0.3s ease;
   width: 250px;
   position: fixed;
@@ -25,7 +29,6 @@
   align-items: center;
   padding: 0 15px;
   justify-content: space-between;
-  border-bottom: 1px solid #2d2d2d;
 }
 
 .logo {
@@ -36,21 +39,18 @@
 .toggle-btn {
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
   padding: 5px;
   font-size: 22px;
   border-radius: 50%;
   transition: background-color 0.3s;
 }
-
-.toggle-btn:hover {
-  background-color: #2d2d2d;
-}
-
 .search-box {
   padding: 15px;
   position: relative;
+  border: none;
+  color: #000;
 }
 
 .search-box input {
@@ -58,8 +58,8 @@
   padding: 8px 30px 8px 10px;
   border-radius: 5px;
   border: none;
-  background: #2d2d2d;
-  color: #ffffff;
+  background: #b0b9db;
+  color: #fff;
 }
 
 .search-icon {
@@ -67,7 +67,7 @@
   right: 25px;
   top: 50%;
   transform: translateY(-50%);
-  color: #666;
+  color: #fff;
 }
 
 .nav-menu {
@@ -87,12 +87,31 @@
   gap: 10px;
 }
 
-.nav-item:hover {
-  background-color: #2d2d2d;
+.nav-item.active {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1),
+    rgba(55, 72, 132, 0.8)
+  );
+  color: #fff;
+  backdrop-filter: blur(15px);
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
 }
 
-.nav-item.active {
-  background-color: #3a3a3a;
+.nav-item.active:hover {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1),
+    rgba(55, 72, 132, 0.3)
+  );
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.3),
+    0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-item :hover {
+  color: #fff;
 }
 
 .nav-label {
@@ -109,9 +128,9 @@
   font-size: 12px;
 }
 
-.submenu {
-  background: #232323;
-}
+/* .submenu {
+  background: #ebf0fa;
+} */
 
 .sub-item {
   padding: 10px;
@@ -120,6 +139,7 @@
 
 .expand-icon {
   transition: transform 0.3s;
+  font-size: 22px;
 }
 
 .child-icon {
@@ -137,7 +157,6 @@
   font-size: 14px;
   width: 100%;
   padding: 20px;
-  border-top: 1px solid #2d2d2d;
 }
 
 .user-info {
@@ -150,6 +169,11 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
+}
+
+.username {
+  color: #fff;
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {

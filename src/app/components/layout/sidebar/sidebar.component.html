@@ -25,7 +25,7 @@
     <input
       type="text"
       [(ngModel)]="searchTerm"
-      placeholder="Search..."
+      placeholder="search.."
       (input)="filterMenuItems()"
     />
     <i class="ri-search-2-line search-icon"></i>
@@ -76,13 +76,9 @@
 
   <div class="sidebar-footer" *ngIf="isExpanded">
     <div class="user-info">
-      <img
-        src="../../../../assets/Images/user.jpg"
-        alt="UserAvatar"
-        class="avatar"
-      />
-      <span class="username">{{ UserName }}</span>
+      <a href="https://invosys.co.in/" class="username" target="_blank" rel="noopener noreferrer"
+        >Developed By Invoking Systems</a
+      >
     </div>
-    <button (click)="LogOut()">LogOut</button>
   </div>
 </div>

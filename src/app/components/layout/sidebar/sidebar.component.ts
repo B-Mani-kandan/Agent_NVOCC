@@ -42,12 +42,11 @@ export class SidebarComponent implements OnInit {
   searchTerm = '';
   filteredMenuItems: MenuItem[] = [];
   router = inject(Router);
-  UserName: any;
+
   @Output() sidebarToggled = new EventEmitter<boolean>();
 
   ngOnInit() {
     this.sortMenuItems();
-    this.UserName = localStorage.getItem('AgentName');
   }
 
   toggleSidebar() {
@@ -62,10 +61,7 @@ export class SidebarComponent implements OnInit {
       this.selectMenuItem(item);
     }
   }
-  LogOut() {
-    localStorage.clear();
-    this.router.navigate(['/login']);
-  }
+
 
   sortMenuItems() {
     this.menuItems.sort((a, b) => a.position - b.position);
