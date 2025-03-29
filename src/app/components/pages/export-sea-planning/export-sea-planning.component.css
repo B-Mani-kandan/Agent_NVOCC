@@ -1,0 +1,119 @@
+/* .tab-panel {
+  margin-top: 3%;
+}
+.example-tab-icon {
+  margin-right: 8px;
+} */
+
+/* .custom-tab-group {
+  background: #f5f6fa;
+  padding: 10px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mat-tab {
+  font-weight: bold;
+  color: #b2bec3;
+  opacity: 1;
+  transition: 0.3s;
+  border-radius: 50px;
+  padding: 12px 24px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  min-width: 200px;
+  justify-content: center;
+}
+
+
+.mat-tab.mat-tab-label:active {
+  background: linear-gradient(
+    to right,
+    #74b9ff,
+    #a29bfe
+  ) !important;
+  color: white !important;
+  border-radius: 50px;
+}
+
+
+.tab-number {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 50%;
+  background: white;
+  color: #0984e3;
+  margin-right: 8px;
+} */
+
+/* Remove the default bottom border/indicator */
+/* .mat-mdc-tab-header {
+  border-bottom: none !important;
+}
+
+
+.custom-tab-group {
+  background: linear-gradient(to right, #f5f7fa, #e6ebf3);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  box-shadow: none;
+}
+
+
+.mat-mdc-tab {
+  padding: 10px 20px;
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a3a8b4;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+
+.mat-mdc-tab.mdc-tab--active {
+  background: linear-gradient(to right, #60a5fa, #3b82f6);
+  color: #ffffff !important;
+  border-radius: 30px;
+  font-weight: bold;
+  padding: 10px 25px;
+}
+
+
+.mat-mdc-tab-indicator {
+  display: none !important;
+}
+
+.mat-mdc-tab-label-container {
+  display: flex;
+  align-items: center;
+}
+
+.tab-number {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  color: #a3a8b4;
+  background: #e0e7ff;
+}
+
+.mat-mdc-tab.mdc-tab--active .tab-number {
+  background: white;
+  color: #3b82f6;
+} */

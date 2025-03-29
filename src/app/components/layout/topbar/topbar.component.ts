@@ -15,8 +15,11 @@ export class TopbarComponent implements OnInit {
   ngOnInit(): void {
     this.UserName = localStorage.getItem('AgentName');
   }
+
   LogOut() {
     localStorage.clear();
-    this.router.navigate(['/login']);
+    this.router.navigateByUrl('/login').then(() => {
+      window.location.reload();
+    });
   }
 }

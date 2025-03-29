@@ -2,13 +2,12 @@ import { Component, inject, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthenticationService } from '../../../services/authentication.service';
+import { AuthenticationService } from '../../services/authentication.service';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { ToastComponent } from '../../layout/toast/toast.component';
-import { ToastService } from '../../../services/toast.service';
+import { ToastComponent } from '../layout/toast/toast.component';
+import { ToastService } from '../../services/toast.service';
 import CryptoJS from 'crypto-js';
-import { ClientinfoService } from '../../../services/clientinfo.service';
-
+import { ClientinfoService } from '../../services/clientinfo.service';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -30,11 +29,13 @@ export class LoginComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     @Inject(DOCUMENT) private document: Document,
     private toastService: ToastService,
-    private ClientinfoService: ClientinfoService
+    private ClientinfoService: ClientinfoService,
+    private agentLogin: AuthenticationService,
+    private router: Router
   ) {}
 
-  agentLogin = inject(AuthenticationService);
-  router = inject(Router);
+  // agentLogin = inject(AuthenticationService);
+  // router = inject(Router);
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -70,7 +71,6 @@ export class LoginComponent implements OnInit {
       );
       return;
     }
-
     const iv = CryptoJS.lib.WordArray.random(16);
     const encryptedPassword = CryptoJS.AES.encrypt(
       this.loginObj.Password,

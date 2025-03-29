@@ -29,6 +29,13 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         id: 3,
         position: 1,
+        label: 'Export Sea Planning',
+        route: '/export-sea-planning',
+        icon: 'ri-sailboat-line',
+      },
+      {
+        id: 4,
+        position: 2,
         label: 'Booking',
         route: '/nvocc-booking',
         icon: 'ri-list-check',

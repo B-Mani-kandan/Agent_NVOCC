@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login/login.component';
+import { LoginComponent } from './components/login/login.component';
 import { LayoutComponent } from './components/layout/layout/layout.component';
 import { authGuard } from './guard/auth.guard';
 import { JobNvoccComponent } from './components/pages/job-nvocc/job-nvocc.component';
 import { DashboardComponent } from './components/pages/dashboard/dashboard.component';
+import { ExportSeaPlanningComponent } from './components/pages/export-sea-planning/export-sea-planning.component';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,10 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent,
+      },
+      {
+        path: 'export-sea-planning',
+        component: ExportSeaPlanningComponent,
       },
       {
         path: 'nvocc-booking',
