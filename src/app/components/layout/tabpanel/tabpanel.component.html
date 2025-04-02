@@ -1,0 +1,13 @@
+<mat-tab-group class="custom-tab-group" [(selectedIndex)]="activeTab">
+  <mat-tab *ngFor="let tab of tabs; let i = index">
+    <ng-template mat-tab-label class="custom-tab-label">
+      <div class="custom-tab" [class.active]="activeTab === i">
+        {{ tab }}
+      </div>
+    </ng-template>
+    <ng-container
+      *ngIf="tabContents[i]"
+      [ngTemplateOutlet]="tabContents[i]"
+    ></ng-container>
+  </mat-tab>
+</mat-tab-group>

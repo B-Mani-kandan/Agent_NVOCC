@@ -1,68 +1,71 @@
-<!-- <div class="container-fluid">
-  <div class="tab-panel">
-    <mat-tab-group>
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">thumb_up</mat-icon>
-          GENERAL
-        </ng-template>
-      </mat-tab>
+<app-tab-panel [tabs]="tabLabels" [tabContents]="tabContents"></app-tab-panel>
 
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">thumb_up</mat-icon>
-          OPERATION DETAILS
-        </ng-template>
-      </mat-tab>
-
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">thumb_up</mat-icon>
-          INVOICE DETAILS
-        </ng-template>
-      </mat-tab>
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">thumb_up</mat-icon>
-          CONTAINER DETAILS
-        </ng-template>
-      </mat-tab>
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">thumb_up</mat-icon>
-          VESSEL DETAILS
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
+<ng-template #GENERAL>
+  <app-dynamic-forms
+    [formGroup]="generalForm"
+    [formFields]="generalFields"
+    [templateId]="'GENERAL'"
+    [isInputGroupField]="getInputGroupFields('GENERAL')"
+    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="col-12 text-center">
+    <button type="submit" class="btn btn-primary">Save</button>
   </div>
-</div> -->
+</ng-template>
 
-<div class="container-fluid">
-  <div class="tab-panel">
-    <mat-tab-group class="custom-tab-group" disableRipple>
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="tab-item">
-            <span class="tab-number">1</span> Your Profile
-          </div>
-        </ng-template>
-      </mat-tab>
-
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="tab-item">
-            <span class="tab-number">2</span> Business Information
-          </div>
-        </ng-template>
-      </mat-tab>
-
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="tab-item">
-            <span class="tab-number">3</span> Additional Users
-          </div>
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
+<ng-template #OPERATION>
+  <app-dynamic-forms
+    [formGroup]="operationForm"
+    [formFields]="operationFields"
+    [templateId]="'OPERATION'"
+    [isInputGroupField]="getInputGroupFields('GENERAL')"
+    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="col-12 text-center">
+    <button type="submit" class="btn btn-primary">Save</button>
   </div>
-</div>
+</ng-template>
+
+<ng-template #INVOICE>
+  <app-dynamic-forms
+    [formGroup]="invoiceForm"
+    [formFields]="invoiceFields"
+    [templateId]="'INVOICE'"
+    [isInputGroupField]="getInputGroupFields('GENERAL')"
+    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="col-12 text-center">
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
+</ng-template>
+
+<ng-template #CONTAINER>
+  <app-dynamic-forms
+    [formGroup]="containerForm"
+    [formFields]="containerFields"
+    [templateId]="'CONTAINER'"
+    [isInputGroupField]="getInputGroupFields('GENERAL')"
+    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="col-12 text-center">
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
+</ng-template>
+
+<ng-template #VESSEL>
+  <app-dynamic-forms
+    [formGroup]="vesselForm"
+    [formFields]="vesselFields"
+    [templateId]="'VESSEL'"
+    [isInputGroupField]="getInputGroupFields('GENERAL')"
+    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="col-12 text-center">
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
+</ng-template>

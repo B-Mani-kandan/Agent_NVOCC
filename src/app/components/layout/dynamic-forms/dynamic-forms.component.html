@@ -1,0 +1,57 @@
+<div class="container-fluid mt-4">
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="row g-3">
+    <div class="col-md-3" *ngFor="let field of formFields">
+      <label [for]="field.id" class="form-label">{{ field.label }}</label>
+
+      <!-- ✅ Input Group: Show only if field is in inputGroupFields -->
+      <div class="input-group" *ngIf="isInputGroupField(field.id)">
+        <span class="input-group-text split-input">
+          <i class="ri-user-line split-input-icon"></i>
+        </span>
+        <div class="form-floating">
+          <input
+            type="text"
+            class="form-control"
+            [id]="field.id"
+            [placeholder]="field.label"
+            formControlName="{{ field.id }}"
+            [ngClass]="{ important: isMandatoryField(field.id) }"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <!-- ✅ Regular Input: Only show if NOT in inputGroupFields -->
+      <input
+        *ngIf="
+          !isInputGroupField(field.id) &&
+          (field.type === 'text' || field.type === 'date')
+        "
+        [type]="field.type"
+        class="form-control"
+        [id]="field.id"
+        formControlName="{{ field.id }}"
+        [ngClass]="{ important: isMandatoryField(field.id) }"
+        autocomplete="off"
+      />
+
+      <select
+        *ngIf="field.type === 'select'"
+        class="form-select"
+        [id]="field.id"
+        formControlName="{{ field.id }}"
+      >
+        <option *ngFor="let option of field.options">{{ option }}</option>
+      </select>
+
+      <textarea
+        *ngIf="field.type === 'textarea'"
+        class="form-control description-text-box"
+        [id]="field.id"
+        formControlName="{{ field.id }}"
+        autocomplete="off"
+        [ngClass]="{ important: isMandatoryField(field.id) }"
+      ></textarea>
+    </div>
+  </form>
+</div>
