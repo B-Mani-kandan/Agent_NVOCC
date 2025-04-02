@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class AgentservicesService {
+export class AgentService {
   _http = inject(HttpClient);
   constructor() {}
 
@@ -15,6 +15,45 @@ export class AgentservicesService {
     return this._http
       .post<any>(
         'https://client.f-studio.in/ServiceNVOC/Nvocc_GetYardName.ashx',
+        payload
+      )
+      .pipe(
+        map((response) => {
+          return response;
+        })
+      );
+  }
+
+  NVOCC_GetClientName(payload: any) {
+    return this._http
+      .post<any>(
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_GetClientName.ashx',
+        payload
+      )
+      .pipe(
+        map((response) => {
+          return response;
+        })
+      );
+  }
+
+  NVOCC_GetShipperName(payload: any) {
+    return this._http
+      .post<any>(
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_GetShipperName.ashx',
+        payload
+      )
+      .pipe(
+        map((response) => {
+          return response;
+        })
+      );
+  }
+
+  NVOCC_GetConsigneeName(payload: any) {
+    return this._http
+      .post<any>(
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_GetConsigneeName.ashx',
         payload
       )
       .pipe(

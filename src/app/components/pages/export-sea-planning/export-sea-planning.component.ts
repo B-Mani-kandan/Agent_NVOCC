@@ -1,119 +1,20 @@
-// import {
-//   Component,
-//   ViewChild,
-//   TemplateRef,
-//   ViewEncapsulation,
-// } from '@angular/core';
-// import { TabPanelComponent } from '../../layout/tabpanel/tabpanel.component';
-// import { FormBuilder, FormGroup } from '@angular/forms';
-// import { ReactiveFormsModule } from '@angular/forms';
-// import { CommonModule } from '@angular/common';
-// @Component({
-//   selector: 'app-export-sea-planning',
-//   imports: [TabPanelComponent, ReactiveFormsModule, CommonModule],
-//   templateUrl: './export-sea-planning.component.html',
-//   styleUrl: './export-sea-planning.component.css',
-//   encapsulation: ViewEncapsulation.None,
-// })
-// export class ExportSeaPlanningComponent {
-//   tabLabels: string[] = [
-//     'GENERAL',
-//     'OPERATION DETAILS',
-//     'INVOICE DETAILS',
-//     'CONTAINER DETAILS',
-//     'VESSEL DETAILS',
-//   ];
-//   tabContents: TemplateRef<any>[] = [];
-//   profileForm!: FormGroup;
-//   formFields = [
-//     { label: 'Job No', type: 'text', id: 'jobNo' },
-//     {
-//       label: 'Job Date',
-//       type: 'date',
-//       id: 'jobDate',
-//       value: new Date().toISOString().split('T')[0],
-//       mandatory: true,
-//     },
-//     { label: 'Client Name', type: 'text', id: 'clientName' },
-//     { label: 'Shipper/Exporter Name', type: 'text', id: 'shipper' },
-//     { label: 'Consignee Name', type: 'text', id: 'consignee' },
-//     { label: 'POL', type: 'text', id: 'pol', mandatory: true },
-//     { label: 'POD', type: 'text', id: 'pod', mandatory: true },
-//     { label: 'FPOD', type: 'text', id: 'fpod' },
-//     {
-//       label: 'Item Description',
-//       type: 'textarea',
-//       id: 'itemDesc',
-//       mandatory: true,
-//     },
-//     {
-//       label: 'Type of Commodity',
-//       type: 'select',
-//       id: 'commodityType',
-//       options: ['Non DG', 'DG'],
-//     },
-//     { label: 'CFS Name', type: 'text', id: 'cfsName' },
-//     { label: 'CHA Name', type: 'text', id: 'chaName' },
-//     { label: 'Co-Loader Name', type: 'text', id: 'coloadName' },
-//     { label: 'Forwarder Name', type: 'text', id: 'frwdName' },
-//     { label: 'Shipping Line Name', type: 'text', id: 'shiplineName' },
-//     { label: 'Empty Yard Name', type: 'text', id: 'emptyName' },
-//     { label: 'Shipment No', type: 'text', id: 'shipNo' },
-//     { label: 'TotalDay of Transit', type: 'text', id: 'totTrans' },
-//     { label: 'Free Days', type: 'text', id: 'freeDays' },
-//     { label: 'Container Booking No', type: 'text', id: 'contBokNo' },
-//     { label: 'Remark', type: 'text', id: 'remark' },
-//   ];
-
-//   @ViewChild('GENERAL', { static: false }) GENERAL!: TemplateRef<any>;
-//   @ViewChild('OPERATION', { static: false }) OPERATION!: TemplateRef<any>;
-//   @ViewChild('INVOICE', { static: false })
-//   INVOICE!: TemplateRef<any>;
-//   @ViewChild('CONTAINER', { static: false }) CONTAINER!: TemplateRef<any>;
-//   @ViewChild('VESSEL', { static: false }) VESSEL!: TemplateRef<any>;
-
-//   ngAfterViewInit() {
-//     setTimeout(() => {
-//       this.tabContents = [
-//         this.GENERAL,
-//         this.OPERATION,
-//         this.INVOICE,
-//         this.CONTAINER,
-//         this.VESSEL,
-//       ];
-//     });
-//   }
-
-//   constructor(private fb: FormBuilder) {}
-//   ngOnInit() {
-//     this.profileForm = this.fb.group(
-//       Object.fromEntries(this.formFields.map((field) => [field.id]))
-//     );
-//   }
-
-//   saveForm() {
-//     console.log(this.profileForm.value);
-//   }
-
-//   isInputGroupField(fieldId: string): boolean {
-//     return ['clientName', 'shipper', 'consignee'].includes(fieldId);
-//   }
-
-//   isMandatoryField(fieldId: string): boolean {
-//     return ['pol', 'pod', 'fpod', 'itemDesc'].includes(fieldId);
-//   }
-// }
-
 import {
   Component,
   ViewChild,
   TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { TabPanelComponent } from '../../layout/tabpanel/tabpanel.component';
+import { AgentService } from '../../../services/agent.service';
 import { DynamicFormsComponent } from '../../layout/dynamic-forms/dynamic-forms.component';
-
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+} from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 @Component({
   selector: 'app-export-sea-planning',
   imports: [TabPanelComponent, DynamicFormsComponent],
@@ -135,6 +36,9 @@ export class ExportSeaPlanningComponent {
   invoiceForm!: FormGroup;
   containerForm!: FormGroup;
   vesselForm!: FormGroup;
+  clientSuggestions: string[] = [];
+  shipperSuggestions: string[] = [];
+  consigneeSuggestions: string[] = [];
   generalFields = [
     { label: 'Job No', type: 'text', id: 'jobNo' },
     {
@@ -144,9 +48,9 @@ export class ExportSeaPlanningComponent {
       value: new Date().toISOString().split('T')[0],
       mandatory: true,
     },
-    { label: 'Client Name', type: 'text', id: 'clientName' },
-    { label: 'Shipper/Exporter Name', type: 'text', id: 'shipper' },
-    { label: 'Consignee Name', type: 'text', id: 'consignee' },
+    { label: 'Client Name', type: 'autocomplete', id: 'clientName' },
+    { label: 'Shipper/Exporter Name', type: 'autocomplete', id: 'shipper' },
+    { label: 'Consignee Name', type: 'autocomplete', id: 'consignee' },
     { label: 'POL', type: 'text', id: 'pol', mandatory: true },
     { label: 'POD', type: 'text', id: 'pod', mandatory: true },
     { label: 'FPOD', type: 'text', id: 'fpod' },
@@ -216,7 +120,7 @@ export class ExportSeaPlanningComponent {
   @ViewChild('CONTAINER', { static: false }) CONTAINER!: TemplateRef<any>;
   @ViewChild('VESSEL', { static: false }) VESSEL!: TemplateRef<any>;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private agentService: AgentService) {}
 
   ngOnInit() {
     this.generalForm = this.createForm(this.generalFields);
@@ -224,31 +128,44 @@ export class ExportSeaPlanningComponent {
     this.invoiceForm = this.createForm(this.invoiceFields);
     this.containerForm = this.createForm(this.containerFields);
     this.vesselForm = this.createForm(this.vesselFields);
+    this.setupAutocompleteListeners();
   }
-
   ngAfterViewInit() {
     setTimeout(() => {
-      this.tabContents = [
-        this.GENERAL,
-        this.OPERATION,
-        this.INVOICE,
-        this.CONTAINER,
-        this.VESSEL,
-      ];
-    });
+      if (
+        this.GENERAL &&
+        this.OPERATION &&
+        this.INVOICE &&
+        this.CONTAINER &&
+        this.VESSEL
+      ) {
+        this.tabContents = [
+          this.GENERAL,
+          this.OPERATION,
+          this.INVOICE,
+          this.CONTAINER,
+          this.VESSEL,
+        ];
+      } else {
+        console.error('One or more @ViewChild references are undefined!');
+      }
+    }, 0);
   }
 
   createForm(fields: any[]): FormGroup {
-    return this.fb.group(Object.fromEntries(fields.map((field) => [field.id])));
+    let group: any = {};
+    fields.forEach((field) => {
+      group[field.id] = new FormControl('');
+    });
+    return new FormGroup(group);
   }
-
   saveForm(data: any) {
     console.log(data);
   }
 
   getInputGroupFields(templateId: string): (fieldId: string) => boolean {
     const inputGroupFields: Record<string, string[]> = {
-      GENERAL: ['clientName', 'shipper', 'consignee'],
+      GENERAL: ['cfsName'],
       OPERATION: ['leadOwner', 'leadSource'],
     };
     return (fieldId: string) =>
@@ -262,5 +179,76 @@ export class ExportSeaPlanningComponent {
     };
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;
+  }
+
+  setupAutocompleteListeners() {
+    this.generalForm
+      .get('clientName')
+      ?.valueChanges.pipe(
+        debounceTime(1),
+        distinctUntilChanged(),
+        switchMap((input) => this.fetchClientSuggestions(input))
+      )
+      .subscribe((options) => (this.clientSuggestions = options));
+
+    this.generalForm
+      .get('shipper')
+      ?.valueChanges.pipe(
+        debounceTime(100),
+        distinctUntilChanged(),
+        switchMap((input) => this.fetchShipperSuggestions(input))
+      )
+      .subscribe((options) => (this.shipperSuggestions = options));
+
+    this.generalForm
+      .get('consignee')
+      ?.valueChanges.pipe(
+        debounceTime(100),
+        distinctUntilChanged(),
+        switchMap((input) => this.fetchConsigneeSuggestions(input))
+      )
+      .subscribe((options) => (this.consigneeSuggestions = options));
+  }
+
+  fetchClientSuggestions(input: string): Observable<string[]> {
+    if (!input) return of([]);
+    const companyId = localStorage.getItem('CompanyID');
+    const requestPayload = { InputVal: input, CompanyId: companyId };
+
+    return this.agentService
+      .NVOCC_GetYardName(requestPayload)
+      .pipe(
+        map(
+          (response) =>
+            response?.GetYardName?.map((item: any) => item.AccountName) || []
+        )
+      );
+  }
+
+  fetchShipperSuggestions(input: string): Observable<string[]> {
+    if (!input) return of([]);
+    const companyId = localStorage.getItem('CompanyID');
+    const requestPayload = { InputVal: input, CompanyId: companyId };
+
+    return this.agentService
+      .NVOCC_GetShipperName(requestPayload)
+      .pipe(map((response) => response?.data || []));
+  }
+
+  fetchConsigneeSuggestions(input: string): Observable<string[]> {
+    if (!input) return of([]);
+    const companyId = localStorage.getItem('CompanyID');
+    const requestPayload = { InputVal: input, CompanyId: companyId };
+
+    return this.agentService
+      .NVOCC_GetConsigneeName(requestPayload)
+      .pipe(map((response) => response?.data || []));
+  }
+
+  getAutocompleteOptions(fieldId: string): string[] {
+    if (fieldId === 'clientName') return this.clientSuggestions;
+    if (fieldId === 'shipper') return this.shipperSuggestions;
+    if (fieldId === 'consignee') return this.consigneeSuggestions;
+    return [];
   }
 }

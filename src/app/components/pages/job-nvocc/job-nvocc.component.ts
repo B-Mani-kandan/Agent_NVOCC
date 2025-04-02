@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AgentservicesService } from '../../../services/agentservices.service';
+import { AgentService } from '../../../services/agent.service';
 import { ToastService } from '../../../services/toast.service';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -42,7 +42,7 @@ export class JobNvoccComponent implements OnInit {
   isLoading: boolean = false;
   router = inject(Router);
   _notify = inject(ToastService);
-  _CommonService = inject(AgentservicesService);
+  _CommonService = inject(AgentService);
   myControl = new FormControl('');
   options: string[] = ['One', 'Two', 'Three'];
   filteredOptions: Observable<string[]>[] = [];
