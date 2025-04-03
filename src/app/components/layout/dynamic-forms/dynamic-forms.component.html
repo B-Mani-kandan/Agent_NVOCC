@@ -13,13 +13,15 @@
             [id]="field.id"
             [placeholder]="field.label"
             formControlName="{{ field.id }}"
-            [ngClass]="{ important: isMandatoryField(field.id) }"
             autocomplete="off"
           />
         </div>
       </div>
       <div class="input-group" *ngIf="field.type === 'autocomplete'">
-        <span class="input-group-text split-input">
+        <span
+          class="input-group-text split-input"
+          [ngClass]="{ important: isMandatoryField(field.id) }"
+        >
           <i class="ri-user-line split-input-icon"></i>
         </span>
         <div class="form-floating">
@@ -29,7 +31,6 @@
             [id]="field.id"
             [placeholder]="field.label"
             formControlName="{{ field.id }}"
-            [ngClass]="{ important: isMandatoryField(field.id) }"
             autocomplete="off"
             [matAutocomplete]="auto"
           />

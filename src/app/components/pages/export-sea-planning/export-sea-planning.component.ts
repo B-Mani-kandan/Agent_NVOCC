@@ -46,9 +46,13 @@ export class ExportSeaPlanningComponent {
       type: 'date',
       id: 'gen_JobDate',
       value: new Date().toISOString().split('T')[0],
+    },
+    {
+      label: 'Client Name',
+      type: 'autocomplete',
+      id: 'gen_ClientName',
       mandatory: true,
     },
-    { label: 'Client Name', type: 'autocomplete', id: 'gen_ClientName' },
     { label: 'Shipper/Exporter Name', type: 'autocomplete', id: 'gen_Shipper' },
     { label: 'Consignee Name', type: 'autocomplete', id: 'gen_Consignee' },
     { label: 'POL', type: 'text', id: 'gen_Pol', mandatory: true },
@@ -197,8 +201,7 @@ export class ExportSeaPlanningComponent {
 
   getInputGroupFields(templateId: string): (fieldId: string) => boolean {
     const inputGroupFields: Record<string, string[]> = {
-      GENERAL: ['cfsName'],
-      OPERATION: ['leadOwner', 'leadSource'],
+      // GENERAL: ['gen_CfsName'],
     };
     return (fieldId: string) =>
       inputGroupFields[templateId]?.includes(fieldId) || false;
@@ -206,8 +209,13 @@ export class ExportSeaPlanningComponent {
 
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
-      GENERAL: ['pol', 'pod', 'fpod', 'itemDesc'],
-      OPERATION: ['leadType'],
+      GENERAL: [
+        'gen_ClientName',
+        'gen_Pol',
+        'gen_Pod',
+        'gen_Fpod',
+        'gen_ItemDesc',
+      ],
     };
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;

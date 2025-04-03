@@ -23,8 +23,9 @@
     [formGroup]="operationForm"
     [formFields]="operationFields"
     [templateId]="'OPERATION'"
-    [isInputGroupField]="getInputGroupFields('GENERAL')"
-    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    [isInputGroupField]="getInputGroupFields('OPERATION')"
+    [isMandatoryField]="getMandatoryFields('OPERATION')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
   ></app-dynamic-forms>
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
@@ -39,8 +40,9 @@
     [formGroup]="invoiceForm"
     [formFields]="invoiceFields"
     [templateId]="'INVOICE'"
-    [isInputGroupField]="getInputGroupFields('GENERAL')"
-    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    [isInputGroupField]="getInputGroupFields('INVOICE')"
+    [isMandatoryField]="getMandatoryFields('INVOICE')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
   ></app-dynamic-forms>
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
@@ -55,8 +57,9 @@
     [formGroup]="containerForm"
     [formFields]="containerFields"
     [templateId]="'CONTAINER'"
-    [isInputGroupField]="getInputGroupFields('GENERAL')"
-    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    [isInputGroupField]="getInputGroupFields('CONTAINER')"
+    [isMandatoryField]="getMandatoryFields('CONTAINER')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
   ></app-dynamic-forms>
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
@@ -71,8 +74,9 @@
     [formGroup]="vesselForm"
     [formFields]="vesselFields"
     [templateId]="'VESSEL'"
-    [isInputGroupField]="getInputGroupFields('GENERAL')"
-    [isMandatoryField]="getMandatoryFields('GENERAL')"
+    [isInputGroupField]="getInputGroupFields('VESSEL')"
+    [isMandatoryField]="getMandatoryFields('VESSEL')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
   ></app-dynamic-forms>
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">

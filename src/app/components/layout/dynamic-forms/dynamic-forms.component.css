@@ -1,0 +1,7 @@
+.important {
+  border-left: 2px solid red;
+}
+.important:focus {
+  border-color: red !important;
+  box-shadow: none !important;
+}

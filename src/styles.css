@@ -27,10 +27,12 @@ html {
 .important {
   border-left: 2px solid red;
 }
+
 .important:focus {
   border-color: red !important;
   box-shadow: none !important;
 }
+
 .form-control:focus {
   border-color: #86b7fe;
   outline: 0;
@@ -144,4 +146,8 @@ html {
 /* tabs header color */
 .mat-mdc-tab-header {
   background-color: #5c7285 !important;
+}
+
+.mat-mdc-tab-body-content {
+  overflow-y: hidden !important;
 }
