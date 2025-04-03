@@ -17,27 +17,7 @@ export class TabPanelComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {
-    if (!this.tabs.length) {
-      this.fetchTabsFromBackend();
-    }
-  }
-
-  fetchTabsFromBackend() {
-    this.http.get<string[]>('https://api.example.com/tabs').subscribe({
-      next: (data) => {
-        this.tabs = data;
-      },
-      error: (err) => {
-        console.error('Error fetching tabs:', err);
-        this.tabs = [
-          'Your Profile',
-          'Business Information',
-          'Additional Users',
-        ];
-      },
-    });
-  }
+  ngOnInit() {}
 
   setActiveTab(index: number) {
     this.activeTab = index;

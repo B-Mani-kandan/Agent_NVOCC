@@ -40,78 +40,111 @@ export class ExportSeaPlanningComponent {
   shipperSuggestions: string[] = [];
   consigneeSuggestions: string[] = [];
   generalFields = [
-    { label: 'Job No', type: 'text', id: 'jobNo' },
+    { label: 'Job No', type: 'text', id: 'gen_JobNo' },
     {
       label: 'Job Date',
       type: 'date',
-      id: 'jobDate',
+      id: 'gen_JobDate',
       value: new Date().toISOString().split('T')[0],
       mandatory: true,
     },
-    { label: 'Client Name', type: 'autocomplete', id: 'clientName' },
-    { label: 'Shipper/Exporter Name', type: 'autocomplete', id: 'shipper' },
-    { label: 'Consignee Name', type: 'autocomplete', id: 'consignee' },
-    { label: 'POL', type: 'text', id: 'pol', mandatory: true },
-    { label: 'POD', type: 'text', id: 'pod', mandatory: true },
-    { label: 'FPOD', type: 'text', id: 'fpod' },
+    { label: 'Client Name', type: 'autocomplete', id: 'gen_ClientName' },
+    { label: 'Shipper/Exporter Name', type: 'autocomplete', id: 'gen_Shipper' },
+    { label: 'Consignee Name', type: 'autocomplete', id: 'gen_Consignee' },
+    { label: 'POL', type: 'text', id: 'gen_Pol', mandatory: true },
+    { label: 'POD', type: 'text', id: 'gen_Pod', mandatory: true },
+    { label: 'FPOD', type: 'text', id: 'gen_Fpod' },
     {
       label: 'Item Description',
       type: 'textarea',
-      id: 'itemDesc',
+      id: 'gen_ItemDesc',
       mandatory: true,
     },
     {
       label: 'Type of Commodity',
       type: 'select',
-      id: 'commodityType',
+      id: 'gen_CommodityType',
       options: ['Non DG', 'DG'],
     },
-    { label: 'CFS Name', type: 'text', id: 'cfsName' },
-    { label: 'CHA Name', type: 'text', id: 'chaName' },
-    { label: 'Co-Loader Name', type: 'text', id: 'coloadName' },
-    { label: 'Forwarder Name', type: 'text', id: 'frwdName' },
-    { label: 'Shipping Line Name', type: 'text', id: 'shiplineName' },
-    { label: 'Empty Yard Name', type: 'text', id: 'emptyName' },
-    { label: 'Shipment No', type: 'text', id: 'shipNo' },
-    { label: 'TotalDay of Transit', type: 'text', id: 'totTrans' },
-    { label: 'Free Days', type: 'text', id: 'freeDays' },
-    { label: 'Container Booking No', type: 'text', id: 'contBokNo' },
-    { label: 'Remark', type: 'text', id: 'remark' },
+    { label: 'CFS Name', type: 'text', id: 'gen_CfsName' },
+    { label: 'CHA Name', type: 'text', id: 'gen_ChaName' },
+    { label: 'Co-Loader Name', type: 'text', id: 'gen_ColoadName' },
+    { label: 'Forwarder Name', type: 'text', id: 'gen_FrwdName' },
+    { label: 'Shipping Line Name', type: 'text', id: 'gen_ShiplineName' },
+    { label: 'Empty Yard Name', type: 'text', id: 'gen_EmptyName' },
+    { label: 'Shipment No', type: 'text', id: 'gen_ShipNo' },
+    { label: 'TotalDay of Transit', type: 'text', id: 'gen_TotTrans' },
+    { label: 'Free Days', type: 'text', id: 'gen_FreeDays' },
+    { label: 'Container Booking No', type: 'text', id: 'gen_ContBokNo' },
+    { label: 'Remark', type: 'text', id: 'gen_Remark' },
   ];
 
   operationFields = [
-    { label: 'Lead Owner', type: 'text', id: 'leadOwner' },
+    { label: 'Created Date', type: 'date', id: 'Oper_CreatedDate' },
     {
-      label: 'Ownership',
-      type: 'select',
-      id: 'ownership',
-      options: ['Private', 'Public'],
+      label: 'Examined Date',
+      type: 'date',
+      id: 'Oper_ExaminedDate',
     },
     {
-      label: 'Lead Type',
-      type: 'select',
-      id: 'leadType',
-      options: ['Hot', 'Cold'],
+      label: 'Leo Date',
+      type: 'date',
+      id: 'Oper_LeoDate',
     },
-    { label: 'Lead Source', type: 'text', id: 'leadSource' },
+    { label: 'Hand Over Date', type: 'date', id: 'Oper_HandOver' },
+    { label: 'VGM Updated Date', type: 'date', id: 'Oper_VgmUpdated' },
+    { label: 'Form 13 Updated Date', type: 'date', id: 'Oper_Form13' },
+    { label: 'Gate In Date', type: 'date', id: 'Oper_GateInDate' },
+    { label: 'OnBoard Date', type: 'date', id: 'Oper_OnBoardDate' },
+    { label: 'Depature Date', type: 'date', id: 'Oper_DepatureDate' },
+    { label: 'Pre Alert Date', type: 'date', id: 'Oper_PreAlertDate' },
+    { label: 'Delivery Date', type: 'date', id: 'Oper_DeliveryDate' },
   ];
 
   invoiceFields = [
-    { label: 'Invoice Number', type: 'text', id: 'invoiceNo' },
-    { label: 'Invoice Date', type: 'date', id: 'invoiceDate' },
-    { label: 'Amount', type: 'text', id: 'amount' },
+    { label: 'Invoice No', type: 'text', id: 'inv_InvoiceNo' },
+    { label: 'Invoice Date', type: 'date', id: 'inv_InvoiceDate' },
+    { label: 'Invoice Value', type: 'number', id: 'inv_InvoiceValue' },
+    { label: 'Currency', type: 'text', id: 'inv_Currency' },
+    { label: 'Ex-Rate', type: 'number', id: 'inv_ExRate' },
+    { label: 'Terms', type: 'text', id: 'inv_Terms' },
+    { label: 'FOB Value', type: 'number', id: 'inv_FobValue' },
+    { label: 'SB No', type: 'text', id: 'inv_SbNo' },
+    { label: 'SB Date', type: 'date', id: 'inv_SbDate' },
+    { label: 'No of Packages', type: 'number', id: 'inv_NoOfpackage' },
+    { label: 'Type Of Packages', type: 'text', id: 'inv_TypeOfPackage' },
+    { label: 'Gross Weight', type: 'number', id: 'inv_GrossWeight' },
+    { label: 'Net Weight', type: 'number', id: 'inv_NetWeight' },
+    { label: 'CBM', type: 'number', id: 'inv_Cbm' },
+    { label: 'Unit Type', type: 'text', id: 'inv_UnitType' },
   ];
 
   containerFields = [
-    { label: 'Container No', type: 'text', id: 'containerNo' },
-    { label: 'Size', type: 'select', id: 'size', options: ['20ft', '40ft'] },
-    { label: 'Seal No', type: 'text', id: 'sealNo' },
+    { label: 'Container Size', type: 'text', id: 'cont_ContainerSize' },
+    {
+      label: 'Container No',
+      type: 'text',
+      id: 'cont_ContainerNo',
+    },
+    { label: 'Line Seal No', type: 'text', id: 'cont_SealNo' },
+    { label: 'Custom Seal No', type: 'text', id: 'cont_CustomsealNo' },
+    { label: 'From Place', type: 'text', id: 'cont_FromPlace' },
+    { label: 'To Place', type: 'text', id: 'cont_ToPlace' },
+    { label: 'Transporter Name', type: 'text', id: 'cont_TransporterName' },
+    { label: 'Vehicle No', type: 'text', id: 'cont_VehicleNo' },
+    { label: 'Driver Mobile', type: 'number', id: 'cont_DriverMobile' },
+    { label: 'Remarks', type: 'text', id: 'cont_Remarks' },
   ];
 
   vesselFields = [
-    { label: 'Vessel Name', type: 'text', id: 'vesselName' },
-    { label: 'Voyage No', type: 'text', id: 'voyageNo' },
-    { label: 'Departure Date', type: 'date', id: 'departureDate' },
+    { label: 'From', type: 'text', id: 'vess_from' },
+    { label: 'To', type: 'text', id: 'vess_To' },
+    { label: 'Vessel Name', type: 'text', id: 'vess_VesselName' },
+    { label: 'Voyage No', type: 'text', id: 'vess_VoyageNo' },
+    { label: 'ETD', type: 'date', id: 'vess_Etd' },
+    { label: 'ETA', type: 'date', id: 'vess_Eta' },
+    { label: 'ROT No', type: 'text', id: 'vess_RotNo' },
+    { label: 'Via No', type: 'text', id: 'vess_ViaNo' },
   ];
 
   @ViewChild('GENERAL', { static: false }) GENERAL!: TemplateRef<any>;
@@ -151,7 +184,6 @@ export class ExportSeaPlanningComponent {
       }
     }, 0);
   }
-
   createForm(fields: any[]): FormGroup {
     let group: any = {};
     fields.forEach((field) => {

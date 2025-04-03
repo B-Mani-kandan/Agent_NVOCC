@@ -2,7 +2,7 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="row g-3">
     <div class="col-md-3" *ngFor="let field of formFields">
       <label [for]="field.id" class="form-label">{{ field.label }}</label>
-      <!-- <div class="input-group" *ngIf="isInputGroupField(field.id)">
+      <div class="input-group" *ngIf="isInputGroupField(field.id)">
         <span class="input-group-text split-input">
           <i class="ri-user-line split-input-icon"></i>
         </span>
@@ -17,29 +17,38 @@
             autocomplete="off"
           />
         </div>
-      </div> -->
-      <mat-form-field *ngIf="field.type === 'autocomplete'" class="full-width">
-        <mat-label>{{ field.label }}</mat-label>
-        <input
-          type="text"
-          matInput
-          [formControlName]="field.id"
-          [matAutocomplete]="auto"
-        />
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option
-            *ngFor="let option of getAutocompleteOptions(field.id)"
-            [value]="option"
-          >
-            {{ option }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-
+      </div>
+      <div class="input-group" *ngIf="field.type === 'autocomplete'">
+        <span class="input-group-text split-input">
+          <i class="ri-user-line split-input-icon"></i>
+        </span>
+        <div class="form-floating">
+          <input
+            type="text"
+            class="form-control"
+            [id]="field.id"
+            [placeholder]="field.label"
+            formControlName="{{ field.id }}"
+            [ngClass]="{ important: isMandatoryField(field.id) }"
+            autocomplete="off"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let option of getAutocompleteOptions(field.id)"
+              [value]="option"
+            >
+              {{ option }}
+            </mat-option>
+          </mat-autocomplete>
+        </div>
+      </div>
       <input
         *ngIf="
           !isInputGroupField(field.id) &&
-          (field.type === 'text' || field.type === 'date')
+          (field.type === 'text' ||
+            field.type === 'date' ||
+            field.type === 'number')
         "
         [type]="field.type"
         class="form-control"
@@ -48,7 +57,6 @@
         [ngClass]="{ important: isMandatoryField(field.id) }"
         autocomplete="off"
       />
-
       <select
         *ngIf="field.type === 'select'"
         class="form-select"
@@ -57,7 +65,6 @@
       >
         <option *ngFor="let option of field.options">{{ option }}</option>
       </select>
-
       <textarea
         *ngIf="field.type === 'textarea'"
         class="form-control description-text-box"
