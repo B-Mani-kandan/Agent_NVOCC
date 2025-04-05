@@ -12,6 +12,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   map,
+  catchError,
   switchMap,
 } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
@@ -23,6 +24,7 @@ import { Observable, of } from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class ExportSeaPlanningComponent {
+  CompanyId: string | undefined;
   tabLabels: string[] = [
     'GENERAL',
     'OPERATION DETAILS',
@@ -39,6 +41,15 @@ export class ExportSeaPlanningComponent {
   clientSuggestions: string[] = [];
   shipperSuggestions: string[] = [];
   consigneeSuggestions: string[] = [];
+  polSuggestions: string[] = [];
+  podSuggestions: string[] = [];
+  fpodSuggestions: string[] = [];
+  cfsNameSuggestions: string[] = [];
+  chaNameSuggestions: string[] = [];
+  coLoaderSuggestions: string[] = [];
+  forwarderSuggestions: string[] = [];
+  shippingLineSuggestions: string[] = [];
+  emptyYardSuggestions: string[] = [];
   generalFields = [
     { label: 'Job No', type: 'text', id: 'gen_JobNo' },
     {
@@ -55,9 +66,9 @@ export class ExportSeaPlanningComponent {
     },
     { label: 'Shipper/Exporter Name', type: 'autocomplete', id: 'gen_Shipper' },
     { label: 'Consignee Name', type: 'autocomplete', id: 'gen_Consignee' },
-    { label: 'POL', type: 'text', id: 'gen_Pol', mandatory: true },
-    { label: 'POD', type: 'text', id: 'gen_Pod', mandatory: true },
-    { label: 'FPOD', type: 'text', id: 'gen_Fpod' },
+    { label: 'POL', type: 'autocomplete', id: 'gen_Pol', mandatory: true },
+    { label: 'POD', type: 'autocomplete', id: 'gen_Pod', mandatory: true },
+    { label: 'FPOD', type: 'autocomplete', id: 'gen_Fpod' },
     {
       label: 'Item Description',
       type: 'textarea',
@@ -70,12 +81,16 @@ export class ExportSeaPlanningComponent {
       id: 'gen_CommodityType',
       options: ['Non DG', 'DG'],
     },
-    { label: 'CFS Name', type: 'text', id: 'gen_CfsName' },
-    { label: 'CHA Name', type: 'text', id: 'gen_ChaName' },
-    { label: 'Co-Loader Name', type: 'text', id: 'gen_ColoadName' },
-    { label: 'Forwarder Name', type: 'text', id: 'gen_FrwdName' },
-    { label: 'Shipping Line Name', type: 'text', id: 'gen_ShiplineName' },
-    { label: 'Empty Yard Name', type: 'text', id: 'gen_EmptyName' },
+    { label: 'CFS Name', type: 'autocomplete', id: 'gen_CfsName' },
+    { label: 'CHA Name', type: 'autocomplete', id: 'gen_ChaName' },
+    { label: 'Co-Loader Name', type: 'autocomplete', id: 'gen_ColoadName' },
+    { label: 'Forwarder Name', type: 'autocomplete', id: 'gen_FrwdName' },
+    {
+      label: 'Shipping Line Name',
+      type: 'autocomplete',
+      id: 'gen_ShiplineName',
+    },
+    { label: 'Empty Yard Name', type: 'autocomplete', id: 'gen_EmptyName' },
     { label: 'Shipment No', type: 'text', id: 'gen_ShipNo' },
     { label: 'TotalDay of Transit', type: 'text', id: 'gen_TotTrans' },
     { label: 'Free Days', type: 'text', id: 'gen_FreeDays' },
@@ -166,6 +181,7 @@ export class ExportSeaPlanningComponent {
     this.containerForm = this.createForm(this.containerFields);
     this.vesselForm = this.createForm(this.vesselFields);
     this.setupAutocompleteListeners();
+    this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
   }
   ngAfterViewInit() {
     setTimeout(() => {
@@ -220,75 +236,206 @@ export class ExportSeaPlanningComponent {
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;
   }
-
   setupAutocompleteListeners() {
-    this.generalForm
-      .get('clientName')
-      ?.valueChanges.pipe(
-        debounceTime(1),
-        distinctUntilChanged(),
-        switchMap((input) => this.fetchClientSuggestions(input))
-      )
-      .subscribe((options) => (this.clientSuggestions = options));
+    const fields = [
+      {
+        field: 'gen_ClientName',
+        method: 'fetchClientSuggestions',
+        payloadType: 'client',
+      },
+      {
+        field: 'gen_Shipper',
+        method: 'fetchShipperSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_Consignee',
+        method: 'fetchConsigneeSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_Pol',
+        method: 'fetchPortSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_Pod',
+        method: 'fetchPortSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_Fpod',
+        method: 'fetchPortSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_CfsName',
+        method: 'fetchAccountSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_ChaName',
+        method: 'fetchAccountSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_ColoadName',
+        method: 'fetchAccountSuggestions',
+        payloadType: 'common',
+      },
+      {
+        field: 'gen_FrwdName',
+        method: 'fetchAccountSuggestions',
+        payloadType: 'forwarder',
+      },
+      {
+        field: 'gen_ShiplineName',
+        method: 'fetchShippingLineSuggestions',
+        payloadType: 'shippingLine',
+      },
+      {
+        field: 'gen_EmptyName',
+        method: 'fetchEmptyYardNameSuggestions',
+        payloadType: 'common',
+      },
+    ];
 
-    this.generalForm
-      .get('shipper')
-      ?.valueChanges.pipe(
-        debounceTime(100),
-        distinctUntilChanged(),
-        switchMap((input) => this.fetchShipperSuggestions(input))
-      )
-      .subscribe((options) => (this.shipperSuggestions = options));
-
-    this.generalForm
-      .get('consignee')
-      ?.valueChanges.pipe(
-        debounceTime(100),
-        distinctUntilChanged(),
-        switchMap((input) => this.fetchConsigneeSuggestions(input))
-      )
-      .subscribe((options) => (this.consigneeSuggestions = options));
-  }
-
-  fetchClientSuggestions(input: string): Observable<string[]> {
-    if (!input) return of([]);
-    const companyId = localStorage.getItem('CompanyID');
-    const requestPayload = { InputVal: input, CompanyId: companyId };
-
-    return this.agentService
-      .NVOCC_GetYardName(requestPayload)
-      .pipe(
-        map(
-          (response) =>
-            response?.GetYardName?.map((item: any) => item.AccountName) || []
+    fields.forEach(({ field, method, payloadType }) => {
+      this.generalForm
+        .get(field)
+        ?.valueChanges.pipe(
+          debounceTime(100),
+          distinctUntilChanged(),
+          switchMap((input) => (this as any)[method](input, payloadType))
         )
-      );
+        .subscribe((options) => {
+          (this as any)[`${field}Suggestions`] = options;
+        });
+    });
   }
 
-  fetchShipperSuggestions(input: string): Observable<string[]> {
+  fetchClientSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetClientName',
+      'ClientName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchShipperSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetShipperName',
+      'ShipperName',
+      'PartyName',
+      payloadType
+    );
+  }
+
+  fetchConsigneeSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetConsigneeName',
+      'ConsigneeName',
+      'consigneeName',
+      payloadType
+    );
+  }
+
+  fetchPortSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'Nvocc_GetPortCountry',
+      'PortCountry',
+      'PortName',
+      payloadType
+    );
+  }
+
+  fetchAccountSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'Nvocc_GetCFSName',
+      'CFSName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchShippingLineSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'Nvocc_GetShippingLine',
+      'ShippingLineName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchEmptyYardNameSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetYardName',
+      'GetYardName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchData(
+    input: string,
+    serviceMethod: string,
+    responseKey: string,
+    itemKey: string,
+    payloadType: string
+  ): Observable<string[]> {
     if (!input) return of([]);
-    const companyId = localStorage.getItem('CompanyID');
-    const requestPayload = { InputVal: input, CompanyId: companyId };
 
-    return this.agentService
-      .NVOCC_GetShipperName(requestPayload)
-      .pipe(map((response) => response?.data || []));
+    const payloadMap: Record<string, any> = {
+      common: { InputVal: input, CompanyId: this.CompanyId },
+      client: { InputVal: input, CompanyID: this.CompanyId, CompID: '1575' },
+      forwarder: { InputVal: input, CompanyId: this.CompanyId },
+      shippingLine: { InputVal: input, CompanyId: this.CompanyId, Country: '' },
+    };
+
+    const requestPayload = payloadMap[payloadType] || { InputVal: input };
+
+    return (this.agentService as any)[serviceMethod](requestPayload).pipe(
+      map((response: any) =>
+        response?.Status === 'Success' && Array.isArray(response[responseKey])
+          ? response[responseKey].map((item: any) => item[itemKey])
+          : []
+      ),
+      catchError((error: any) => {
+        console.error(`Error fetching data from ${serviceMethod}:`, error);
+        return of([]);
+      })
+    );
   }
-
-  fetchConsigneeSuggestions(input: string): Observable<string[]> {
-    if (!input) return of([]);
-    const companyId = localStorage.getItem('CompanyID');
-    const requestPayload = { InputVal: input, CompanyId: companyId };
-
-    return this.agentService
-      .NVOCC_GetConsigneeName(requestPayload)
-      .pipe(map((response) => response?.data || []));
-  }
-
   getAutocompleteOptions(fieldId: string): string[] {
-    if (fieldId === 'clientName') return this.clientSuggestions;
-    if (fieldId === 'shipper') return this.shipperSuggestions;
-    if (fieldId === 'consignee') return this.consigneeSuggestions;
-    return [];
+    return (this as any)[`${fieldId}Suggestions`] || [];
   }
 }

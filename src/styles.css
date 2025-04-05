@@ -57,13 +57,11 @@ html {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 12px;
   color: #5d85fe;
-  background: #e5dafd;
 }
 
 .form-floating > .form-control:focus {
@@ -123,7 +121,7 @@ html {
 }
 /* Active Tab Style */
 .custom-tab.active {
-  background: linear-gradient(to right, #77aff3, #b37ff7);
+  background: linear-gradient(to right, #649fe7, #c5a3f3);
   color: rgb(248, 245, 245) !important;
   border-top-right-radius: 30px;
   border-bottom-right-radius: 30px;
@@ -145,9 +143,61 @@ html {
 
 /* tabs header color */
 .mat-mdc-tab-header {
-  background-color: #5c7285 !important;
+  background-color: #3d5095 !important;
 }
 
 .mat-mdc-tab-body-content {
   overflow-y: hidden !important;
+}
+
+/* Autocomplete Dropdown */
+.mat-mdc-option {
+  min-height: 26px !important;
+}
+
+div.mat-mdc-autocomplete-panel {
+  scrollbar-width: thin;
+  max-height: 184px !important;
+  background-color: #fff !important;
+}
+
+div.mat-mdc-autocomplete-panel::-webkit-scrollbar {
+  width: 2px !important; /* Adjust width as needed */
+}
+
+div.mat-mdc-autocomplete-panel::-webkit-scrollbar-thumb {
+  background: #888; /* Color of scrollbar thumb */
+  border-radius: 2px;
+}
+
+div.mat-mdc-autocomplete-panel::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of scrollbar track */
+}
+
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background-color: #3d5095 !important;
+  color: #fff !important;
+}
+.mat-mdc-option.mat-mdc-option-active.mdc-list-item {
+  background-color: #3d5095 !important;
+  color: #fff !important;
+}
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(
+    .mat-mdc-option-multiple
+  ) {
+  background-color: #3d5095 !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(
+    .mat-mdc-option-multiple
+  )
+  .mdc-list-item__primary-text {
+  color: #fff !important;
+}
+.mat-mdc-option .mat-pseudo-checkbox {
+  --mat-minimal-pseudo-checkbox-selected-checkmark-color: #fff !important;
+}
+.mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+  width: 8px !important;
+  height: 4px !important;
 }

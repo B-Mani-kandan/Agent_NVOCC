@@ -2,27 +2,13 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="row g-3">
     <div class="col-md-3" *ngFor="let field of formFields">
       <label [for]="field.id" class="form-label">{{ field.label }}</label>
-      <div class="input-group" *ngIf="isInputGroupField(field.id)">
-        <span class="input-group-text split-input">
-          <i class="ri-user-line split-input-icon"></i>
-        </span>
-        <div class="form-floating">
-          <input
-            type="text"
-            class="form-control"
-            [id]="field.id"
-            [placeholder]="field.label"
-            formControlName="{{ field.id }}"
-            autocomplete="off"
-          />
-        </div>
-      </div>
+
       <div class="input-group" *ngIf="field.type === 'autocomplete'">
         <span
           class="input-group-text split-input"
           [ngClass]="{ important: isMandatoryField(field.id) }"
         >
-          <i class="ri-user-line split-input-icon"></i>
+          <i class="ri-search-eye-line split-input-icon"></i>
         </span>
         <div class="form-floating">
           <input
