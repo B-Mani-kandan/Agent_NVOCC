@@ -13,6 +13,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 export class TabPanelComponent implements OnInit {
   @Input() tabs: string[] = [];
   @Input() tabContents: TemplateRef<any>[] = [];
+  @Input() disabledTabs: boolean[] = [];
   activeTab: number = 0;
 
   constructor(private http: HttpClient) {}

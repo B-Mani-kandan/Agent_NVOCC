@@ -16,15 +16,46 @@ import {
   switchMap,
 } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+const ELEMENT_DATA = [
+  { id: 1, name: 'Alice', email: 'alice@example.com' },
+  { id: 2, name: 'Bob', email: 'bob@example.com' },
+  { id: 3, name: 'Charlie', email: 'charlie@example.com' },
+  { id: 4, name: 'Alice', email: 'alice@example.com' },
+  { id: 5, name: 'Bob', email: 'bob@example.com' },
+  { id: 6, name: 'Charlie', email: 'charlie@example.com' },
+  { id: 7, name: 'Alice', email: 'alice@example.com' },
+  { id: 8, name: 'Bob', email: 'bob@example.com' },
+  { id: 9, name: 'Charlie', email: 'charlie@example.com' },
+  { id: 10, name: 'Alice', email: 'alice@example.com' },
+  { id: 11, name: 'Bob', email: 'bob@example.com' },
+  { id: 12, name: 'Charlie', email: 'charlie@example.com' },
+];
 @Component({
   selector: 'app-export-sea-planning',
-  imports: [TabPanelComponent, DynamicFormsComponent],
+  standalone: true,
+  imports: [
+    TabPanelComponent,
+    DynamicFormsComponent,
+    MatTableModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   templateUrl: './export-sea-planning.component.html',
   styleUrl: './export-sea-planning.component.css',
   encapsulation: ViewEncapsulation.None,
 })
 export class ExportSeaPlanningComponent {
   CompanyId: string | undefined;
+  FinanceYear: any | undefined;
+  BranchID: any | undefined;
+  SavedJobId: any | undefined;
   tabLabels: string[] = [
     'GENERAL',
     'OPERATION DETAILS',
@@ -33,6 +64,7 @@ export class ExportSeaPlanningComponent {
     'VESSEL DETAILS',
   ];
   tabContents: TemplateRef<any>[] = [];
+  disabledTabs: boolean[] = [false, false, false, false, false];
   generalForm!: FormGroup;
   operationForm!: FormGroup;
   invoiceForm!: FormGroup;
@@ -50,6 +82,17 @@ export class ExportSeaPlanningComponent {
   forwarderSuggestions: string[] = [];
   shippingLineSuggestions: string[] = [];
   emptyYardSuggestions: string[] = [];
+
+  displayedColumns: string[] = ['id', 'name', 'email'];
+  ELEMENT_DATA = [
+    { id: 1, name: 'Alice', email: 'alice@example.com' },
+    { id: 2, name: 'Bob', email: 'bob@example.com' },
+    { id: 3, name: 'Charlie', email: 'charlie@example.com' },
+    // Add more mock data...
+  ];
+  dataSource = new MatTableDataSource(ELEMENT_DATA);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   generalFields = [
     { label: 'Job No', type: 'text', id: 'gen_JobNo' },
     {
@@ -81,10 +124,6 @@ export class ExportSeaPlanningComponent {
       id: 'gen_CommodityType',
       options: ['Non DG', 'DG'],
     },
-    { label: 'CFS Name', type: 'autocomplete', id: 'gen_CfsName' },
-    { label: 'CHA Name', type: 'autocomplete', id: 'gen_ChaName' },
-    { label: 'Co-Loader Name', type: 'autocomplete', id: 'gen_ColoadName' },
-    { label: 'Forwarder Name', type: 'autocomplete', id: 'gen_FrwdName' },
     {
       label: 'Shipping Line Name',
       type: 'autocomplete',
@@ -124,22 +163,26 @@ export class ExportSeaPlanningComponent {
     { label: 'Invoice No', type: 'text', id: 'inv_InvoiceNo' },
     { label: 'Invoice Date', type: 'date', id: 'inv_InvoiceDate' },
     { label: 'Invoice Value', type: 'number', id: 'inv_InvoiceValue' },
-    { label: 'Currency', type: 'text', id: 'inv_Currency' },
+    { label: 'Currency', type: 'autocomplete', id: 'inv_Currency' },
     { label: 'Ex-Rate', type: 'number', id: 'inv_ExRate' },
-    { label: 'Terms', type: 'text', id: 'inv_Terms' },
+    { label: 'Terms', type: 'autocomplete', id: 'inv_Terms' },
     { label: 'FOB Value', type: 'number', id: 'inv_FobValue' },
     { label: 'SB No', type: 'text', id: 'inv_SbNo' },
     { label: 'SB Date', type: 'date', id: 'inv_SbDate' },
     { label: 'No of Packages', type: 'number', id: 'inv_NoOfpackage' },
-    { label: 'Type Of Packages', type: 'text', id: 'inv_TypeOfPackage' },
+    {
+      label: 'Type Of Packages',
+      type: 'autocomplete',
+      id: 'inv_TypeOfPackage',
+    },
     { label: 'Gross Weight', type: 'number', id: 'inv_GrossWeight' },
     { label: 'Net Weight', type: 'number', id: 'inv_NetWeight' },
     { label: 'CBM', type: 'number', id: 'inv_Cbm' },
-    { label: 'Unit Type', type: 'text', id: 'inv_UnitType' },
+    { label: 'Unit Type', type: 'autocomplete', id: 'inv_UnitType' },
   ];
 
   containerFields = [
-    { label: 'Container Size', type: 'text', id: 'cont_ContainerSize' },
+    { label: 'Container Size', type: 'autocomplete', id: 'cont_ContainerSize' },
     {
       label: 'Container No',
       type: 'text',
@@ -147,18 +190,22 @@ export class ExportSeaPlanningComponent {
     },
     { label: 'Line Seal No', type: 'text', id: 'cont_SealNo' },
     { label: 'Custom Seal No', type: 'text', id: 'cont_CustomsealNo' },
-    { label: 'From Place', type: 'text', id: 'cont_FromPlace' },
-    { label: 'To Place', type: 'text', id: 'cont_ToPlace' },
-    { label: 'Transporter Name', type: 'text', id: 'cont_TransporterName' },
+    { label: 'From Place', type: 'autocomplete', id: 'cont_FromPlace' },
+    { label: 'To Place', type: 'autocomplete', id: 'cont_ToPlace' },
+    {
+      label: 'Transporter Name',
+      type: 'autocomplete',
+      id: 'cont_TransporterName',
+    },
     { label: 'Vehicle No', type: 'text', id: 'cont_VehicleNo' },
     { label: 'Driver Mobile', type: 'number', id: 'cont_DriverMobile' },
     { label: 'Remarks', type: 'text', id: 'cont_Remarks' },
   ];
 
   vesselFields = [
-    { label: 'From', type: 'text', id: 'vess_from' },
-    { label: 'To', type: 'text', id: 'vess_To' },
-    { label: 'Vessel Name', type: 'text', id: 'vess_VesselName' },
+    { label: 'From', type: 'autocomplete', id: 'vess_from' },
+    { label: 'To', type: 'autocomplete', id: 'vess_To' },
+    { label: 'Vessel Name', type: 'autocomplete', id: 'vess_VesselName' },
     { label: 'Voyage No', type: 'text', id: 'vess_VoyageNo' },
     { label: 'ETD', type: 'date', id: 'vess_Etd' },
     { label: 'ETA', type: 'date', id: 'vess_Eta' },
@@ -181,7 +228,10 @@ export class ExportSeaPlanningComponent {
     this.containerForm = this.createForm(this.containerFields);
     this.vesselForm = this.createForm(this.vesselFields);
     this.setupAutocompleteListeners();
+    this.getJobNo();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
+    this.FinanceYear = '2024-2025';
+    this.BranchID = '1594';
   }
   ngAfterViewInit() {
     setTimeout(() => {
@@ -203,6 +253,7 @@ export class ExportSeaPlanningComponent {
         console.error('One or more @ViewChild references are undefined!');
       }
     }, 0);
+    this.dataSource.paginator = this.paginator;
   }
   createForm(fields: any[]): FormGroup {
     let group: any = {};
@@ -213,6 +264,11 @@ export class ExportSeaPlanningComponent {
   }
   saveForm(data: any) {
     console.log(data);
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   getInputGroupFields(templateId: string): (fieldId: string) => boolean {
@@ -236,81 +292,165 @@ export class ExportSeaPlanningComponent {
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;
   }
+
+  getJobNo(): void {
+    const payload = {
+      CompanyID: 'FST2223005',
+      FinanceYear: '2024-2025',
+      BranchID: '1594',
+    };
+
+    this.agentService.NVOCC_GetJobNo(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success' && res.GetJobNo?.length > 0) {
+          const jobNo = res.GetJobNo[0]?.orderno;
+          this.generalForm.patchValue({
+            gen_JobNo: jobNo,
+          });
+        } else {
+          console.warn('Job No not found');
+        }
+      },
+      (err) => {
+        console.error('Failed to fetch Job No:', err);
+      }
+    );
+  }
   setupAutocompleteListeners() {
     const fields = [
       {
         field: 'gen_ClientName',
         method: 'fetchClientSuggestions',
         payloadType: 'client',
+        formType: 'generalForm',
       },
       {
         field: 'gen_Shipper',
         method: 'fetchShipperSuggestions',
         payloadType: 'common',
+        formType: 'generalForm',
       },
       {
         field: 'gen_Consignee',
         method: 'fetchConsigneeSuggestions',
         payloadType: 'common',
+        formType: 'generalForm',
       },
       {
         field: 'gen_Pol',
         method: 'fetchPortSuggestions',
         payloadType: 'common',
+        formType: 'generalForm',
       },
       {
         field: 'gen_Pod',
         method: 'fetchPortSuggestions',
         payloadType: 'common',
+        formType: 'generalForm',
       },
       {
         field: 'gen_Fpod',
         method: 'fetchPortSuggestions',
         payloadType: 'common',
-      },
-      {
-        field: 'gen_CfsName',
-        method: 'fetchAccountSuggestions',
-        payloadType: 'common',
-      },
-      {
-        field: 'gen_ChaName',
-        method: 'fetchAccountSuggestions',
-        payloadType: 'common',
-      },
-      {
-        field: 'gen_ColoadName',
-        method: 'fetchAccountSuggestions',
-        payloadType: 'common',
-      },
-      {
-        field: 'gen_FrwdName',
-        method: 'fetchAccountSuggestions',
-        payloadType: 'forwarder',
+        formType: 'generalForm',
       },
       {
         field: 'gen_ShiplineName',
         method: 'fetchShippingLineSuggestions',
         payloadType: 'shippingLine',
+        formType: 'generalForm',
       },
       {
         field: 'gen_EmptyName',
         method: 'fetchEmptyYardNameSuggestions',
         payloadType: 'common',
+        formType: 'generalForm',
+      },
+      {
+        field: 'inv_Currency',
+        method: 'fetchInvCurrencySuggestions',
+        payloadType: 'InputVal',
+        formType: 'invoiceForm',
+      },
+      {
+        field: 'inv_Terms',
+        method: 'fetchInvTermsSuggestions',
+        payloadType: 'InputVal',
+        formType: 'invoiceForm',
+      },
+      {
+        field: 'inv_TypeOfPackage',
+        method: 'fetchInvTypePackgSuggestions',
+        payloadType: 'InputVal',
+        formType: 'invoiceForm',
+      },
+      {
+        field: 'inv_UnitType',
+        method: 'fetchInvUnitSuggestions',
+        payloadType: 'InputVal',
+        formType: 'invoiceForm',
+      },
+      {
+        field: 'cont_ContainerSize',
+        method: 'fetchContSizeSuggestions',
+        payloadType: 'InputVal',
+        formType: 'containerForm',
+      },
+      {
+        field: 'cont_FromPlace',
+        method: 'fetchContFromToSuggestions',
+        payloadType: 'common',
+        formType: 'containerForm',
+      },
+      {
+        field: 'cont_ToPlace',
+        method: 'fetchContFromToSuggestions',
+        payloadType: 'common',
+        formType: 'containerForm',
+      },
+      {
+        field: 'cont_TransporterName',
+        method: 'fetchContTransSuggestions',
+        payloadType: 'common',
+        formType: 'containerForm',
+      },
+      {
+        field: 'vess_from',
+        method: 'fetchVesselFromSuggestions',
+        payloadType: 'InputVal',
+        formType: 'vesselForm',
+      },
+      {
+        field: 'vess_To',
+        method: 'fetchPortSuggestions',
+        payloadType: 'common',
+        formType: 'vesselForm',
+      },
+      {
+        field: 'vess_VesselName',
+        method: 'fetchVesselNameSuggestions',
+        payloadType: 'InputVal',
+        formType: 'vesselForm',
       },
     ];
 
-    fields.forEach(({ field, method, payloadType }) => {
-      this.generalForm
-        .get(field)
-        ?.valueChanges.pipe(
-          debounceTime(100),
-          distinctUntilChanged(),
-          switchMap((input) => (this as any)[method](input, payloadType))
-        )
-        .subscribe((options) => {
-          (this as any)[`${field}Suggestions`] = options;
-        });
+    fields.forEach(({ field, method, payloadType, formType }) => {
+      const formGroup = (this as any)[formType];
+
+      if (formGroup && formGroup.get(field)) {
+        formGroup
+          .get(field)
+          ?.valueChanges.pipe(
+            debounceTime(100),
+            distinctUntilChanged(),
+            switchMap((input: string) =>
+              (this as any)[method](input, payloadType)
+            )
+          )
+          .subscribe((options: any[]) => {
+            (this as any)[`${field}Suggestions`] = options;
+          });
+      }
     });
   }
 
@@ -366,19 +506,6 @@ export class ExportSeaPlanningComponent {
     );
   }
 
-  fetchAccountSuggestions(
-    input: string,
-    payloadType: string
-  ): Observable<string[]> {
-    return this.fetchData(
-      input,
-      'Nvocc_GetCFSName',
-      'CFSName',
-      'AccountName',
-      payloadType
-    );
-  }
-
   fetchShippingLineSuggestions(
     input: string,
     payloadType: string
@@ -405,6 +532,121 @@ export class ExportSeaPlanningComponent {
     );
   }
 
+  fetchInvCurrencySuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetCurrency',
+      'GetCurrency',
+      'ShortName',
+      payloadType
+    );
+  }
+
+  fetchInvTermsSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetTerms',
+      'GetTerms',
+      'Term',
+      payloadType
+    );
+  }
+
+  fetchInvTypePackgSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetTypeOfPackage',
+      'GetTypeof_Package',
+      'packageType',
+      payloadType
+    );
+  }
+
+  fetchInvUnitSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetUnitType',
+      'GetUnitType',
+      'UnitCode',
+      payloadType
+    );
+  }
+  fetchContSizeSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetContainerSize',
+      'GetContainerSize',
+      'CType',
+      payloadType
+    );
+  }
+  fetchContFromToSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetFromToPlaces',
+      'GetFromToPlace',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchContTransSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetTransporterName',
+      'GetTransporterName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchVesselFromSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetVesselFrom',
+      'GetVesselFrom',
+      'PortName',
+      payloadType
+    );
+  }
+
+  fetchVesselNameSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetVesselName',
+      'GetVesselName',
+      'VesselName',
+      payloadType
+    );
+  }
+
   fetchData(
     input: string,
     serviceMethod: string,
@@ -415,6 +657,7 @@ export class ExportSeaPlanningComponent {
     if (!input) return of([]);
 
     const payloadMap: Record<string, any> = {
+      InputVal: { InputVal: input },
       common: { InputVal: input, CompanyId: this.CompanyId },
       client: { InputVal: input, CompanyID: this.CompanyId, CompID: '1575' },
       forwarder: { InputVal: input, CompanyId: this.CompanyId },
@@ -437,5 +680,116 @@ export class ExportSeaPlanningComponent {
   }
   getAutocompleteOptions(fieldId: string): string[] {
     return (this as any)[`${fieldId}Suggestions`] || [];
+  }
+
+  private buildPayload(form: FormGroup, extraData: any = {}): any {
+    return {
+      ...form.getRawValue(),
+      ...extraData,
+    };
+  }
+
+  private saveSection(
+    form: FormGroup,
+    apiCall: (payload: any) => Observable<any>,
+    extraData: any = {},
+    onSuccess?: (res: any) => void
+  ): void {
+    if (form.invalid) {
+      console.error('Form is invalid');
+      return;
+    }
+
+    const payload = this.buildPayload(form, extraData);
+
+    apiCall(payload).subscribe({
+      next: (res) => {
+        if (res.Status === 'Success') {
+          console.log('Saved Successfully');
+          onSuccess?.(res);
+        } else {
+          console.error('Save failed:', res.Message || res.Error);
+        }
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+      },
+    });
+  }
+
+  OnGeneralSave(): void {
+    this.saveSection(
+      this.generalForm,
+      this.agentService.NVOCC_Save_ExportSea_General.bind(this.agentService),
+      {
+        JobID: this.generalForm.getRawValue().JobID || '',
+        CompanyID: this.CompanyId,
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+        Nvocc_AgentID: '',
+      },
+      (res) => {
+        this.SavedJobId = res.ReturnJobID;
+        this.disabledTabs = [false, false, false, false, false];
+      }
+    );
+  }
+
+  OnOperationsSave(): void {
+    this.saveSection(
+      this.operationForm,
+      this.agentService.NVOCC_Save_ExportSea_OperationDetails.bind(
+        this.agentService
+      ),
+      {
+        SavedJobID: this.SavedJobId,
+        CompanyID: this.CompanyId,
+      }
+    );
+  }
+
+  OnInvoiceSave(): void {
+    this.saveSection(
+      this.invoiceForm,
+      this.agentService.NVOCC_Save_ExportSea_InvoiceDetails.bind(
+        this.agentService
+      ),
+      {
+        SavedJobID: this.SavedJobId,
+        CompanyID: this.CompanyId,
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+      }
+    );
+  }
+
+  OnContainerSave(): void {
+    this.saveSection(
+      this.containerForm,
+      this.agentService.NVOCC_Save_ExportSea_ContainerDetails.bind(
+        this.agentService
+      ),
+      {
+        SavedJobID: this.SavedJobId,
+        CompanyID: this.CompanyId,
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+      }
+    );
+  }
+
+  OnVesselSave(): void {
+    this.saveSection(
+      this.vesselForm,
+      this.agentService.NVOCC_Save_ExportSea_VesselDetails.bind(
+        this.agentService
+      ),
+      {
+        SavedJobID: this.SavedJobId,
+        CompanyID: this.CompanyId,
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+      }
+    );
   }
 }
