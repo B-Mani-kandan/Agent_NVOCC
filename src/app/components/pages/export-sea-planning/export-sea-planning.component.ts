@@ -4,10 +4,12 @@ import {
   TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { TabPanelComponent } from '../../layout/tabpanel/tabpanel.component';
 import { AgentService } from '../../../services/agent.service';
 import { DynamicFormsComponent } from '../../layout/dynamic-forms/dynamic-forms.component';
+import { DynamicGridviewComponent } from '../../layout/dynamic-gridview/dynamic-gridview.component';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -16,36 +18,18 @@ import {
   switchMap,
 } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-const ELEMENT_DATA = [
-  { id: 1, name: 'Alice', email: 'alice@example.com' },
-  { id: 2, name: 'Bob', email: 'bob@example.com' },
-  { id: 3, name: 'Charlie', email: 'charlie@example.com' },
-  { id: 4, name: 'Alice', email: 'alice@example.com' },
-  { id: 5, name: 'Bob', email: 'bob@example.com' },
-  { id: 6, name: 'Charlie', email: 'charlie@example.com' },
-  { id: 7, name: 'Alice', email: 'alice@example.com' },
-  { id: 8, name: 'Bob', email: 'bob@example.com' },
-  { id: 9, name: 'Charlie', email: 'charlie@example.com' },
-  { id: 10, name: 'Alice', email: 'alice@example.com' },
-  { id: 11, name: 'Bob', email: 'bob@example.com' },
-  { id: 12, name: 'Charlie', email: 'charlie@example.com' },
-];
+import { HttpClient } from '@angular/common/http';
+import { ToastComponent } from '../../layout/toast/toast.component';
+import { ToastService } from '../../../services/toast.service';
 @Component({
   selector: 'app-export-sea-planning',
   standalone: true,
   imports: [
+    CommonModule,
     TabPanelComponent,
     DynamicFormsComponent,
-    MatTableModule,
-    MatPaginatorModule,
-    MatFormFieldModule,
-    MatInputModule,
+    DynamicGridviewComponent,
+    ToastComponent,
   ],
   templateUrl: './export-sea-planning.component.html',
   styleUrl: './export-sea-planning.component.css',
@@ -56,6 +40,7 @@ export class ExportSeaPlanningComponent {
   FinanceYear: any | undefined;
   BranchID: any | undefined;
   SavedJobId: any | undefined;
+  ModifyJobId: any | undefined;
   tabLabels: string[] = [
     'GENERAL',
     'OPERATION DETAILS',
@@ -82,17 +67,13 @@ export class ExportSeaPlanningComponent {
   forwarderSuggestions: string[] = [];
   shippingLineSuggestions: string[] = [];
   emptyYardSuggestions: string[] = [];
+  gridData: any[] = [];
+  displayedColumns: string[] = [];
+  isModifyVisible: boolean = false;
+  isGridVisible: boolean = false;
+  fullGridData: string[] = [];
+  selectedColumns: string[] = [];
 
-  displayedColumns: string[] = ['id', 'name', 'email'];
-  ELEMENT_DATA = [
-    { id: 1, name: 'Alice', email: 'alice@example.com' },
-    { id: 2, name: 'Bob', email: 'bob@example.com' },
-    { id: 3, name: 'Charlie', email: 'charlie@example.com' },
-    // Add more mock data...
-  ];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   generalFields = [
     { label: 'Job No', type: 'text', id: 'gen_JobNo' },
     {
@@ -219,7 +200,12 @@ export class ExportSeaPlanningComponent {
   @ViewChild('CONTAINER', { static: false }) CONTAINER!: TemplateRef<any>;
   @ViewChild('VESSEL', { static: false }) VESSEL!: TemplateRef<any>;
 
-  constructor(private fb: FormBuilder, private agentService: AgentService) {}
+  constructor(
+    private fb: FormBuilder,
+    private agentService: AgentService,
+    private http: HttpClient,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit() {
     this.generalForm = this.createForm(this.generalFields);
@@ -253,7 +239,6 @@ export class ExportSeaPlanningComponent {
         console.error('One or more @ViewChild references are undefined!');
       }
     }, 0);
-    this.dataSource.paginator = this.paginator;
   }
   createForm(fields: any[]): FormGroup {
     let group: any = {};
@@ -264,19 +249,6 @@ export class ExportSeaPlanningComponent {
   }
   saveForm(data: any) {
     console.log(data);
-  }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-  getInputGroupFields(templateId: string): (fieldId: string) => boolean {
-    const inputGroupFields: Record<string, string[]> = {
-      // GENERAL: ['gen_CfsName'],
-    };
-    return (fieldId: string) =>
-      inputGroupFields[templateId]?.includes(fieldId) || false;
   }
 
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
@@ -357,13 +329,13 @@ export class ExportSeaPlanningComponent {
       {
         field: 'gen_ShiplineName',
         method: 'fetchShippingLineSuggestions',
-        payloadType: 'shippingLine',
+        payloadType: 'common',
         formType: 'generalForm',
       },
       {
         field: 'gen_EmptyName',
         method: 'fetchEmptyYardNameSuggestions',
-        payloadType: 'common',
+        payloadType: 'EmptyYard',
         formType: 'generalForm',
       },
       {
@@ -656,12 +628,22 @@ export class ExportSeaPlanningComponent {
   ): Observable<string[]> {
     if (!input) return of([]);
 
+    let country = '';
+    if (payloadType === 'EmptyYard') {
+      const polValue = this.generalForm?.get('gen_Pol')?.value || '';
+      country = polValue;
+    }
+
     const payloadMap: Record<string, any> = {
       InputVal: { InputVal: input },
       common: { InputVal: input, CompanyId: this.CompanyId },
       client: { InputVal: input, CompanyID: this.CompanyId, CompID: '1575' },
       forwarder: { InputVal: input, CompanyId: this.CompanyId },
-      shippingLine: { InputVal: input, CompanyId: this.CompanyId, Country: '' },
+      EmptyYard: {
+        InputVal: input,
+        CompanyId: this.CompanyId,
+        Country: country,
+      },
     };
 
     const requestPayload = payloadMap[payloadType] || { InputVal: input };
@@ -705,29 +687,34 @@ export class ExportSeaPlanningComponent {
     apiCall(payload).subscribe({
       next: (res) => {
         if (res.Status === 'Success') {
-          console.log('Saved Successfully');
+          this.toastService.addToast('success', 'Success', res.Message);
           onSuccess?.(res);
         } else {
-          console.error('Save failed:', res.Message || res.Error);
+          this.toastService.addToast(
+            'error',
+            'Save Failed',
+            res.Message || res.Error
+          );
         }
       },
-      error: (err) => {
-        console.error('API Error:', err);
-      },
+      error: () => {},
     });
   }
 
-  OnGeneralSave(): void {
+  OnGeneralSave(action: any): void {
+    const data = {
+      CompanyID: this.CompanyId,
+      FinanceYear: this.FinanceYear,
+      BranchID: this.BranchID,
+      Nvocc_AgentID: localStorage.getItem('AgentID'),
+      ...(action === 'Modify' &&
+        this.ModifyJobId && { JobID: this.ModifyJobId }),
+    };
+
     this.saveSection(
       this.generalForm,
       this.agentService.NVOCC_Save_ExportSea_General.bind(this.agentService),
-      {
-        JobID: this.generalForm.getRawValue().JobID || '',
-        CompanyID: this.CompanyId,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
-        Nvocc_AgentID: '',
-      },
+      data,
       (res) => {
         this.SavedJobId = res.ReturnJobID;
         this.disabledTabs = [false, false, false, false, false];
@@ -735,16 +722,20 @@ export class ExportSeaPlanningComponent {
     );
   }
 
-  OnOperationsSave(): void {
+  OnOperationsSave(action: any): void {
+    const data = {
+      CompanyID: this.CompanyId,
+      SavedJobID: action === 'Modify' ? this.ModifyJobId : this.SavedJobId,
+    };
+
+    console.log(data);
+
     this.saveSection(
       this.operationForm,
       this.agentService.NVOCC_Save_ExportSea_OperationDetails.bind(
         this.agentService
       ),
-      {
-        SavedJobID: this.SavedJobId,
-        CompanyID: this.CompanyId,
-      }
+      data
     );
   }
 
@@ -791,5 +782,130 @@ export class ExportSeaPlanningComponent {
         BranchID: this.BranchID,
       }
     );
+  }
+
+  //Search Details
+  fetchGridData(tab: string) {
+    const apiMap: any = {
+      GENERAL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_SearchGeneralData.ashx',
+      INVOICE: 'https://your-api-url/invoice',
+      CONTAINER: 'https://your-api-url/container',
+      VESSEL: 'https://your-api-url/vessel',
+    };
+
+    const apiUrl = apiMap[tab];
+    const payload = {
+      CompanyID: this.CompanyId,
+      BranchID: this.BranchID,
+      FinanceYear: this.FinanceYear,
+    };
+
+    if (!apiUrl) {
+      console.error('API URL not found for tab:', tab);
+      return;
+    }
+
+    this.http.post(apiUrl, payload).subscribe(
+      (res: any) => {
+        if (res.Status === 'Success') {
+          const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
+          this.gridData = res[key];
+
+          this.displayedColumns = [
+            'JobNo',
+            'JobDate',
+            'ClientName',
+            'Shipper',
+            'Pol',
+            'Pod',
+          ];
+          this.isGridVisible = true;
+        } else {
+          this.gridData = [];
+          this.displayedColumns = [];
+          this.isGridVisible = false;
+        }
+      },
+      (error) => {
+        console.error('API Error:', error);
+        this.gridData = [];
+        this.displayedColumns = [];
+        this.isGridVisible = false;
+      }
+    );
+  }
+
+  fillGeneralForm(row: any) {
+    this.isModifyVisible = true;
+    this.ModifyJobId = row.ID || null;
+    this.isGridVisible = false;
+
+    const formValues: any = {};
+    const operationFormValues: any = {};
+
+    this.generalFields.forEach((field) => {
+      const fieldId = field.id;
+      const key = this.extractGeneralRowKey(fieldId);
+
+      if (key === 'JobDate' && row[key]) {
+        formValues[fieldId] = this.convertToDateInputFormat(row[key]);
+      } else {
+        formValues[fieldId] = row[key] ?? '';
+      }
+    });
+
+    this.operationFields.forEach((field) => {
+      const fieldId = field.id;
+      const key = this.extractOperationRowKey(fieldId);
+
+      if (key === 'SomeDateField' && row[key]) {
+        operationFormValues[fieldId] = this.convertToDateInputFormat(row[key]);
+      } else {
+        operationFormValues[fieldId] = row[key] ?? '';
+      }
+    });
+
+    this.generalForm.patchValue(formValues);
+    this.operationForm.patchValue(operationFormValues);
+  }
+
+  extractGeneralRowKey(fieldId: string): string {
+    return fieldId.replace(/^gen_/, '');
+  }
+
+  extractOperationRowKey(fieldId: string): string {
+    return fieldId.replace(/^Oper_/, '');
+  }
+
+  convertToDateInputFormat(dateStr: string): string {
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    return '';
+  }
+
+  //Clear Forms
+
+  clearAllForms(): void {
+    const formMap: { [key: string]: FormGroup | undefined } = {
+      generalForm: this.generalForm,
+      invoiceForm: this.invoiceForm,
+      operationForm: this.operationForm,
+      containerForm: this.containerForm,
+      vesselForm: this.vesselForm,
+    };
+
+    Object.values(formMap).forEach((form) => {
+      form?.reset();
+      form?.markAsPristine();
+      form?.markAsUntouched();
+    });
+
+    this.SavedJobId = '';
+    this.ModifyJobId = '';
+    this.isModifyVisible = false;
   }
 }

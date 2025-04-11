@@ -111,29 +111,24 @@ export class AgentService {
 
   // Saerch Details
   Nvocc_Booking(payload: any) {
-    return this._http
-      .post<any>(
-        'https://client.f-studio.in/ServiceNVOC/NVOCC_Booking.ashx',
-        payload
-      )
-      .pipe(
-        map((response) => {
-          return response;
-        })
-      );
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/NVOCC_Booking.ashx',
+      payload
+    );
   }
 
   Nvocc_JobBooking(payload: any) {
-    return this._http
-      .post<any>(
-        'https://client.f-studio.in/ServiceNVOC/Nvocc_Export_EmptyYard.ashx',
-        payload
-      )
-      .pipe(
-        map((response) => {
-          return response;
-        })
-      );
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Export_EmptyYard.ashx',
+      payload
+    );
+  }
+
+  Nvocc_SearchGeneralDetails(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_SearchGeneralData.ashx',
+      payload
+    );
   }
 
   //Save

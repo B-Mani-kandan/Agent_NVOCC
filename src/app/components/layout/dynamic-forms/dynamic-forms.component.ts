@@ -27,7 +27,6 @@ export class DynamicFormsComponent {
   @Input() formGroup!: FormGroup;
   @Input() formFields: any[] = [];
   @Input() templateId!: string;
-  @Input() isInputGroupField!: (fieldId: string) => boolean;
   @Input() isMandatoryField!: (fieldId: string) => boolean;
   @Input() getAutocompleteOptions!: (fieldId: string) => string[];
   @Output() formSubmit = new EventEmitter();

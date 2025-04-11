@@ -31,10 +31,9 @@
       </div>
       <input
         *ngIf="
-          !isInputGroupField(field.id) &&
-          (field.type === 'text' ||
-            field.type === 'date' ||
-            field.type === 'number')
+          field.type === 'text' ||
+          field.type === 'date' ||
+          field.type === 'number'
         "
         [type]="field.type"
         class="form-control"

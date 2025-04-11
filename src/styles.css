@@ -162,16 +162,16 @@ div.mat-mdc-autocomplete-panel {
 }
 
 div.mat-mdc-autocomplete-panel::-webkit-scrollbar {
-  width: 2px !important; /* Adjust width as needed */
+  width: 2px !important;
 }
 
 div.mat-mdc-autocomplete-panel::-webkit-scrollbar-thumb {
-  background: #888; /* Color of scrollbar thumb */
+  background: #888;
   border-radius: 2px;
 }
 
 div.mat-mdc-autocomplete-panel::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color of scrollbar track */
+  background: #f1f1f1;
 }
 
 .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
@@ -200,4 +200,44 @@ div.mat-mdc-autocomplete-panel::-webkit-scrollbar-track {
 .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
   width: 8px !important;
   height: 4px !important;
+}
+
+/* Pagination */
+
+.mdc-notched-outline {
+  display: none !important;
+}
+
+.mat-mdc-paginator-container {
+  color: #3d5095;
+}
+
+.mat-mdc-icon-button[aria-disabled] .mat-mdc-paginator-icon {
+  fill: color-mix(in srgb, #3d5095 60%, transparent) !important;
+}
+
+.mat-mdc-select {
+  color: #3d5095 !important;
+}
+
+/* filter box */
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: transparent !important;
+}
+
+.mat-mdc-text-field-wrapper.mdc-text-field--filled:hover {
+  background-color: transparent !important;
+}
+
+.mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+div.mdc-line-ripple {
+  display: none !important;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  width: 0px !important;
 }

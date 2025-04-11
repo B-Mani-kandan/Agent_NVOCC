@@ -1,4 +1,5 @@
 <app-tab-panel
+  *ngIf="!isGridVisible"
   [tabs]="tabLabels"
   [tabContents]="tabContents"
   [disabledTabs]="disabledTabs"
@@ -9,22 +10,42 @@
     [formGroup]="generalForm"
     [formFields]="generalFields"
     [templateId]="'GENERAL'"
-    [isInputGroupField]="getInputGroupFields('GENERAL')"
     [isMandatoryField]="getMandatoryFields('GENERAL')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
   ></app-dynamic-forms>
+
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      (click)="OnGeneralSave()"
+      *ngIf="!isModifyVisible"
+      (click)="OnGeneralSave('Save')"
     >
       Save
     </button>
-    <button type="submit" class="btn custom-btn btn-success">Modify</button>
-    <button type="submit" class="btn custom-btn btn-primary">Search</button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isModifyVisible"
+      (click)="OnGeneralSave('Modify')"
+    >
+      Modify
+    </button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-primary"
+      (click)="fetchGridData('GENERAL')"
+    >
+      Search
+    </button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="clearAllForms()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
 
@@ -33,7 +54,6 @@
     [formGroup]="operationForm"
     [formFields]="operationFields"
     [templateId]="'OPERATION'"
-    [isInputGroupField]="getInputGroupFields('OPERATION')"
     [isMandatoryField]="getMandatoryFields('OPERATION')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
@@ -42,12 +62,25 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      (click)="OnOperationsSave()"
+      (click)="OnOperationsSave('Save')"
+      *ngIf="!isModifyVisible"
     >
       Save
     </button>
-    <button type="submit" class="btn custom-btn btn-success">Modify</button>
-    <input type="reset" class="btn custom-btn btn-danger" value="Clear" />
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      (click)="OnOperationsSave('Modify')"
+      *ngIf="isModifyVisible"
+    >
+      Modify
+    </button>
+    <input
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="clearAllForms()"
+      value="Clear"
+    />
   </div>
 </ng-template>
 
@@ -56,7 +89,6 @@
     [formGroup]="invoiceForm"
     [formFields]="invoiceFields"
     [templateId]="'INVOICE'"
-    [isInputGroupField]="getInputGroupFields('INVOICE')"
     [isMandatoryField]="getMandatoryFields('INVOICE')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
@@ -79,7 +111,6 @@
     [formGroup]="containerForm"
     [formFields]="containerFields"
     [templateId]="'CONTAINER'"
-    [isInputGroupField]="getInputGroupFields('CONTAINER')"
     [isMandatoryField]="getMandatoryFields('CONTAINER')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
@@ -102,7 +133,6 @@
     [formGroup]="vesselForm"
     [formFields]="vesselFields"
     [templateId]="'VESSEL'"
-    [isInputGroupField]="getInputGroupFields('VESSEL')"
     [isMandatoryField]="getMandatoryFields('VESSEL')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
@@ -120,36 +150,11 @@
   </div>
 </ng-template>
 
-<div class="mat-elevation-z8">
-  <mat-form-field>
-    <mat-label>Filter</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Filter table" />
-  </mat-form-field>
-
-  <table mat-table [dataSource]="dataSource" class="mat-table">
-    <!-- Column Definitions -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let element">{{ element.id }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef>Email</th>
-      <td mat-cell *matCellDef="let element">{{ element.email }}</td>
-    </ng-container>
-
-    <!-- Header and Row Declarations -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-
-  <mat-paginator
-    [pageSizeOptions]="[5, 10, 20]"
-    showFirstLastButtons
-  ></mat-paginator>
-</div>
+<app-dynamic-gridview
+  *ngIf="isGridVisible"
+  [data]="gridData"
+  [columns]="displayedColumns"
+  (rowSelected)="fillGeneralForm($event)"
+>
+</app-dynamic-gridview>
+<app-toast></app-toast>
