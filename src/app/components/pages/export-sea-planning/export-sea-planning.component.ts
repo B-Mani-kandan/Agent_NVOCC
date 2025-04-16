@@ -5,7 +5,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { TabPanelComponent } from '../../layout/tabpanel/tabpanel.component';
 import { AgentService } from '../../../services/agent.service';
 import { DynamicFormsComponent } from '../../layout/dynamic-forms/dynamic-forms.component';
@@ -21,6 +21,14 @@ import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ToastComponent } from '../../layout/toast/toast.component';
 import { ToastService } from '../../../services/toast.service';
+import { AUTOCOMPLETE_FIELDS } from './autocomplete-fields.config';
+import {
+  GENERAL_FIELDS,
+  OPERATION_FIELDS,
+  INVOICE_FIELDS,
+  CONTAINER_FIELDS,
+  VESSEL_FIELDS,
+} from './export-sea-input-fields.config';
 @Component({
   selector: 'app-export-sea-planning',
   standalone: true,
@@ -39,8 +47,11 @@ export class ExportSeaPlanningComponent {
   CompanyId: string | undefined;
   FinanceYear: any | undefined;
   BranchID: any | undefined;
-  SavedJobId: any | undefined;
   ModifyJobId: any | undefined;
+  VesselID: any | undefined;
+  ContainerID: any | undefined;
+  InvoiceID: any | undefined;
+  tabName: string = 'GENERAL';
   tabLabels: string[] = [
     'GENERAL',
     'OPERATION DETAILS',
@@ -70,129 +81,19 @@ export class ExportSeaPlanningComponent {
   gridData: any[] = [];
   displayedColumns: string[] = [];
   isModifyVisible: boolean = false;
+  isoperModifyVisible: boolean = false;
+  isInvoiceModifyVisible: boolean = false;
+  isContModifyVisible: boolean = false;
+  isVesselModifyVisible: boolean = false;
   isGridVisible: boolean = false;
+  searchClicked: boolean = false;
   fullGridData: string[] = [];
   selectedColumns: string[] = [];
-
-  generalFields = [
-    { label: 'Job No', type: 'text', id: 'gen_JobNo' },
-    {
-      label: 'Job Date',
-      type: 'date',
-      id: 'gen_JobDate',
-      value: new Date().toISOString().split('T')[0],
-    },
-    {
-      label: 'Client Name',
-      type: 'autocomplete',
-      id: 'gen_ClientName',
-      mandatory: true,
-    },
-    { label: 'Shipper/Exporter Name', type: 'autocomplete', id: 'gen_Shipper' },
-    { label: 'Consignee Name', type: 'autocomplete', id: 'gen_Consignee' },
-    { label: 'POL', type: 'autocomplete', id: 'gen_Pol', mandatory: true },
-    { label: 'POD', type: 'autocomplete', id: 'gen_Pod', mandatory: true },
-    { label: 'FPOD', type: 'autocomplete', id: 'gen_Fpod' },
-    {
-      label: 'Item Description',
-      type: 'textarea',
-      id: 'gen_ItemDesc',
-      mandatory: true,
-    },
-    {
-      label: 'Type of Commodity',
-      type: 'select',
-      id: 'gen_CommodityType',
-      options: ['Non DG', 'DG'],
-    },
-    {
-      label: 'Shipping Line Name',
-      type: 'autocomplete',
-      id: 'gen_ShiplineName',
-    },
-    { label: 'Empty Yard Name', type: 'autocomplete', id: 'gen_EmptyName' },
-    { label: 'Shipment No', type: 'text', id: 'gen_ShipNo' },
-    { label: 'TotalDay of Transit', type: 'text', id: 'gen_TotTrans' },
-    { label: 'Free Days', type: 'text', id: 'gen_FreeDays' },
-    { label: 'Container Booking No', type: 'text', id: 'gen_ContBokNo' },
-    { label: 'Remark', type: 'text', id: 'gen_Remark' },
-  ];
-
-  operationFields = [
-    { label: 'Created Date', type: 'date', id: 'Oper_CreatedDate' },
-    {
-      label: 'Examined Date',
-      type: 'date',
-      id: 'Oper_ExaminedDate',
-    },
-    {
-      label: 'Leo Date',
-      type: 'date',
-      id: 'Oper_LeoDate',
-    },
-    { label: 'Hand Over Date', type: 'date', id: 'Oper_HandOver' },
-    { label: 'VGM Updated Date', type: 'date', id: 'Oper_VgmUpdated' },
-    { label: 'Form 13 Updated Date', type: 'date', id: 'Oper_Form13' },
-    { label: 'Gate In Date', type: 'date', id: 'Oper_GateInDate' },
-    { label: 'OnBoard Date', type: 'date', id: 'Oper_OnBoardDate' },
-    { label: 'Depature Date', type: 'date', id: 'Oper_DepatureDate' },
-    { label: 'Pre Alert Date', type: 'date', id: 'Oper_PreAlertDate' },
-    { label: 'Delivery Date', type: 'date', id: 'Oper_DeliveryDate' },
-  ];
-
-  invoiceFields = [
-    { label: 'Invoice No', type: 'text', id: 'inv_InvoiceNo' },
-    { label: 'Invoice Date', type: 'date', id: 'inv_InvoiceDate' },
-    { label: 'Invoice Value', type: 'number', id: 'inv_InvoiceValue' },
-    { label: 'Currency', type: 'autocomplete', id: 'inv_Currency' },
-    { label: 'Ex-Rate', type: 'number', id: 'inv_ExRate' },
-    { label: 'Terms', type: 'autocomplete', id: 'inv_Terms' },
-    { label: 'FOB Value', type: 'number', id: 'inv_FobValue' },
-    { label: 'SB No', type: 'text', id: 'inv_SbNo' },
-    { label: 'SB Date', type: 'date', id: 'inv_SbDate' },
-    { label: 'No of Packages', type: 'number', id: 'inv_NoOfpackage' },
-    {
-      label: 'Type Of Packages',
-      type: 'autocomplete',
-      id: 'inv_TypeOfPackage',
-    },
-    { label: 'Gross Weight', type: 'number', id: 'inv_GrossWeight' },
-    { label: 'Net Weight', type: 'number', id: 'inv_NetWeight' },
-    { label: 'CBM', type: 'number', id: 'inv_Cbm' },
-    { label: 'Unit Type', type: 'autocomplete', id: 'inv_UnitType' },
-  ];
-
-  containerFields = [
-    { label: 'Container Size', type: 'autocomplete', id: 'cont_ContainerSize' },
-    {
-      label: 'Container No',
-      type: 'text',
-      id: 'cont_ContainerNo',
-    },
-    { label: 'Line Seal No', type: 'text', id: 'cont_SealNo' },
-    { label: 'Custom Seal No', type: 'text', id: 'cont_CustomsealNo' },
-    { label: 'From Place', type: 'autocomplete', id: 'cont_FromPlace' },
-    { label: 'To Place', type: 'autocomplete', id: 'cont_ToPlace' },
-    {
-      label: 'Transporter Name',
-      type: 'autocomplete',
-      id: 'cont_TransporterName',
-    },
-    { label: 'Vehicle No', type: 'text', id: 'cont_VehicleNo' },
-    { label: 'Driver Mobile', type: 'number', id: 'cont_DriverMobile' },
-    { label: 'Remarks', type: 'text', id: 'cont_Remarks' },
-  ];
-
-  vesselFields = [
-    { label: 'From', type: 'autocomplete', id: 'vess_from' },
-    { label: 'To', type: 'autocomplete', id: 'vess_To' },
-    { label: 'Vessel Name', type: 'autocomplete', id: 'vess_VesselName' },
-    { label: 'Voyage No', type: 'text', id: 'vess_VoyageNo' },
-    { label: 'ETD', type: 'date', id: 'vess_Etd' },
-    { label: 'ETA', type: 'date', id: 'vess_Eta' },
-    { label: 'ROT No', type: 'text', id: 'vess_RotNo' },
-    { label: 'Via No', type: 'text', id: 'vess_ViaNo' },
-  ];
+  generalFields = GENERAL_FIELDS;
+  operationFields = OPERATION_FIELDS;
+  invoiceFields = INVOICE_FIELDS;
+  containerFields = CONTAINER_FIELDS;
+  vesselFields = VESSEL_FIELDS;
 
   @ViewChild('GENERAL', { static: false }) GENERAL!: TemplateRef<any>;
   @ViewChild('OPERATION', { static: false }) OPERATION!: TemplateRef<any>;
@@ -201,13 +102,13 @@ export class ExportSeaPlanningComponent {
   @ViewChild('VESSEL', { static: false }) VESSEL!: TemplateRef<any>;
 
   constructor(
-    private fb: FormBuilder,
     private agentService: AgentService,
     private http: HttpClient,
     private toastService: ToastService
   ) {}
 
   ngOnInit() {
+    this.tabName = 'GENERAL';
     this.generalForm = this.createForm(this.generalFields);
     this.operationForm = this.createForm(this.operationFields);
     this.invoiceForm = this.createForm(this.invoiceFields);
@@ -218,6 +119,7 @@ export class ExportSeaPlanningComponent {
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
     this.FinanceYear = '2024-2025';
     this.BranchID = '1594';
+    this.onTabChange(0);
   }
   ngAfterViewInit() {
     setTimeout(() => {
@@ -247,10 +149,10 @@ export class ExportSeaPlanningComponent {
     });
     return new FormGroup(group);
   }
+
   saveForm(data: any) {
     console.log(data);
   }
-
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
       GENERAL: [
@@ -289,124 +191,7 @@ export class ExportSeaPlanningComponent {
     );
   }
   setupAutocompleteListeners() {
-    const fields = [
-      {
-        field: 'gen_ClientName',
-        method: 'fetchClientSuggestions',
-        payloadType: 'client',
-        formType: 'generalForm',
-      },
-      {
-        field: 'gen_Shipper',
-        method: 'fetchShipperSuggestions',
-        payloadType: 'common',
-        formType: 'generalForm',
-      },
-      {
-        field: 'gen_Consignee',
-        method: 'fetchConsigneeSuggestions',
-        payloadType: 'common',
-        formType: 'generalForm',
-      },
-      {
-        field: 'gen_Pol',
-        method: 'fetchPortSuggestions',
-        payloadType: 'common',
-        formType: 'generalForm',
-      },
-      {
-        field: 'gen_Pod',
-        method: 'fetchPortSuggestions',
-        payloadType: 'common',
-        formType: 'generalForm',
-      },
-      {
-        field: 'gen_Fpod',
-        method: 'fetchPortSuggestions',
-        payloadType: 'common',
-        formType: 'generalForm',
-      },
-      {
-        field: 'gen_ShiplineName',
-        method: 'fetchShippingLineSuggestions',
-        payloadType: 'common',
-        formType: 'generalForm',
-      },
-      {
-        field: 'gen_EmptyName',
-        method: 'fetchEmptyYardNameSuggestions',
-        payloadType: 'EmptyYard',
-        formType: 'generalForm',
-      },
-      {
-        field: 'inv_Currency',
-        method: 'fetchInvCurrencySuggestions',
-        payloadType: 'InputVal',
-        formType: 'invoiceForm',
-      },
-      {
-        field: 'inv_Terms',
-        method: 'fetchInvTermsSuggestions',
-        payloadType: 'InputVal',
-        formType: 'invoiceForm',
-      },
-      {
-        field: 'inv_TypeOfPackage',
-        method: 'fetchInvTypePackgSuggestions',
-        payloadType: 'InputVal',
-        formType: 'invoiceForm',
-      },
-      {
-        field: 'inv_UnitType',
-        method: 'fetchInvUnitSuggestions',
-        payloadType: 'InputVal',
-        formType: 'invoiceForm',
-      },
-      {
-        field: 'cont_ContainerSize',
-        method: 'fetchContSizeSuggestions',
-        payloadType: 'InputVal',
-        formType: 'containerForm',
-      },
-      {
-        field: 'cont_FromPlace',
-        method: 'fetchContFromToSuggestions',
-        payloadType: 'common',
-        formType: 'containerForm',
-      },
-      {
-        field: 'cont_ToPlace',
-        method: 'fetchContFromToSuggestions',
-        payloadType: 'common',
-        formType: 'containerForm',
-      },
-      {
-        field: 'cont_TransporterName',
-        method: 'fetchContTransSuggestions',
-        payloadType: 'common',
-        formType: 'containerForm',
-      },
-      {
-        field: 'vess_from',
-        method: 'fetchVesselFromSuggestions',
-        payloadType: 'InputVal',
-        formType: 'vesselForm',
-      },
-      {
-        field: 'vess_To',
-        method: 'fetchPortSuggestions',
-        payloadType: 'common',
-        formType: 'vesselForm',
-      },
-      {
-        field: 'vess_VesselName',
-        method: 'fetchVesselNameSuggestions',
-        payloadType: 'InputVal',
-        formType: 'vesselForm',
-      },
-    ];
-
-    fields.forEach(({ field, method, payloadType, formType }) => {
+    AUTOCOMPLETE_FIELDS.forEach(({ field, method, payloadType, formType }) => {
       const formGroup = (this as any)[formType];
 
       if (formGroup && formGroup.get(field)) {
@@ -555,6 +340,7 @@ export class ExportSeaPlanningComponent {
       payloadType
     );
   }
+
   fetchContSizeSuggestions(
     input: string,
     payloadType: string
@@ -564,44 +350,6 @@ export class ExportSeaPlanningComponent {
       'NVOCC_GetContainerSize',
       'GetContainerSize',
       'CType',
-      payloadType
-    );
-  }
-  fetchContFromToSuggestions(
-    input: string,
-    payloadType: string
-  ): Observable<string[]> {
-    return this.fetchData(
-      input,
-      'NVOCC_GetFromToPlaces',
-      'GetFromToPlace',
-      'AccountName',
-      payloadType
-    );
-  }
-
-  fetchContTransSuggestions(
-    input: string,
-    payloadType: string
-  ): Observable<string[]> {
-    return this.fetchData(
-      input,
-      'NVOCC_GetTransporterName',
-      'GetTransporterName',
-      'AccountName',
-      payloadType
-    );
-  }
-
-  fetchVesselFromSuggestions(
-    input: string,
-    payloadType: string
-  ): Observable<string[]> {
-    return this.fetchData(
-      input,
-      'NVOCC_GetVesselFrom',
-      'GetVesselFrom',
-      'PortName',
       payloadType
     );
   }
@@ -618,7 +366,6 @@ export class ExportSeaPlanningComponent {
       payloadType
     );
   }
-
   fetchData(
     input: string,
     serviceMethod: string,
@@ -701,14 +448,13 @@ export class ExportSeaPlanningComponent {
     });
   }
 
-  OnGeneralSave(action: any): void {
+  OnGeneralSave(): void {
     const data = {
       CompanyID: this.CompanyId,
       FinanceYear: this.FinanceYear,
       BranchID: this.BranchID,
       Nvocc_AgentID: localStorage.getItem('AgentID'),
-      ...(action === 'Modify' &&
-        this.ModifyJobId && { JobID: this.ModifyJobId }),
+      JobID: this.ModifyJobId,
     };
 
     this.saveSection(
@@ -716,19 +462,18 @@ export class ExportSeaPlanningComponent {
       this.agentService.NVOCC_Save_ExportSea_General.bind(this.agentService),
       data,
       (res) => {
-        this.SavedJobId = res.ReturnJobID;
+        this.ModifyJobId = res.ReturnJobID;
         this.disabledTabs = [false, false, false, false, false];
       }
     );
+    this.isModifyVisible = true;
   }
 
-  OnOperationsSave(action: any): void {
+  OnOperationsSave(): void {
     const data = {
       CompanyID: this.CompanyId,
-      SavedJobID: action === 'Modify' ? this.ModifyJobId : this.SavedJobId,
+      SavedJobID: this.ModifyJobId,
     };
-
-    console.log(data);
 
     this.saveSection(
       this.operationForm,
@@ -739,111 +484,182 @@ export class ExportSeaPlanningComponent {
     );
   }
 
-  OnInvoiceSave(): void {
+  OnInvoiceSave(action: any): void {
+    const data = {
+      SavedJobID: this.ModifyJobId,
+      InvoiceID: action === 'Modify' ? this.InvoiceID : '',
+      CompanyID: this.CompanyId,
+      FinanceYear: this.FinanceYear,
+      BranchID: this.BranchID,
+    };
+
     this.saveSection(
       this.invoiceForm,
       this.agentService.NVOCC_Save_ExportSea_InvoiceDetails.bind(
         this.agentService
       ),
-      {
-        SavedJobID: this.SavedJobId,
-        CompanyID: this.CompanyId,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
-      }
+      data
     );
+    this.ClearInvoiceForm();
+    this.fetchGridData('INVOICE');
   }
 
-  OnContainerSave(): void {
+  OnContainerSave(action: any): void {
+    const genEmptyName = this.generalForm.get('gen_EmptyName')?.value;
+    const data = {
+      SavedJobID: this.ModifyJobId,
+      ContainerID: action === 'Modify' ? this.ContainerID : '',
+      CompanyID: this.CompanyId,
+      FinanceYear: this.FinanceYear,
+      BranchID: this.BranchID,
+      gen_EmptyName: genEmptyName,
+    };
     this.saveSection(
       this.containerForm,
       this.agentService.NVOCC_Save_ExportSea_ContainerDetails.bind(
         this.agentService
       ),
-      {
-        SavedJobID: this.SavedJobId,
-        CompanyID: this.CompanyId,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
-      }
+      data
     );
+    this.ClearContainerForm();
+    this.fetchGridData('CONTAINER');
   }
 
-  OnVesselSave(): void {
+  OnVesselSave(action: any): void {
+    const data = {
+      SavedJobID: this.ModifyJobId,
+      VesselID: action === 'Modify' ? this.VesselID : '',
+    };
     this.saveSection(
       this.vesselForm,
       this.agentService.NVOCC_Save_ExportSea_VesselDetails.bind(
         this.agentService
       ),
-      {
-        SavedJobID: this.SavedJobId,
-        CompanyID: this.CompanyId,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
-      }
+      data
     );
+    this.ClearVesselForm();
+    this.fetchGridData('VESSEL');
+  }
+
+  onSearch() {
+    if (this.tabName === 'GENERAL') {
+      this.isGridVisible = true;
+      this.searchClicked = true;
+    }
+    this.fetchGridData(this.tabName);
   }
 
   //Search Details
   fetchGridData(tab: string) {
     const apiMap: any = {
       GENERAL:
-        'https://client.f-studio.in/ServiceNVOC/Nvocc_SearchGeneralData.ashx',
-      INVOICE: 'https://your-api-url/invoice',
-      CONTAINER: 'https://your-api-url/container',
-      VESSEL: 'https://your-api-url/vessel',
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchGeneralData.ashx',
+      INVOICE:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchInvoiceDetails.ashx',
+      CONTAINER:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchContDetails.ashx',
+      VESSEL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchVesselDetails.ashx',
+    };
+
+    const columnMap: any = {
+      GENERAL: ['JobNo', 'JobDate', 'ClientName', 'Shipper', 'Pol', 'Pod'],
+      INVOICE: [
+        'InvoiceNo',
+        'InvoiceDate',
+        'InvoiceValue',
+        'Currency',
+        'Terms',
+      ],
+      CONTAINER: ['ContainerNo', 'ContainerSize', 'LineSealNo'],
+      VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
     };
 
     const apiUrl = apiMap[tab];
     const payload = {
+      EDIJobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
       BranchID: this.BranchID,
       FinanceYear: this.FinanceYear,
     };
-
-    if (!apiUrl) {
-      console.error('API URL not found for tab:', tab);
-      return;
-    }
-
-    this.http.post(apiUrl, payload).subscribe(
-      (res: any) => {
-        if (res.Status === 'Success') {
-          const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
-          this.gridData = res[key];
-
-          this.displayedColumns = [
-            'JobNo',
-            'JobDate',
-            'ClientName',
-            'Shipper',
-            'Pol',
-            'Pod',
-          ];
-          this.isGridVisible = true;
-        } else {
+    if (this.tabName !== 'OPERATION') {
+      this.http.post(apiUrl, payload).subscribe(
+        (res: any) => {
+          if (res.Status === 'Success') {
+            const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
+            this.gridData = res[key];
+            this.displayedColumns = columnMap[tab];
+          } else {
+            this.gridData = [];
+            this.displayedColumns = [];
+          }
+        },
+        (error) => {
+          console.error('API Error:', error);
           this.gridData = [];
           this.displayedColumns = [];
           this.isGridVisible = false;
         }
-      },
-      (error) => {
-        console.error('API Error:', error);
+      );
+    }
+  }
+
+  onTabChange(tabIndex: number): void {
+    this.tabName = this.tabLabels[tabIndex];
+    if (this.searchClicked && this.tabName !== 'GENERAL') {
+      this.isGridVisible = true;
+    } else {
+      this.isGridVisible = false;
+    }
+    switch (this.tabName) {
+      case 'GENERAL':
+        this.tabName = 'GENERAL';
+        break;
+      case 'OPERATION DETAILS':
+        this.tabName = 'OPERATION';
         this.gridData = [];
-        this.displayedColumns = [];
-        this.isGridVisible = false;
-      }
-    );
+        break;
+      case 'INVOICE DETAILS':
+        this.tabName = 'INVOICE';
+        break;
+      case 'CONTAINER DETAILS':
+        this.tabName = 'CONTAINER';
+        break;
+      case 'VESSEL DETAILS':
+        this.tabName = 'VESSEL';
+        break;
+      default:
+        this.tabName = this.tabName;
+        return;
+    }
+    this.fetchGridData(this.tabName);
   }
 
   fillGeneralForm(row: any) {
     this.isModifyVisible = true;
-    this.ModifyJobId = row.ID || null;
+    this.isoperModifyVisible = true;
     this.isGridVisible = false;
+    this.ModifyJobId = row.ID || null;
+
+    if (this.tabName === 'INVOICE') {
+      this.InvoiceID = row.InvoiceID || null;
+      this.isInvoiceModifyVisible = true;
+      this.isGridVisible = true;
+    } else if (this.tabName === 'CONTAINER') {
+      this.ContainerID = row.ContID || null;
+      this.isContModifyVisible = true;
+      this.isGridVisible = true;
+    } else if (this.tabName === 'VESSEL') {
+      this.VesselID = row.VesselID || null;
+      this.isVesselModifyVisible = true;
+      this.isGridVisible = true;
+    }
 
     const formValues: any = {};
     const operationFormValues: any = {};
-
+    const invoiceFormValues: any = {};
+    const containerFormValues: any = {};
+    const vesselFormValues: any = {};
     this.generalFields.forEach((field) => {
       const fieldId = field.id;
       const key = this.extractGeneralRowKey(fieldId);
@@ -866,8 +682,36 @@ export class ExportSeaPlanningComponent {
       }
     });
 
+    this.invoiceFields.forEach((field) => {
+      const fieldId = field.id;
+      const key = this.extractInvoiceRowKey(fieldId);
+      invoiceFormValues[fieldId] =
+        key === 'InvoiceDate' && row[key]
+          ? this.convertToDateInputFormat(row[key])
+          : row[key] ?? '';
+    });
+
+    this.containerFields.forEach((field) => {
+      const fieldId = field.id;
+      const key = this.extractContainerRowKey(fieldId);
+      containerFormValues[fieldId] = row[key] ?? '';
+    });
+
+    const dateFields = ['Etd', 'Eta'];
+    this.vesselFields.forEach((field) => {
+      const fieldId = field.id;
+      const key = this.extractVesselRowKey(fieldId);
+      vesselFormValues[fieldId] =
+        dateFields.includes(key) && row[key]
+          ? this.convertToDateInputFormat(row[key])
+          : row[key] ?? '';
+    });
+
     this.generalForm.patchValue(formValues);
     this.operationForm.patchValue(operationFormValues);
+    this.invoiceForm.patchValue(invoiceFormValues);
+    this.containerForm.patchValue(containerFormValues);
+    this.vesselForm.patchValue(vesselFormValues);
   }
 
   extractGeneralRowKey(fieldId: string): string {
@@ -876,6 +720,18 @@ export class ExportSeaPlanningComponent {
 
   extractOperationRowKey(fieldId: string): string {
     return fieldId.replace(/^Oper_/, '');
+  }
+
+  extractInvoiceRowKey(fieldId: string): string {
+    return fieldId.replace(/^inv_/, '');
+  }
+
+  extractContainerRowKey(fieldId: string): string {
+    return fieldId.replace(/^cont_/, '');
+  }
+
+  extractVesselRowKey(fieldId: string): string {
+    return fieldId.replace(/^vess_/, '');
   }
 
   convertToDateInputFormat(dateStr: string): string {
@@ -889,7 +745,7 @@ export class ExportSeaPlanningComponent {
 
   //Clear Forms
 
-  clearAllForms(): void {
+  ClearAllForms(): void {
     const formMap: { [key: string]: FormGroup | undefined } = {
       generalForm: this.generalForm,
       invoiceForm: this.invoiceForm,
@@ -904,8 +760,47 @@ export class ExportSeaPlanningComponent {
       form?.markAsUntouched();
     });
 
-    this.SavedJobId = '';
     this.ModifyJobId = '';
+    this.InvoiceID = '';
+    this.ContainerID = '';
+    this.VesselID = '';
     this.isModifyVisible = false;
+    this.getJobNo();
+  }
+
+  ClearInvoiceForm(): void {
+    const formMap: { [key: string]: FormGroup | undefined } = {
+      invoiceForm: this.invoiceForm,
+    };
+    Object.values(formMap).forEach((form) => {
+      form?.reset();
+      form?.markAsPristine();
+      form?.markAsUntouched();
+    });
+    this.InvoiceID = '';
+  }
+
+  ClearContainerForm(): void {
+    const formMap: { [key: string]: FormGroup | undefined } = {
+      containerForm: this.containerForm,
+    };
+    Object.values(formMap).forEach((form) => {
+      form?.reset();
+      form?.markAsPristine();
+      form?.markAsUntouched();
+    });
+    this.ContainerID = '';
+  }
+
+  ClearVesselForm(): void {
+    const formMap: { [key: string]: FormGroup | undefined } = {
+      vesselForm: this.vesselForm,
+    };
+    Object.values(formMap).forEach((form) => {
+      form?.reset();
+      form?.markAsPristine();
+      form?.markAsUntouched();
+    });
+    this.VesselID = '';
   }
 }

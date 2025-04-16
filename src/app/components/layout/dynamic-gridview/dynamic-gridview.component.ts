@@ -37,7 +37,7 @@ export class DynamicGridviewComponent
   @Input() data: any[] = [];
   @Input() columns: string[] = [];
   @Output() rowSelected = new EventEmitter<any>();
-
+  @Input() tabName: string = '';
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -55,11 +55,19 @@ export class DynamicGridviewComponent
     this.dataSource.paginator = this.paginator;
   }
 
+  ngAfterViewChecked() {
+    if (this.dataSource && this.paginator && !this.dataSource.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+  }
+
   setupTable() {
     this.dataSource = new MatTableDataSource(this.data);
     if (this.columns.length) {
       this.displayColumns = ['select', ...this.columns];
     }
+
+    this.dataSource.paginator = this.paginator;
   }
 
   applyFilter(event: any) {
@@ -69,5 +77,9 @@ export class DynamicGridviewComponent
 
   onSelect(row: any) {
     this.rowSelected.emit(row);
+  }
+
+  refreshPage() {
+    window.location.reload();
   }
 }

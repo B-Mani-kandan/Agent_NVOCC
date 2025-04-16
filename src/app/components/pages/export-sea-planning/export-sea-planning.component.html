@@ -1,8 +1,9 @@
 <app-tab-panel
-  *ngIf="!isGridVisible"
   [tabs]="tabLabels"
+  *ngIf="!(isGridVisible && tabName === 'GENERAL')"
   [tabContents]="tabContents"
   [disabledTabs]="disabledTabs"
+  (tabChanged)="onTabChange($event)"
 ></app-tab-panel>
 
 <ng-template #GENERAL>
@@ -20,7 +21,7 @@
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="!isModifyVisible"
-      (click)="OnGeneralSave('Save')"
+      (click)="OnGeneralSave()"
     >
       Save
     </button>
@@ -28,21 +29,21 @@
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="isModifyVisible"
-      (click)="OnGeneralSave('Modify')"
+      (click)="OnGeneralSave()"
     >
       Modify
     </button>
     <button
       type="submit"
       class="btn custom-btn btn-primary"
-      (click)="fetchGridData('GENERAL')"
+      (click)="onSearch()"
     >
       Search
     </button>
     <button
       type="reset"
       class="btn custom-btn btn-danger"
-      (click)="clearAllForms()"
+      (click)="ClearAllForms()"
     >
       Clear
     </button>
@@ -62,23 +63,23 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      (click)="OnOperationsSave('Save')"
-      *ngIf="!isModifyVisible"
+      (click)="OnOperationsSave()"
+      *ngIf="!isoperModifyVisible"
     >
       Save
     </button>
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      (click)="OnOperationsSave('Modify')"
-      *ngIf="isModifyVisible"
+      (click)="OnOperationsSave()"
+      *ngIf="isoperModifyVisible"
     >
       Modify
     </button>
     <input
       type="reset"
       class="btn custom-btn btn-danger"
-      (click)="clearAllForms()"
+      (click)="ClearAllForms()"
       value="Clear"
     />
   </div>
@@ -97,12 +98,26 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      (click)="OnInvoiceSave()"
+      *ngIf="!isInvoiceModifyVisible"
+      (click)="OnInvoiceSave('Save')"
     >
       Save
     </button>
-    <button type="submit" class="btn custom-btn btn-success">Modify</button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isInvoiceModifyVisible"
+      (click)="OnInvoiceSave('Modify')"
+    >
+      Modify
+    </button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearInvoiceForm()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
 
@@ -119,12 +134,26 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      (click)="OnContainerSave()"
+      *ngIf="!isContModifyVisible"
+      (click)="OnContainerSave('Save')"
     >
       Save
     </button>
-    <button type="submit" class="btn custom-btn btn-success">Modify</button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isContModifyVisible"
+      (click)="OnContainerSave('Modify')"
+    >
+      Modify
+    </button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearContainerForm()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
 
@@ -141,12 +170,26 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      (click)="OnVesselSave()"
+      *ngIf="!isVesselModifyVisible"
+      (click)="OnVesselSave('Save')"
     >
       Save
     </button>
-    <button type="submit" class="btn custom-btn btn-success">Modify</button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isVesselModifyVisible"
+      (click)="OnVesselSave('Modify')"
+    >
+      Modify
+    </button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearVesselForm()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
 
@@ -154,6 +197,7 @@
   *ngIf="isGridVisible"
   [data]="gridData"
   [columns]="displayedColumns"
+  [tabName]="tabName"
   (rowSelected)="fillGeneralForm($event)"
 >
 </app-dynamic-gridview>

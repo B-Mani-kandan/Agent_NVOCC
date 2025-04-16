@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  TemplateRef,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -14,8 +21,8 @@ export class TabPanelComponent implements OnInit {
   @Input() tabs: string[] = [];
   @Input() tabContents: TemplateRef<any>[] = [];
   @Input() disabledTabs: boolean[] = [];
+  @Output() tabChanged = new EventEmitter<number>();
   activeTab: number = 0;
-
   constructor(private http: HttpClient) {}
 
   ngOnInit() {}

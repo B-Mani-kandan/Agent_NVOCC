@@ -1,4 +1,4 @@
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4" *ngIf="data.length > 0">
   <div class="mat-elevation-z8">
     <mat-form-field class="custom-search-field mb-3">
       <mat-label>Filter</mat-label>
@@ -7,7 +7,20 @@
         <mat-icon>search</mat-icon>
       </button>
     </mat-form-field>
-
+    <div class="grid-close">
+      <button
+        type="submit"
+        *ngIf="
+          tabName !== 'INVOICE' &&
+          tabName !== 'CONTAINER' &&
+          tabName !== 'VESSEL'
+        "
+        class="btn custom-btn btn-danger"
+        (click)="refreshPage()"
+      >
+        Close
+      </button>
+    </div>
     <table
       mat-table
       [dataSource]="dataSource"

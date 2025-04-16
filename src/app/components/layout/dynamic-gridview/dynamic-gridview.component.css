@@ -35,3 +35,9 @@
 .mat-mdc-form-field {
   flex-direction: row !important;
 }
+
+.grid-close {
+  margin-left: 1.3%;
+  display: inline;
+  vertical-align: text-bottom;
+}

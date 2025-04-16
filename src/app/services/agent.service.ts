@@ -124,13 +124,6 @@ export class AgentService {
     );
   }
 
-  Nvocc_SearchGeneralDetails(payload: any) {
-    return this._http.post<any>(
-      'https://client.f-studio.in/ServiceNVOC/Nvocc_SearchGeneralData.ashx',
-      payload
-    );
-  }
-
   //Save
 
   NVOCC_Save_JobBooking(payload: any) {
