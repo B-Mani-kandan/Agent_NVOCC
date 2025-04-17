@@ -19,7 +19,6 @@ import {
 } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { ToastComponent } from '../../layout/toast/toast.component';
 import { ToastService } from '../../../services/toast.service';
 import { AUTOCOMPLETE_FIELDS } from './autocomplete-fields.config';
 import {
@@ -29,6 +28,8 @@ import {
   CONTAINER_FIELDS,
   VESSEL_FIELDS,
 } from './export-sea-input-fields.config';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-export-sea-planning',
   standalone: true,
@@ -37,8 +38,9 @@ import {
     TabPanelComponent,
     DynamicFormsComponent,
     DynamicGridviewComponent,
-    ToastComponent,
+    ToastModule,
   ],
+  providers: [MessageService],
   templateUrl: './export-sea-planning.component.html',
   styleUrl: './export-sea-planning.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -104,7 +106,8 @@ export class ExportSeaPlanningComponent {
   constructor(
     private agentService: AgentService,
     private http: HttpClient,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit() {
@@ -162,6 +165,9 @@ export class ExportSeaPlanningComponent {
         'gen_Fpod',
         'gen_ItemDesc',
       ],
+      INVOICE: ['inv_InvoiceNo', 'inv_InvoiceDate'],
+      CONTAINER: ['cont_ContainerSize', 'cont_ContainerNo'],
+      VESSEL: ['vess_VesselName'],
     };
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;
@@ -436,6 +442,7 @@ export class ExportSeaPlanningComponent {
         if (res.Status === 'Success') {
           this.toastService.addToast('success', 'Success', res.Message);
           onSuccess?.(res);
+          this.fetchGridData(this.tabName);
         } else {
           this.toastService.addToast(
             'error',
@@ -448,7 +455,33 @@ export class ExportSeaPlanningComponent {
     });
   }
 
+  validateMandatoryFields(formGroup: FormGroup, templateId: string): boolean {
+    const isMandatory = this.getMandatoryFields(templateId);
+    let allValid = true;
+
+    Object.keys(formGroup.controls).forEach((fieldId) => {
+      if (isMandatory(fieldId)) {
+        const control = formGroup.get(fieldId);
+        if (!control?.value || control.value.toString().trim() === '') {
+          control?.markAsTouched();
+          allValid = false;
+        }
+      }
+    });
+
+    if (!allValid) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Validation',
+        detail: 'Please Fill mandatory Fields',
+      });
+    }
+
+    return allValid;
+  }
+
   OnGeneralSave(): void {
+    if (!this.validateMandatoryFields(this.generalForm, 'GENERAL')) return;
     const data = {
       CompanyID: this.CompanyId,
       FinanceYear: this.FinanceYear,
@@ -485,6 +518,8 @@ export class ExportSeaPlanningComponent {
   }
 
   OnInvoiceSave(action: any): void {
+    if (!this.validateMandatoryFields(this.invoiceForm, 'INVOICE')) return;
+
     const data = {
       SavedJobID: this.ModifyJobId,
       InvoiceID: action === 'Modify' ? this.InvoiceID : '',
@@ -501,10 +536,10 @@ export class ExportSeaPlanningComponent {
       data
     );
     this.ClearInvoiceForm();
-    this.fetchGridData('INVOICE');
   }
 
   OnContainerSave(action: any): void {
+    if (!this.validateMandatoryFields(this.containerForm, 'CONTAINER')) return;
     const genEmptyName = this.generalForm.get('gen_EmptyName')?.value;
     const data = {
       SavedJobID: this.ModifyJobId,
@@ -522,10 +557,10 @@ export class ExportSeaPlanningComponent {
       data
     );
     this.ClearContainerForm();
-    this.fetchGridData('CONTAINER');
   }
 
   OnVesselSave(action: any): void {
+    if (!this.validateMandatoryFields(this.vesselForm, 'VESSEL')) return;
     const data = {
       SavedJobID: this.ModifyJobId,
       VesselID: action === 'Modify' ? this.VesselID : '',
@@ -538,7 +573,6 @@ export class ExportSeaPlanningComponent {
       data
     );
     this.ClearVesselForm();
-    this.fetchGridData('VESSEL');
   }
 
   onSearch() {
@@ -550,7 +584,16 @@ export class ExportSeaPlanningComponent {
   }
 
   //Search Details
+  HandleRowAction(event: { action: string; data: any }) {
+    if (event.action === 'select') {
+      this.fillGeneralForm(event.data);
+    } else if (event.action === 'delete') {
+      this.onRowDelete(event.data);
+    }
+  }
+
   fetchGridData(tab: string) {
+    console.log(this.tabName, 'tsesf');
     const apiMap: any = {
       GENERAL:
         'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchGeneralData.ashx',
@@ -587,6 +630,7 @@ export class ExportSeaPlanningComponent {
         (res: any) => {
           if (res.Status === 'Success') {
             const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
+            console.log(res);
             this.gridData = res[key];
             this.displayedColumns = columnMap[tab];
           } else {
@@ -743,6 +787,42 @@ export class ExportSeaPlanningComponent {
     return '';
   }
 
+  //Delete
+
+  onRowDelete(row: any): void {
+    const jobId = row.ID;
+    let apiUrl = '';
+    let body: any = { JobID: jobId, CompanyID: this.CompanyId };
+
+    if (this.tabName === 'INVOICE') {
+      apiUrl =
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_DeleteInvoice.ashx';
+      body.InvoiceID = row.InvoiceID;
+    } else if (this.tabName === 'CONTAINER') {
+      apiUrl =
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_DeleteContainer.ashx';
+      body.ContainerID = row.ContID;
+    } else if (this.tabName === 'VESSEL') {
+      apiUrl =
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_DeleteVessel.ashx';
+      body.VesselID = row.VesselID;
+    } else {
+      return;
+    }
+    this.http.post(apiUrl, body).subscribe((res: any) => {
+      if (res.Status === 'Success') {
+        this.toastService.addToast('success', 'Success', res.Message);
+      } else {
+        this.toastService.addToast(
+          'error',
+          'Delete Failed',
+          res.Message || res.Error
+        );
+      }
+    });
+    this.fetchGridData(this.tabName);
+  }
+
   //Clear Forms
 
   ClearAllForms(): void {
@@ -778,6 +858,7 @@ export class ExportSeaPlanningComponent {
       form?.markAsUntouched();
     });
     this.InvoiceID = '';
+    this.isInvoiceModifyVisible = false;
   }
 
   ClearContainerForm(): void {
@@ -790,6 +871,7 @@ export class ExportSeaPlanningComponent {
       form?.markAsUntouched();
     });
     this.ContainerID = '';
+    this.isContModifyVisible = false;
   }
 
   ClearVesselForm(): void {
@@ -802,5 +884,6 @@ export class ExportSeaPlanningComponent {
       form?.markAsUntouched();
     });
     this.VesselID = '';
+    this.isVesselModifyVisible = false;
   }
 }

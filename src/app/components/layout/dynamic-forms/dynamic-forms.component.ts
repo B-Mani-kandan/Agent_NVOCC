@@ -11,6 +11,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { CalendarModule } from 'primeng/calendar';
 @Component({
   selector: 'app-dynamic-forms',
   imports: [
@@ -19,6 +20,7 @@ import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
     MatAutocompleteModule,
     MatFormFieldModule,
     MatInputModule,
+    CalendarModule,
   ],
   templateUrl: './dynamic-forms.component.html',
   styleUrl: './dynamic-forms.component.css',

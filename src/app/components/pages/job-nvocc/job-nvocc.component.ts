@@ -11,7 +11,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ToastComponent } from '../../layout/toast/toast.component';
 import { Observable } from 'rxjs';
 import { map, startWith, debounceTime, switchMap } from 'rxjs/operators';
 import { AsyncPipe } from '@angular/common';
@@ -30,7 +29,6 @@ import { AsyncPipe } from '@angular/common';
     MatDatepickerModule,
     ReactiveFormsModule,
     AsyncPipe,
-    ToastComponent,
   ],
   templateUrl: './job-nvocc.component.html',
   styleUrl: './job-nvocc.component.css',

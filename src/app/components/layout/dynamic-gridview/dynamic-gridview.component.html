@@ -47,6 +47,22 @@
 
       <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayColumns"></tr>
+
+      <ng-container
+        *ngIf="
+          tabName === 'INVOICE' ||
+          tabName === 'CONTAINER' ||
+          tabName === 'VESSEL'
+        "
+        matColumnDef="delete"
+      >
+        <th mat-header-cell *matHeaderCellDef>Delete</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button style="color: red" (click)="onDelete(row)">
+            <i class="ri-delete-bin-6-line"></i>
+          </button>
+        </td>
+      </ng-container>
     </table>
 
     <mat-paginator

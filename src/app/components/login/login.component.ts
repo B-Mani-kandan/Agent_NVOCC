@@ -1,41 +1,35 @@
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthenticationService } from '../../services/authentication.service';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { ToastComponent } from '../layout/toast/toast.component';
-import { ToastService } from '../../services/toast.service';
-import CryptoJS from 'crypto-js';
 import { ClientinfoService } from '../../services/clientinfo.service';
+import CryptoJS from 'crypto-js';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterOutlet, FormsModule, CommonModule, ToastComponent],
+  imports: [RouterOutlet, FormsModule, CommonModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit {
   fieldTextType: boolean = false;
-  loginObj: any = {
-    UserName: '',
-    Password: '',
-  };
+  loginObj: any = { UserName: '', Password: '' };
   CompanyID: any;
-
   private secureKey = 'wHq4RhDiO5zZRLg8xzHBhJ8WZJlpjtLHaPEvX3F1+aQ=';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     @Inject(DOCUMENT) private document: Document,
-    private toastService: ToastService,
     private ClientinfoService: ClientinfoService,
     private agentLogin: AuthenticationService,
-    private router: Router
+    private router: Router,
+    private messageService: MessageService
   ) {}
-
-  // agentLogin = inject(AuthenticationService);
-  // router = inject(Router);
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -44,6 +38,7 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl('/dashboard');
       }
     }
+
     const siteUrl = this.document.location.hostname;
     this.ClientinfoService.getClientInfo(siteUrl).subscribe(
       (data) => {
@@ -53,33 +48,38 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('CompanyID', data.CompanyId);
           }
         } else {
-          console.error(data.Message);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: data.Message,
+          });
         }
       },
       (error) => {
-        console.error('Error fetching client info', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Client info fetch failed',
+        });
       }
     );
   }
 
   onLogin() {
     if (!this.loginObj.UserName || !this.loginObj.Password) {
-      this.toastService.addToast(
-        'error',
-        'Error',
-        'Please enter both username and password.'
-      );
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Validation',
+        detail: 'Username and Password required',
+      });
       return;
     }
+
     const iv = CryptoJS.lib.WordArray.random(16);
     const encryptedPassword = CryptoJS.AES.encrypt(
       this.loginObj.Password,
       CryptoJS.enc.Base64.parse(this.secureKey),
-      {
-        iv: iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7,
-      }
+      { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
     ).toString();
 
     const ivBase64 = CryptoJS.enc.Base64.stringify(iv);
@@ -96,9 +96,20 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('authToken', res.Token);
         localStorage.setItem('AgentID', res.AgentID);
         localStorage.setItem('AgentName', res.AgentName);
-        this.router.navigateByUrl('/dashboard');
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Login Successful',
+          detail: 'Redirecting to dashboard...',
+        });
+
+        setTimeout(() => this.router.navigateByUrl('/dashboard'), 1000);
       } else {
-        this.toastService.addToast('error', 'Login Failed', res.Message);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Login Failed',
+          detail: res.Message || 'Invalid credentials',
+        });
       }
     });
   }

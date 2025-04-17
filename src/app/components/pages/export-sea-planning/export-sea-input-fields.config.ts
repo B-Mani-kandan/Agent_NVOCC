@@ -46,8 +46,13 @@ export const OPERATION_FIELDS = [
 ];
 
 export const INVOICE_FIELDS = [
-  { label: 'Invoice No', type: 'text', id: 'inv_InvoiceNo' },
-  { label: 'Invoice Date', type: 'date', id: 'inv_InvoiceDate' },
+  { label: 'Invoice No', type: 'text', id: 'inv_InvoiceNo', mandatory: true },
+  {
+    label: 'Invoice Date',
+    type: 'date',
+    id: 'inv_InvoiceDate',
+    mandatory: true,
+  },
   { label: 'Invoice Value', type: 'number', id: 'inv_InvoiceValue' },
   { label: 'Currency', type: 'autocomplete', id: 'inv_Currency' },
   { label: 'Ex-Rate', type: 'number', id: 'inv_ExRate' },
@@ -62,8 +67,18 @@ export const INVOICE_FIELDS = [
 ];
 
 export const CONTAINER_FIELDS = [
-  { label: 'Container Size', type: 'autocomplete', id: 'cont_ContainerSize' },
-  { label: 'Container No', type: 'text', id: 'cont_ContainerNo' },
+  {
+    label: 'Container Size',
+    type: 'autocomplete',
+    id: 'cont_ContainerSize',
+    mandatory: true,
+  },
+  {
+    label: 'Container No',
+    type: 'text',
+    id: 'cont_ContainerNo',
+    mandatory: true,
+  },
   { label: 'Line Seal No', type: 'text', id: 'cont_LineSealNo' },
   { label: 'Custom Seal No', type: 'text', id: 'cont_CustomsealNo' },
 ];
@@ -71,7 +86,12 @@ export const CONTAINER_FIELDS = [
 export const VESSEL_FIELDS = [
   { label: 'POL', type: 'autocomplete', id: 'vess_POL' },
   { label: 'POD', type: 'autocomplete', id: 'vess_POD' },
-  { label: 'Vessel Name', type: 'autocomplete', id: 'vess_VesselName' },
+  {
+    label: 'Vessel Name',
+    type: 'autocomplete',
+    id: 'vess_VesselName',
+    mandatory: true,
+  },
   { label: 'Voyage No', type: 'text', id: 'vess_VoyageNo' },
   { label: 'ETA', type: 'date', id: 'vess_Eta' },
   { label: 'ETD', type: 'date', id: 'vess_Etd' },

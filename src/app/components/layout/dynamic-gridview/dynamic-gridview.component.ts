@@ -36,7 +36,7 @@ export class DynamicGridviewComponent
 {
   @Input() data: any[] = [];
   @Input() columns: string[] = [];
-  @Output() rowSelected = new EventEmitter<any>();
+  @Output() rowSelected = new EventEmitter<{ action: string; data: any }>();
   @Input() tabName: string = '';
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -52,7 +52,9 @@ export class DynamicGridviewComponent
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    if (this.dataSource && this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
 
   ngAfterViewChecked() {
@@ -63,8 +65,13 @@ export class DynamicGridviewComponent
 
   setupTable() {
     this.dataSource = new MatTableDataSource(this.data);
+
     if (this.columns.length) {
       this.displayColumns = ['select', ...this.columns];
+
+      if (['INVOICE', 'CONTAINER', 'VESSEL'].includes(this.tabName)) {
+        this.displayColumns.push('delete');
+      }
     }
 
     this.dataSource.paginator = this.paginator;
@@ -76,7 +83,11 @@ export class DynamicGridviewComponent
   }
 
   onSelect(row: any) {
-    this.rowSelected.emit(row);
+    this.rowSelected.emit({ action: 'select', data: row });
+  }
+
+  onDelete(row: any) {
+    this.rowSelected.emit({ action: 'delete', data: row });
   }
 
   refreshPage() {
