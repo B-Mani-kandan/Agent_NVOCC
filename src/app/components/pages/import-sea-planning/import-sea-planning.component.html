@@ -1,0 +1,170 @@
+<!-- <app-dynamic-gridview
+  [data]="gridData"
+  [columns]="displayedColumns"
+  [tabName]="tabName"
+>
+  >
+</app-dynamic-gridview> -->
+
+<app-tab-panel
+  [tabs]="Imp_tabLabels"
+  [tabContents]="tabContents"
+></app-tab-panel>
+<p-toast></p-toast>
+<ng-template #IMP_GENERAL>
+  <app-dynamic-forms
+    [formGroup]="imp_GeneralForm"
+    [formFields]="imp_GeneralFields"
+    [templateId]="'IMP_GENERAL'"
+    [isMandatoryField]="getMandatoryFields('IMP_GENERAL')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+
+  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="!isModifyVisible"
+    >
+      Save
+    </button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isModifyVisible"
+    >
+      Modify
+    </button>
+    <button type="submit" class="btn custom-btn btn-primary">Search</button>
+    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+  </div>
+</ng-template>
+
+<ng-template #IMP_OPERATION>
+  <app-dynamic-forms
+    [formGroup]="imp_OperationForm"
+    [formFields]="imp_OperationFields"
+    [templateId]="'IMP_OPERATION'"
+    [isMandatoryField]="getMandatoryFields('IMP_OPERATION')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="!isoperModifyVisible"
+    >
+      Save
+    </button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isoperModifyVisible"
+    >
+      Modify
+    </button>
+    <input type="reset" class="btn custom-btn btn-danger" value="Clear" />
+  </div>
+</ng-template>
+
+<ng-template #IMP_BLIGM>
+  <app-dynamic-forms
+    [formGroup]="imp_BligmForm"
+    [formFields]="imp_BligmFields"
+    [templateId]="'IMP_BLIGM'"
+    [isMandatoryField]="getMandatoryFields('IMP_BLIGM')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
+    <button type="submit" class="btn custom-btn btn-success">Save</button>
+    <button type="submit" class="btn custom-btn btn-success">Modify</button>
+    <input type="reset" class="btn custom-btn btn-danger" value="Clear" />
+  </div>
+</ng-template>
+
+<ng-template #IMP_INVOICE>
+  <app-dynamic-forms
+    [formGroup]="imp_InvoiceForm"
+    [formFields]="imp_InvoiceFields"
+    [templateId]="'IMP_INVOICE'"
+    [isMandatoryField]="getMandatoryFields('IMP_INVOICE')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="!isInvoiceModifyVisible"
+    >
+      Save
+    </button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isInvoiceModifyVisible"
+    >
+      Modify
+    </button>
+    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+  </div>
+</ng-template>
+
+<ng-template #IMP_CONTAINER>
+  <app-dynamic-forms
+    [formGroup]="imp_ContainerForm"
+    [formFields]="imp_ContainerFields"
+    [templateId]="'IMP_CONTAINER'"
+    [isMandatoryField]="getMandatoryFields('IMP_CONTAINER')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="!isContModifyVisible"
+    >
+      Save
+    </button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isContModifyVisible"
+    >
+      Modify
+    </button>
+    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+  </div>
+</ng-template>
+
+<ng-template #IMP_VESSEL>
+  <app-dynamic-forms
+    [formGroup]="imp_VesselForm"
+    [formFields]="imp_VesselFields"
+    [templateId]="'IMP_VESSEL'"
+    [isMandatoryField]="getMandatoryFields('IMP_VESSEL')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="!isVesselModifyVisible"
+    >
+      Save
+    </button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isVesselModifyVisible"
+    >
+      Modify
+    </button>
+    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+  </div>
+</ng-template>

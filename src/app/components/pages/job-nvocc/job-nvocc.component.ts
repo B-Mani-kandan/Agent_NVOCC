@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AgentService } from '../../../services/agent.service';
-import { ToastService } from '../../../services/toast.service';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
@@ -39,7 +38,6 @@ export class JobNvoccComponent implements OnInit {
   isShowVisible: boolean = false;
   isLoading: boolean = false;
   router = inject(Router);
-  _notify = inject(ToastService);
   _CommonService = inject(AgentService);
   myControl = new FormControl('');
   options: string[] = ['One', 'Two', 'Three'];
@@ -85,12 +83,12 @@ export class JobNvoccComponent implements OnInit {
         this.NvoccBookingData = response;
         if (this.NvoccBookingData?.Nvocc_Booking?.length > 0) {
         } else {
-          this._notify.addToast('error', 'Error', 'No data available.');
+          //this._notify.addToast('error', 'Error', 'No data available.');
         }
         this.isLoading = false;
       },
       (error) => {
-        this._notify.addToast('error', 'Error', 'Failed to fetch data.');
+        //this._notify.addToast('error', 'Error', 'Failed to fetch data.');
         this.isLoading = false;
       }
     );
@@ -122,13 +120,13 @@ export class JobNvoccComponent implements OnInit {
             }
           );
         } else {
-          this._notify.addToast('error', 'Error', 'No job details found.');
+          //this._notify.addToast('error', 'Error', 'No job details found.');
           this.JobDetails = [];
         }
         this.isLoading = false;
       },
       (error) => {
-        this._notify.addToast('error', 'Error', 'Failed to fetch job details.');
+        //this._notify.addToast('error', 'Error', 'Failed to fetch job details.');
         this.isLoading = false;
       }
     );
@@ -154,7 +152,7 @@ export class JobNvoccComponent implements OnInit {
     );
 
     if (selectedJobs.length === 0) {
-      this._notify.addToast('error', 'Error', 'No job selected.');
+      //this._notify.addToast('error', 'Error', 'No job selected.');
       return;
     }
 
@@ -179,18 +177,18 @@ export class JobNvoccComponent implements OnInit {
       (response: any) => {
         console.log('Success:', response);
         if (response.Status === 'Success') {
-          this._notify.addToast(
-            'success',
-            'Success',
-            'Data Saved Successfully'
-          );
+          // this._notify.addToast(
+          //   'success',
+          //   'Success',
+          //   'Data Saved Successfully'
+          // );
           this.router
             .navigateByUrl('/', { skipLocationChange: true })
             .then(() => {
               this.router.navigate([this.router.url]);
             });
         } else {
-          this._notify.addToast('error', 'Failed', response.Message);
+          //this._notify.addToast('error', 'Failed', response.Message);
         }
       },
       (error: any) => {

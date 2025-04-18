@@ -18,6 +18,7 @@
             formControlName="{{ field.id }}"
             autocomplete="off"
             [matAutocomplete]="auto"
+            (keypress)="onKeyPress($event, field)"
           />
           <mat-autocomplete #auto="matAutocomplete">
             <mat-option
@@ -30,17 +31,14 @@
         </div>
       </div>
       <input
-        *ngIf="
-          field.type === 'text' ||
-          field.type === 'date' ||
-          field.type === 'number'
-        "
+        *ngIf="field.type === 'text' || field.type === 'date'"
         [type]="field.type"
         class="form-control"
         [id]="field.id"
         formControlName="{{ field.id }}"
         [ngClass]="{ important: isMandatoryField(field.id) }"
         autocomplete="off"
+        (keypress)="onKeyPress($event, field)"
       />
       <select
         *ngIf="field.type === 'select'"
@@ -48,7 +46,9 @@
         [id]="field.id"
         formControlName="{{ field.id }}"
       >
-        <option *ngFor="let option of field.options">{{ option }}</option>
+        <option *ngFor="let option of field.options" [value]="option">
+          {{ option }}
+        </option>
       </select>
       <textarea
         *ngIf="field.type === 'textarea'"
@@ -57,6 +57,7 @@
         formControlName="{{ field.id }}"
         autocomplete="off"
         [ngClass]="{ important: isMandatoryField(field.id) }"
+        (keypress)="onKeyPress($event, field)"
       ></textarea>
     </div>
   </form>

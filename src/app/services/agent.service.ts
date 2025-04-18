@@ -109,6 +109,24 @@ export class AgentService {
     );
   }
 
+  //Fetch Grid
+
+  fetchGridData(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchGeneralData.ashx',
+      INVOICE:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchInvoiceDetails.ashx',
+      CONTAINER:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchContDetails.ashx',
+      VESSEL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchVesselDetails.ashx',
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+
   // Saerch Details
   Nvocc_Booking(payload: any) {
     return this._http.post<any>(

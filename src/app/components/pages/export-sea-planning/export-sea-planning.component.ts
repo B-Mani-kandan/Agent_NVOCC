@@ -19,7 +19,6 @@ import {
 } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { ToastService } from '../../../services/toast.service';
 import { AUTOCOMPLETE_FIELDS } from './autocomplete-fields.config';
 import {
   GENERAL_FIELDS,
@@ -62,24 +61,12 @@ export class ExportSeaPlanningComponent {
     'VESSEL DETAILS',
   ];
   tabContents: TemplateRef<any>[] = [];
-  disabledTabs: boolean[] = [false, false, false, false, false];
+  disabledTabs: boolean[] = [false, true, true, true, true];
   generalForm!: FormGroup;
   operationForm!: FormGroup;
   invoiceForm!: FormGroup;
   containerForm!: FormGroup;
   vesselForm!: FormGroup;
-  clientSuggestions: string[] = [];
-  shipperSuggestions: string[] = [];
-  consigneeSuggestions: string[] = [];
-  polSuggestions: string[] = [];
-  podSuggestions: string[] = [];
-  fpodSuggestions: string[] = [];
-  cfsNameSuggestions: string[] = [];
-  chaNameSuggestions: string[] = [];
-  coLoaderSuggestions: string[] = [];
-  forwarderSuggestions: string[] = [];
-  shippingLineSuggestions: string[] = [];
-  emptyYardSuggestions: string[] = [];
   gridData: any[] = [];
   displayedColumns: string[] = [];
   isModifyVisible: boolean = false;
@@ -106,7 +93,6 @@ export class ExportSeaPlanningComponent {
   constructor(
     private agentService: AgentService,
     private http: HttpClient,
-    private toastService: ToastService,
     private messageService: MessageService
   ) {}
 
@@ -119,6 +105,7 @@ export class ExportSeaPlanningComponent {
     this.vesselForm = this.createForm(this.vesselFields);
     this.setupAutocompleteListeners();
     this.getJobNo();
+    this.getCurrentDate();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
     this.FinanceYear = '2024-2025';
     this.BranchID = '1594';
@@ -141,7 +128,6 @@ export class ExportSeaPlanningComponent {
           this.VESSEL,
         ];
       } else {
-        console.error('One or more @ViewChild references are undefined!');
       }
     }, 0);
   }
@@ -153,9 +139,7 @@ export class ExportSeaPlanningComponent {
     return new FormGroup(group);
   }
 
-  saveForm(data: any) {
-    console.log(data);
-  }
+  saveForm(data: any) {}
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
       GENERAL: [
@@ -173,6 +157,12 @@ export class ExportSeaPlanningComponent {
       mandatoryFields[templateId]?.includes(fieldId) || false;
   }
 
+  getCurrentDate() {
+    const today = new Date();
+    this.generalForm.patchValue({
+      gen_JobDate: today.toISOString().split('T')[0],
+    });
+  }
   getJobNo(): void {
     const payload = {
       CompanyID: 'FST2223005',
@@ -188,12 +178,14 @@ export class ExportSeaPlanningComponent {
             gen_JobNo: jobNo,
           });
         } else {
-          console.warn('Job No not found');
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Job No not found',
+          });
         }
       },
-      (err) => {
-        console.error('Failed to fetch Job No:', err);
-      }
+      () => {}
     );
   }
   setupAutocompleteListeners() {
@@ -381,6 +373,7 @@ export class ExportSeaPlanningComponent {
   ): Observable<string[]> {
     if (!input) return of([]);
 
+    //empty yard autocomplete pol value split and pass country
     let country = '';
     if (payloadType === 'EmptyYard') {
       const polValue = this.generalForm?.get('gen_Pol')?.value || '';
@@ -408,7 +401,6 @@ export class ExportSeaPlanningComponent {
           : []
       ),
       catchError((error: any) => {
-        console.error(`Error fetching data from ${serviceMethod}:`, error);
         return of([]);
       })
     );
@@ -417,44 +409,7 @@ export class ExportSeaPlanningComponent {
     return (this as any)[`${fieldId}Suggestions`] || [];
   }
 
-  private buildPayload(form: FormGroup, extraData: any = {}): any {
-    return {
-      ...form.getRawValue(),
-      ...extraData,
-    };
-  }
-
-  private saveSection(
-    form: FormGroup,
-    apiCall: (payload: any) => Observable<any>,
-    extraData: any = {},
-    onSuccess?: (res: any) => void
-  ): void {
-    if (form.invalid) {
-      console.error('Form is invalid');
-      return;
-    }
-
-    const payload = this.buildPayload(form, extraData);
-
-    apiCall(payload).subscribe({
-      next: (res) => {
-        if (res.Status === 'Success') {
-          this.toastService.addToast('success', 'Success', res.Message);
-          onSuccess?.(res);
-          this.fetchGridData(this.tabName);
-        } else {
-          this.toastService.addToast(
-            'error',
-            'Save Failed',
-            res.Message || res.Error
-          );
-        }
-      },
-      error: () => {},
-    });
-  }
-
+  // Validations
   validateMandatoryFields(formGroup: FormGroup, templateId: string): boolean {
     const isMandatory = this.getMandatoryFields(templateId);
     let allValid = true;
@@ -472,12 +427,53 @@ export class ExportSeaPlanningComponent {
     if (!allValid) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Validation',
+        summary: 'Mandatory',
         detail: 'Please Fill mandatory Fields',
       });
     }
 
     return allValid;
+  }
+
+  private buildPayload(form: FormGroup, extraData: any = {}): any {
+    return {
+      ...form.getRawValue(),
+      ...extraData,
+    };
+  }
+  //  Save all Forms
+  private saveSection(
+    form: FormGroup,
+    apiCall: (payload: any) => Observable<any>,
+    extraData: any = {},
+    onSuccess?: (res: any) => void
+  ): void {
+    if (form.invalid) {
+      return;
+    }
+
+    const payload = this.buildPayload(form, extraData);
+
+    apiCall(payload).subscribe({
+      next: (res) => {
+        if (res.Status === 'Success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: `${this.capitalize(this.tabName)} ${res.Message}`,
+          });
+          onSuccess?.(res);
+          this.fetchGridData(this.tabName);
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Save Failed',
+            detail: res.Message,
+          });
+        }
+      },
+      error: () => {},
+    });
   }
 
   OnGeneralSave(): void {
@@ -575,6 +571,8 @@ export class ExportSeaPlanningComponent {
     this.ClearVesselForm();
   }
 
+  //Search Details
+
   onSearch() {
     if (this.tabName === 'GENERAL') {
       this.isGridVisible = true;
@@ -582,8 +580,6 @@ export class ExportSeaPlanningComponent {
     }
     this.fetchGridData(this.tabName);
   }
-
-  //Search Details
   HandleRowAction(event: { action: string; data: any }) {
     if (event.action === 'select') {
       this.fillGeneralForm(event.data);
@@ -591,20 +587,7 @@ export class ExportSeaPlanningComponent {
       this.onRowDelete(event.data);
     }
   }
-
   fetchGridData(tab: string) {
-    console.log(this.tabName, 'tsesf');
-    const apiMap: any = {
-      GENERAL:
-        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchGeneralData.ashx',
-      INVOICE:
-        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchInvoiceDetails.ashx',
-      CONTAINER:
-        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchContDetails.ashx',
-      VESSEL:
-        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchVesselDetails.ashx',
-    };
-
     const columnMap: any = {
       GENERAL: ['JobNo', 'JobDate', 'ClientName', 'Shipper', 'Pol', 'Pod'],
       INVOICE: [
@@ -618,19 +601,18 @@ export class ExportSeaPlanningComponent {
       VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
     };
 
-    const apiUrl = apiMap[tab];
     const payload = {
       EDIJobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
       BranchID: this.BranchID,
       FinanceYear: this.FinanceYear,
     };
+
     if (this.tabName !== 'OPERATION') {
-      this.http.post(apiUrl, payload).subscribe(
+      this.agentService.fetchGridData(tab, payload).subscribe(
         (res: any) => {
           if (res.Status === 'Success') {
             const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
-            console.log(res);
             this.gridData = res[key];
             this.displayedColumns = columnMap[tab];
           } else {
@@ -658,6 +640,7 @@ export class ExportSeaPlanningComponent {
     switch (this.tabName) {
       case 'GENERAL':
         this.tabName = 'GENERAL';
+        this.gridData = [];
         break;
       case 'OPERATION DETAILS':
         this.tabName = 'OPERATION';
@@ -679,10 +662,12 @@ export class ExportSeaPlanningComponent {
     this.fetchGridData(this.tabName);
   }
 
+  // Populate fields
   fillGeneralForm(row: any) {
     this.isModifyVisible = true;
     this.isoperModifyVisible = true;
     this.isGridVisible = false;
+    this.disabledTabs = [false, false, false, false, false];
     this.ModifyJobId = row.ID || null;
 
     if (this.tabName === 'INVOICE') {
@@ -704,15 +689,15 @@ export class ExportSeaPlanningComponent {
     const invoiceFormValues: any = {};
     const containerFormValues: any = {};
     const vesselFormValues: any = {};
+
+    const gendateFields = ['JobDate', 'HblDate', 'MblDate'];
     this.generalFields.forEach((field) => {
       const fieldId = field.id;
       const key = this.extractGeneralRowKey(fieldId);
-
-      if (key === 'JobDate' && row[key]) {
-        formValues[fieldId] = this.convertToDateInputFormat(row[key]);
-      } else {
-        formValues[fieldId] = row[key] ?? '';
-      }
+      formValues[fieldId] =
+        gendateFields.includes(key) && row[key]
+          ? this.convertToDateInputFormat(row[key])
+          : row[key] ?? '';
     });
 
     this.operationFields.forEach((field) => {
@@ -788,39 +773,55 @@ export class ExportSeaPlanningComponent {
   }
 
   //Delete
-
   onRowDelete(row: any): void {
     const jobId = row.ID;
     let apiUrl = '';
     let body: any = { JobID: jobId, CompanyID: this.CompanyId };
+    let deleteKey = '';
 
     if (this.tabName === 'INVOICE') {
       apiUrl =
         'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_DeleteInvoice.ashx';
       body.InvoiceID = row.InvoiceID;
+      deleteKey = 'InvoiceID';
     } else if (this.tabName === 'CONTAINER') {
       apiUrl =
         'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_DeleteContainer.ashx';
       body.ContainerID = row.ContID;
+      deleteKey = 'ContID';
     } else if (this.tabName === 'VESSEL') {
       apiUrl =
         'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_DeleteVessel.ashx';
       body.VesselID = row.VesselID;
+      deleteKey = 'VesselID';
     } else {
       return;
     }
+
     this.http.post(apiUrl, body).subscribe((res: any) => {
-      if (res.Status === 'Success') {
-        this.toastService.addToast('success', 'Success', res.Message);
-      } else {
-        this.toastService.addToast(
-          'error',
-          'Delete Failed',
-          res.Message || res.Error
+      if (res.Status === 'Sucess') {
+        // Remove deleted row index id
+        this.gridData = this.gridData.filter(
+          (item: any) => item[deleteKey] !== row[deleteKey]
         );
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `${this.capitalize(this.tabName)} ${res.Message}`,
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Failed',
+          detail: res.Message,
+        });
       }
     });
-    this.fetchGridData(this.tabName);
+  }
+
+  capitalize(text: string): string {
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
 
   //Clear Forms
@@ -845,7 +846,9 @@ export class ExportSeaPlanningComponent {
     this.ContainerID = '';
     this.VesselID = '';
     this.isModifyVisible = false;
+    this.disabledTabs = [false, true, true, true, true];
     this.getJobNo();
+    this.getCurrentDate();
   }
 
   ClearInvoiceForm(): void {
