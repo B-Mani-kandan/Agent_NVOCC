@@ -79,6 +79,12 @@ export const IMP_AUTOCOMPLETE_FIELDS: IMP_AutocompleteFieldConfig[] = [
     formType: 'imp_InvoiceForm',
   },
   {
+    field: 'Imp_inv_SuplierShipper',
+    method: 'fetchSupplierNameSuggestions',
+    payloadType: 'InputVal',
+    formType: 'imp_InvoiceForm',
+  },
+  {
     field: 'Imp_cont_ContainerSize',
     method: 'fetchContSizeSuggestions',
     payloadType: 'InputVal',

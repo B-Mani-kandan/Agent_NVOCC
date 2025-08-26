@@ -127,6 +127,24 @@ export class AgentService {
     return this._http.post(apiUrl, payload);
   }
 
+  fetchImportSearchGridData(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Imp_SearchGeneralData.ashx',
+      BLDETAILS:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Imp_SearchBLIGMDetails.ashx',
+      INVOICE:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Imp_SearchInvoiceDetails.ashx',
+      CONTAINER:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Imp_SearchContDetails.ashx',
+      VESSEL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Imp_SearchVesselDetails.ashx',
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+
   // Saerch Details
   Nvocc_Booking(payload: any) {
     return this._http.post<any>(
@@ -163,7 +181,6 @@ export class AgentService {
       payload
     );
   }
-
   NVOCC_Save_ExportSea_OperationDetails(payload: any) {
     return this._http.post<any>(
       'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ExportSea_OperationDetails.ashx',
@@ -186,6 +203,41 @@ export class AgentService {
   NVOCC_Save_ExportSea_VesselDetails(payload: any) {
     return this._http.post<any>(
       'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ExportSea_VesselDetails.ashx',
+      payload
+    );
+  }
+
+  NVOCC_SaveAllForms_ImportSea_General(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ImportSea_General.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Save_ImportSea_BLIGM(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ImportSea_BLIGM_Details.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Save_ImportSea_InvoiceDetails(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ImportSea_InvoiceDetails.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Save_ImportSea_ContainerDetails(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ImportSea_ContainerDetails.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Save_ImportSea_VesselDetails(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ImportSea_VesselDetailsashx.ashx',
       payload
     );
   }

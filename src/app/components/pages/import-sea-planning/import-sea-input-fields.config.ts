@@ -11,20 +11,9 @@ export const IMP_GENERAL_FIELDS = [
     id: 'Imp_gen_JobDate',
   },
   {
-    label: 'Client Name',
-    type: 'autocomplete',
-    id: 'Imp_gen_ClientName',
-    mandatory: true,
-  },
-  {
-    label: 'Shipper/Exporter Name',
+    label: 'Importer Name',
     type: 'autocomplete',
     id: 'Imp_gen_Shipper',
-  },
-  {
-    label: 'Consignee Name',
-    type: 'autocomplete',
-    id: 'Imp_gen_Consignee',
   },
   {
     label: 'POL',
@@ -47,7 +36,7 @@ export const IMP_GENERAL_FIELDS = [
     validators: ['lettersOnly'],
   },
   {
-    label: 'Item Description',
+    label: 'Commodity',
     type: 'textarea',
     id: 'Imp_gen_ItemDesc',
     mandatory: true,
@@ -56,18 +45,27 @@ export const IMP_GENERAL_FIELDS = [
     label: 'Type of Commodity',
     type: 'select',
     id: 'Imp_gen_CommodityType',
-    options: ['Non DG', 'DG'],
+    options: ['', 'Non DG', 'DG'],
+  },
+  {
+    label: 'Marks & No',
+    type: 'text',
+    id: 'Imp_gen_MarksNo',
+  },
+  {
+    label: 'Line / Item No',
+    type: 'text',
+    id: 'Imp_gen_LineItemNo',
+  },
+  {
+    label: 'Sub Item',
+    type: 'text',
+    id: 'Imp_gen_SubItem',
   },
   {
     label: 'Carrier Name',
     type: 'autocomplete',
     id: 'Imp_gen_ShiplineName',
-    validators: ['lettersOnly'],
-  },
-  {
-    label: 'Empty Yard Name',
-    type: 'autocomplete',
-    id: 'Imp_gen_EmptyName',
     validators: ['lettersOnly'],
   },
   {
@@ -83,23 +81,46 @@ export const IMP_GENERAL_FIELDS = [
     validators: ['numbersOnly'],
   },
   {
-    label: 'Container Booking No',
-    type: 'text',
-    id: 'Imp_gen_ContBokNo',
-  },
-  {
     label: 'Remark',
     type: 'text',
     id: 'Imp_gen_Remark',
   },
-];
-
-export const IMP_OPERATION_FIELDS = [
-  { label: 'Gate In Date', type: 'date', id: 'Imp_Oper_GateInDate' },
-  { label: 'OnBoard Date', type: 'date', id: 'Imp_Oper_OnBoardDate' },
-  { label: 'Departure Date', type: 'date', id: 'Imp_Oper_DepatureDate' },
-  { label: 'Pre Alert Date', type: 'date', id: 'Imp_Oper_PreAlertDate' },
-  { label: 'Delivery Date', type: 'date', id: 'Imp_Oper_DeliveryDate' },
+  {
+    label: 'Can Date',
+    type: 'date',
+    id: 'Imp_gen_CanDate',
+  },
+  {
+    label: 'Can No',
+    type: 'text',
+    id: 'Imp_gen_CanNo',
+  },
+  {
+    label: 'Do Date',
+    type: 'date',
+    id: 'Imp_gen_DoDate',
+  },
+  {
+    label: 'Do No',
+    type: 'text',
+    id: 'Imp_gen_DoNo',
+  },
+  {
+    label: 'Do Valid Date',
+    type: 'date',
+    id: 'Imp_gen_DoValidDate',
+  },
+  {
+    label: 'Inward Date',
+    type: 'date',
+    id: 'Imp_gen_InwardDate',
+  },
+  {
+    label: 'Empty Yard Name',
+    type: 'autocomplete',
+    id: 'Imp_gen_EmptyName',
+    validators: ['lettersOnly'],
+  },
 ];
 
 export const IMP_BLIGM_FIELDS = [
@@ -107,6 +128,25 @@ export const IMP_BLIGM_FIELDS = [
     label: 'MBL NO',
     type: 'text',
     id: 'Imp_Bligm_Mblno',
+  },
+  {
+    label: 'MBL Date',
+    type: 'date',
+    id: 'Imp_Bligm_MblDate',
+  },
+  {
+    label: 'MBL Type',
+    type: 'select',
+    id: 'Imp_Bligm_MBLType',
+    options: [
+      '',
+      'EXPRESS BL',
+      'ORIGINAL BL',
+      'SURRENDER BL',
+      'SEAWAY BL',
+      'FCR',
+      'RFS',
+    ],
   },
 ];
 export const IMP_INVOICE_FIELDS = [
@@ -147,12 +187,6 @@ export const IMP_INVOICE_FIELDS = [
     validators: ['lettersOnly'],
   },
   {
-    label: 'FOB Value',
-    type: 'text',
-    id: 'Imp_inv_FobValue',
-    validators: ['numbersOnly'],
-  },
-  {
     label: 'No of Packages',
     type: 'text',
     id: 'Imp_inv_NoOfpackage',
@@ -188,6 +222,17 @@ export const IMP_INVOICE_FIELDS = [
     id: 'Imp_inv_UnitType',
     validators: ['lettersOnly'],
   },
+  {
+    label: 'Supplier / Shipper Name',
+    type: 'autocomplete',
+    id: 'Imp_inv_SuplierShipper',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Address',
+    type: 'text',
+    id: 'Imp_inv_Address',
+  },
 ];
 
 export const IMP_CONTAINER_FIELDS = [
@@ -212,6 +257,16 @@ export const IMP_CONTAINER_FIELDS = [
     label: 'Custom Seal No',
     type: 'text',
     id: 'Imp_cont_CustomsealNo',
+  },
+  {
+    label: 'Empty Return Date',
+    type: 'date',
+    id: 'Imp_cont_EmptyReturnDate',
+  },
+  {
+    label: 'Valid Date',
+    type: 'date',
+    id: 'Imp_cont_ValidDate',
   },
 ];
 
@@ -239,16 +294,6 @@ export const IMP_VESSEL_FIELDS = [
     type: 'text',
     id: 'Imp_vess_VoyageNo',
   },
-  { label: 'ETA', type: 'date', id: 'Imp_vess_Eta' },
   { label: 'ETD', type: 'date', id: 'Imp_vess_Etd' },
-  {
-    label: 'ROT No',
-    type: 'text',
-    id: 'Imp_vess_RotNo',
-  },
-  {
-    label: 'Via No',
-    type: 'text',
-    id: 'Imp_vess_ViaNo',
-  },
+  { label: 'ETA', type: 'date', id: 'Imp_vess_Eta' },
 ];

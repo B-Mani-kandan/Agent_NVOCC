@@ -496,6 +496,10 @@ export class ExportSeaPlanningComponent {
       }
     );
     this.isModifyVisible = true;
+    this.vesselForm.patchValue({
+      vess_POL: this.generalForm?.get('gen_Pol')?.value || '',
+      vess_POD: this.generalForm?.get('gen_Pod')?.value || '',
+    });
   }
 
   OnOperationsSave(): void {
@@ -589,16 +593,24 @@ export class ExportSeaPlanningComponent {
   }
   fetchGridData(tab: string) {
     const columnMap: any = {
-      GENERAL: ['JobNo', 'JobDate', 'ClientName', 'Shipper', 'Pol', 'Pod'],
+      GENERAL: ['select', 'JobNo', 'JobDate', 'Shipper', 'Pol', 'Pod'],
       INVOICE: [
+        'select',
         'InvoiceNo',
         'InvoiceDate',
         'InvoiceValue',
         'Currency',
         'Terms',
+        'delete',
       ],
-      CONTAINER: ['ContainerNo', 'ContainerSize', 'LineSealNo'],
-      VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+      CONTAINER: [
+        'select',
+        'ContainerNo',
+        'ContainerSize',
+        'LineSealNo',
+        'delete',
+      ],
+      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta', 'delete'],
     };
 
     const payload = {
@@ -631,6 +643,7 @@ export class ExportSeaPlanningComponent {
   }
 
   onTabChange(tabIndex: number): void {
+    debugger;
     this.tabName = this.tabLabels[tabIndex];
     if (this.searchClicked && this.tabName !== 'GENERAL') {
       this.isGridVisible = true;
@@ -663,7 +676,9 @@ export class ExportSeaPlanningComponent {
   }
 
   // Populate fields
+
   fillGeneralForm(row: any) {
+    debugger;
     this.isModifyVisible = true;
     this.isoperModifyVisible = true;
     this.isGridVisible = false;

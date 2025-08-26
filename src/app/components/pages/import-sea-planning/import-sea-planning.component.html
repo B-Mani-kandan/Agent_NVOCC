@@ -1,14 +1,17 @@
-<!-- <app-dynamic-gridview
+<app-dynamic-gridview
+  *ngIf="importfirstGridVisible"
   [data]="gridData"
   [columns]="displayedColumns"
-  [tabName]="tabName"
+  [tabName]="Imp_tabName"
+  (rowSelected)="HandleRowActionFirstGrid($event)"
 >
-  >
-</app-dynamic-gridview> -->
+</app-dynamic-gridview>
 
 <app-tab-panel
   [tabs]="Imp_tabLabels"
+  *ngIf="isTabPanelVisible"
   [tabContents]="tabContents"
+  (tabChanged)="onTabChange($event)"
 ></app-tab-panel>
 <p-toast></p-toast>
 <ng-template #IMP_GENERAL>
@@ -26,6 +29,7 @@
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="!isModifyVisible"
+      (click)="OnGeneralSave()"
     >
       Save
     </button>
@@ -33,39 +37,24 @@
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="isModifyVisible"
+      (click)="OnGeneralSave()"
     >
       Modify
     </button>
-    <button type="submit" class="btn custom-btn btn-primary">Search</button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
-  </div>
-</ng-template>
-
-<ng-template #IMP_OPERATION>
-  <app-dynamic-forms
-    [formGroup]="imp_OperationForm"
-    [formFields]="imp_OperationFields"
-    [templateId]="'IMP_OPERATION'"
-    [isMandatoryField]="getMandatoryFields('IMP_OPERATION')"
-    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
-    (formSubmit)="saveForm($event)"
-  ></app-dynamic-forms>
-  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
     <button
       type="submit"
-      class="btn custom-btn btn-success"
-      *ngIf="!isoperModifyVisible"
+      class="btn custom-btn btn-primary"
+      (click)="onSearch()"
     >
-      Save
+      Search
     </button>
     <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      *ngIf="isoperModifyVisible"
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearAllForms()"
     >
-      Modify
+      Clear
     </button>
-    <input type="reset" class="btn custom-btn btn-danger" value="Clear" />
   </div>
 </ng-template>
 
@@ -79,9 +68,21 @@
     (formSubmit)="saveForm($event)"
   ></app-dynamic-forms>
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
-    <button type="submit" class="btn custom-btn btn-success">Save</button>
-    <button type="submit" class="btn custom-btn btn-success">Modify</button>
-    <input type="reset" class="btn custom-btn btn-danger" value="Clear" />
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      *ngIf="isBLIGMModifyVisible"
+      (click)="OnBLIGMSave('Modify')"
+    >
+      Modify
+    </button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearBLIGMForm()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
 
@@ -98,18 +99,18 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      *ngIf="!isInvoiceModifyVisible"
-    >
-      Save
-    </button>
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
       *ngIf="isInvoiceModifyVisible"
+      (click)="OnInvoiceSave('Modify')"
     >
       Modify
     </button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearInvoiceForm()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
 
@@ -126,18 +127,18 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      *ngIf="!isContModifyVisible"
-    >
-      Save
-    </button>
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
       *ngIf="isContModifyVisible"
+      (click)="OnContainerSave('Modify')"
     >
       Modify
     </button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearContainerForm()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
 
@@ -154,17 +155,27 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      *ngIf="!isVesselModifyVisible"
-    >
-      Save
-    </button>
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
       *ngIf="isVesselModifyVisible"
+      (click)="OnVesselSave('Modify')"
     >
       Modify
     </button>
-    <button type="reset" class="btn custom-btn btn-danger">Clear</button>
+    <button
+      type="reset"
+      class="btn custom-btn btn-danger"
+      (click)="ClearVesselForm()"
+    >
+      Clear
+    </button>
   </div>
 </ng-template>
+
+<app-dynamic-gridview
+  *ngIf="isGridVisible"
+  [data]="gridData"
+  [columns]="displayedColumns"
+  [tabName]="Imp_tabName"
+  (rowSelected)="HandleRowAction($event)"
+>
+  >
+</app-dynamic-gridview>

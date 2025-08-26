@@ -67,11 +67,7 @@ export class DynamicGridviewComponent
     this.dataSource = new MatTableDataSource(this.data);
 
     if (this.columns.length) {
-      this.displayColumns = ['select', ...this.columns];
-
-      if (['INVOICE', 'CONTAINER', 'VESSEL'].includes(this.tabName)) {
-        this.displayColumns.push('delete');
-      }
+      this.displayColumns = [...this.columns];
     }
 
     this.dataSource.paginator = this.paginator;

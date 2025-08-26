@@ -10,12 +10,12 @@ export const GENERAL_FIELDS = [
     type: 'date',
     id: 'gen_JobDate',
   },
-  {
-    label: 'Client Name',
-    type: 'autocomplete',
-    id: 'gen_ClientName',
-    mandatory: true,
-  },
+  // {
+  //   label: 'Client Name',
+  //   type: 'autocomplete',
+  //   id: 'gen_ClientName',
+  //   mandatory: true,
+  // },
   {
     label: 'Shipper/Exporter Name',
     type: 'autocomplete',
