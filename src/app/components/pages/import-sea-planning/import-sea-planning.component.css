@@ -1,0 +1,18 @@
+.esp-bar {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 0.4rem 0.7rem;
+  margin: 0 0 1rem;
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #3d5095;
+  border-radius: 0.5rem;
+  color: #3d5095;
+}
+.esp-bar h5 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

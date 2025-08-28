@@ -24,22 +24,22 @@ export const MENU_ITEMS: MenuItem[] = [
     position: 2,
     label: 'Export',
     route: '/layout',
-    icon: 'ri-user-line',
+    icon: 'ri-upload-2-line',
     children: [
       {
         id: 3,
         position: 1,
         label: 'Export Sea Planning',
         route: '/export-sea-planning',
-        icon: 'ri-sailboat-line',
+        icon: 'ri-ship-line',
       },
-      {
-        id: 5,
-        position: 3,
-        label: 'Booking',
-        route: '/nvocc-booking',
-        icon: 'ri-list-check',
-      },
+      // {
+      //   id: 5,
+      //   position: 3,
+      //   label: 'Booking',
+      //   route: '/nvocc-booking',
+      //   icon: 'ri-list-check',
+      // },
     ],
   },
   {
@@ -47,7 +47,7 @@ export const MENU_ITEMS: MenuItem[] = [
     position: 3,
     label: 'Import',
     route: '/layout',
-    icon: 'ri-user-line',
+    icon: 'ri-download-2-line',
     children: [
       {
         id: 1,

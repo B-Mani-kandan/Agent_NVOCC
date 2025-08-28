@@ -1,3 +1,6 @@
+<div class="esp-bar">
+  <h6>IMPORT SEA PLANNING</h6>
+</div>
 <app-dynamic-gridview
   *ngIf="importfirstGridVisible"
   [data]="gridData"
@@ -6,7 +9,6 @@
   (rowSelected)="HandleRowActionFirstGrid($event)"
 >
 </app-dynamic-gridview>
-
 <app-tab-panel
   [tabs]="Imp_tabLabels"
   *ngIf="isTabPanelVisible"
