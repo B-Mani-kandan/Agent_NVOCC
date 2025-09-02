@@ -41,3 +41,20 @@
   display: inline;
   vertical-align: text-bottom;
 }
+
+.mat-elevation-z8::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.mat-elevation-z8::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mat-elevation-z8::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+}
+
+.mat-elevation-z8 {
+  scrollbar-width: thin;
+}

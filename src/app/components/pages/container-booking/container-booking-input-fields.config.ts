@@ -1,0 +1,347 @@
+export const GENERAL_FIELDS = [
+  {
+    label: 'Booking No',
+    type: 'text',
+    id: 'Cont_gen_BookingNo',
+    validators: ['numbersOnly'],
+    mandatory: true,
+    readonly: true,
+  },
+  {
+    label: 'Booking Date',
+    type: 'date',
+    id: 'Cont_gen_BookingDate',
+    mandatory: true,
+  },
+  {
+    label: 'Booking Expiry Date',
+    type: 'date',
+    id: 'Cont_gen_BookingExpDt',
+    mandatory: true,
+  },
+  {
+    label: 'Liner Booking No',
+    type: 'text',
+    id: 'Cont_gen_LinerBokNo',
+  },
+  {
+    label: 'Client Name',
+    type: 'autocomplete',
+    id: 'Cont_gen_ClientName',
+    mandatory: true,
+  },
+  {
+    label: 'Shipper Name',
+    type: 'autocomplete',
+    id: 'Cont_gen_ShipperName',
+    mandatory: true,
+  },
+  {
+    label: 'POL',
+    type: 'autocomplete',
+    id: 'Cont_gen_Pol',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'POD',
+    type: 'autocomplete',
+    id: 'Cont_gen_Pod',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Print POL',
+    type: 'text',
+    id: 'Cont_gen_PrintPol',
+  },
+  {
+    label: 'Print POD',
+    type: 'text',
+    id: 'Cont_gen_PrintPod',
+  },
+  {
+    label: 'Carrier Name',
+    type: 'autocomplete',
+    id: 'Cont_gen_CarrierName',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Forwarder Name',
+    type: 'autocomplete',
+    id: 'Cont_gen_ForwarderName',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Empty Yard Name',
+    type: 'autocomplete',
+    id: 'Cont_gen_EmptyName',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Surveyor',
+    type: 'autocomplete',
+    id: 'Cont_gen_Surveyor',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Commodity',
+    type: 'textarea',
+    id: 'Cont_gen_Commodity',
+    mandatory: true,
+  },
+  {
+    label: 'No of Packages',
+    type: 'text',
+    id: 'Cont_gen_NoOfPackages',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'Package Type',
+    type: 'autocomplete',
+    id: 'Cont_gen_PackageType',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Gross Weight',
+    type: 'text',
+    id: 'Cont_gen_GrossWeight',
+    validators: ['numbersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Net Weight',
+    type: 'text',
+    id: 'Cont_gen_NetWeight',
+    validators: ['numbersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'Unit Type',
+    type: 'autocomplete',
+    id: 'Cont_gen_UnitType',
+    validators: ['lettersOnly'],
+    mandatory: true,
+  },
+  {
+    label: 'HS Code',
+    type: 'text',
+    id: 'Cont_gen_HsCode',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'Free Days(POL)',
+    type: 'text',
+    id: 'Cont_gen_FreeDaysPol',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'Free Days(POD)',
+    type: 'text',
+    id: 'Cont_gen_FreeDaysPod',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'Remarks',
+    type: 'textarea',
+    id: 'Cont_gen_Remarks',
+  },
+  {
+    label: 'Gate Open Date',
+    type: 'date',
+    id: 'Cont_gen_GateOpenDt',
+  },
+  {
+    label: 'Time',
+    type: 'time',
+    id: 'Cont_gen_GateOpenTime',
+  },
+  {
+    label: 'VGM Cuttoff Date',
+    type: 'date',
+    id: 'Cont_gen_VgmCutoffDt',
+  },
+  {
+    label: 'Time',
+    type: 'time',
+    id: 'Cont_gen_VgmCutoffTime',
+  },
+  {
+    label: 'Doc Cuttoff Date',
+    type: 'date',
+    id: 'Cont_gen_DocCutoffDt',
+  },
+  {
+    label: 'Time',
+    type: 'time',
+    id: 'Cont_gen_DocCutoffTime',
+  },
+  {
+    label: 'SI Submission Date',
+    type: 'date',
+    id: 'Cont_gen_SiSubDt',
+  },
+  {
+    label: 'Time',
+    type: 'time',
+    id: 'Cont_gen_SiSubTime',
+  },
+  {
+    label: 'Gate Cuttoff Date',
+    type: 'date',
+    id: 'Cont_gen_GateCutoffDt',
+  },
+  {
+    label: 'Time',
+    type: 'time',
+    id: 'Cont_gen_GateCutoffTime',
+  },
+  {
+    label: 'CFS In Date',
+    type: 'date',
+    id: 'Cont_gen_CfsInDt',
+  },
+  {
+    label: 'Time',
+    type: 'time',
+    id: 'Cont_gen_CfsInTime',
+  },
+  {
+    label: 'CFS Out Date',
+    type: 'date',
+    id: 'Cont_gen_CfsOutDt',
+  },
+  {
+    label: 'Time',
+    type: 'time',
+    id: 'Cont_gen_CfsOutTime',
+  },
+  {
+    label: 'LDN Back',
+    type: 'text',
+    id: 'Cont_gen_LdnBack',
+  },
+  {
+    label: 'Gauge',
+    type: 'text',
+    id: 'Cont_gen_Gauge',
+  },
+  {
+    label: 'Length',
+    type: 'text',
+    id: 'Cont_gen_Length',
+  },
+  {
+    label: 'Width',
+    type: 'text',
+    id: 'Cont_gen_Width',
+  },
+  {
+    label: 'Height',
+    type: 'text',
+    id: 'Cont_gen_Height',
+  },
+  {
+    label: 'Class',
+    type: 'text',
+    id: 'Cont_gen_Class',
+  },
+  {
+    label: 'Sub Class',
+    type: 'text',
+    id: 'Cont_gen_SubClass',
+  },
+  {
+    label: 'UN No',
+    type: 'text',
+    id: 'Cont_gen_UnNo',
+  },
+  {
+    label: 'Temperature',
+    type: 'text',
+    id: 'Cont_gen_Temperature',
+  },
+  {
+    label: 'Ventilation',
+    type: 'text',
+    id: 'Cont_gen_Ventilation',
+  },
+  {
+    label: 'Humidity',
+    type: 'text',
+    id: 'Cont_gen_Humidity',
+  },
+];
+
+export const CONTAINER_FIELDS = [
+  {
+    label: 'Container Size',
+    type: 'autocomplete',
+    id: 'Cont_cont_ContainerSize',
+    mandatory: true,
+  },
+  {
+    label: 'Container No',
+    type: 'text',
+    id: 'Cont_cont_ContainerNo',
+    mandatory: true,
+  },
+];
+
+export const VESSEL_FIELDS = [
+  {
+    label: 'POL',
+    type: 'autocomplete',
+    id: 'Cont_vess_POL',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'POD',
+    type: 'autocomplete',
+    id: 'Cont_vess_POD',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Vessel Name',
+    type: 'autocomplete',
+    id: 'Cont_vess_VesselName',
+    mandatory: true,
+  },
+  {
+    label: 'Voyage No',
+    type: 'text',
+    id: 'Cont_vess_VoyageNo',
+  },
+  { label: 'ETA', type: 'date', id: 'Cont_vess_Eta' },
+  { label: 'ETD', type: 'date', id: 'Cont_vess_Etd' },
+  {
+    label: 'ROT No',
+    type: 'text',
+    id: 'Cont_vess_RotNo',
+  },
+  {
+    label: 'Via No',
+    type: 'text',
+    id: 'Cont_vess_ViaNo',
+  },
+  {
+    label: 'SCN',
+    type: 'text',
+    id: 'Cont_vess_Scn',
+  },
+  {
+    label: 'Operator Code',
+    type: 'text',
+    id: 'Cont_vess_OperatorCode',
+  },
+  {
+    label: 'BS Code',
+    type: 'text',
+    id: 'Cont_vess_BsCode',
+  },
+];

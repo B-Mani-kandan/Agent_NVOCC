@@ -9,8 +9,17 @@
     </mat-form-field>
     <div class="grid-close">
       <button
+        type="button"
+        *ngIf="tabNameNew === 'IMPGENERAL'"
+        class="btn custom-btn btn-primary"
+        (click)="onSearch()"
+      >
+        Search
+      </button>
+      <button
         type="submit"
         *ngIf="
+          tabNameNew !== 'IMPGENERAL' &&
           tabName !== 'BLDETAILS' &&
           tabName !== 'INVOICE' &&
           tabName !== 'CONTAINER' &&
@@ -26,7 +35,7 @@
       mat-table
       [dataSource]="dataSource"
       class="mat-table"
-      *ngIf="data.length > 0"
+      *ngIf="data && data.length > 0"
     >
       <ng-container
         *ngFor="let column of displayColumns"
@@ -53,7 +62,26 @@
               <i class="ri-delete-bin-6-line"></i>
             </button>
           </ng-container>
-          <ng-container *ngIf="column !== 'select' && column !== 'delete'">
+          <ng-container *ngIf="column === 'actions'">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button
+                mat-menu-item
+                *ngFor="let action of actionMap"
+                (click)="onAction(action.label, element)"
+              >
+                <mat-icon style="color: #3d5095">{{ action.icon }}</mat-icon>
+                <span>{{ action.label }}</span>
+              </button>
+            </mat-menu>
+          </ng-container>
+          <ng-container
+            *ngIf="
+              column !== 'select' && column !== 'delete' && column !== 'actions'
+            "
+          >
             {{ element[column] }}
           </ng-container>
         </td>

@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   standalone: true,
@@ -26,6 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule,
   ],
   selector: 'app-dynamic-gridview',
   templateUrl: './dynamic-gridview.component.html',
@@ -38,8 +40,11 @@ export class DynamicGridviewComponent
   @Input() columns: string[] = [];
   @Output() rowSelected = new EventEmitter<{ action: string; data: any }>();
   @Input() tabName: string = '';
+  @Input() tabNameNew: string = '';
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @Input() actionMap: { label: string; icon: string }[] = [];
+  @Output() searchClicked = new EventEmitter<void>();
 
   displayColumns: string[] = [];
 
@@ -84,6 +89,14 @@ export class DynamicGridviewComponent
 
   onDelete(row: any) {
     this.rowSelected.emit({ action: 'delete', data: row });
+  }
+
+  onAction(action: string, row: any) {
+    this.rowSelected.emit({ action, data: row });
+  }
+
+  onSearch(): void {
+    this.searchClicked.emit();
   }
 
   refreshPage() {

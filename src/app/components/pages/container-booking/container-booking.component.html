@@ -1,19 +1,18 @@
 <div class="esp-bar">
-  <h6>EXPORT SEA PLANNING</h6>
+  <h6>CONTAINER BOOKING</h6>
 </div>
 
 <app-tab-panel
   [tabs]="tabLabels"
   *ngIf="!(isGridVisible && tabName === 'GENERAL')"
   [tabContents]="tabContents"
-  [disabledTabs]="disabledTabs"
   (tabChanged)="onTabChange($event)"
 ></app-tab-panel>
 <p-toast></p-toast>
-<ng-template #GENERAL>
+<ng-template #CONT_GENERAL>
   <app-dynamic-forms
-    [formGroup]="generalForm"
-    [formFields]="generalFields"
+    [formGroup]="ContgeneralForm"
+    [formFields]="ContgeneralFields"
     [templateId]="'GENERAL'"
     [isMandatoryField]="getMandatoryFields('GENERAL')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
@@ -54,81 +53,10 @@
   </div>
 </ng-template>
 
-<ng-template #OPERATION>
+<ng-template #CONT_CONTAINER>
   <app-dynamic-forms
-    [formGroup]="operationForm"
-    [formFields]="operationFields"
-    [templateId]="'OPERATION'"
-    [isMandatoryField]="getMandatoryFields('OPERATION')"
-    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
-    (formSubmit)="saveForm($event)"
-  ></app-dynamic-forms>
-  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      (click)="OnOperationsSave()"
-      *ngIf="!isoperModifyVisible"
-    >
-      Save
-    </button>
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      (click)="OnOperationsSave()"
-      *ngIf="isoperModifyVisible"
-    >
-      Modify
-    </button>
-    <input
-      type="reset"
-      class="btn custom-btn btn-danger"
-      (click)="ClearAllForms()"
-      value="Clear"
-    />
-  </div>
-</ng-template>
-
-<ng-template #INVOICE>
-  <app-dynamic-forms
-    [formGroup]="invoiceForm"
-    [formFields]="invoiceFields"
-    [templateId]="'INVOICE'"
-    [isMandatoryField]="getMandatoryFields('INVOICE')"
-    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
-    (formSubmit)="saveForm($event)"
-  ></app-dynamic-forms>
-  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      *ngIf="!isInvoiceModifyVisible"
-      (click)="OnInvoiceSave('Save')"
-    >
-      Save
-    </button>
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      *ngIf="isInvoiceModifyVisible"
-      (click)="OnInvoiceSave('Modify')"
-    >
-      Modify
-    </button>
-    <button
-      type="reset"
-      class="btn custom-btn btn-danger"
-      (click)="ClearInvoiceForm()"
-    >
-      Clear
-    </button>
-  </div>
-</ng-template>
-
-<ng-template #CONTAINER>
-  <app-dynamic-forms
-    [formGroup]="containerForm"
-    [formFields]="containerFields"
+    [formGroup]="ContcontainerForm"
+    [formFields]="ContcontainerFields"
     [templateId]="'CONTAINER'"
     [isMandatoryField]="getMandatoryFields('CONTAINER')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
@@ -161,10 +89,10 @@
   </div>
 </ng-template>
 
-<ng-template #VESSEL>
+<ng-template #CONT_VESSEL>
   <app-dynamic-forms
-    [formGroup]="vesselForm"
-    [formFields]="vesselFields"
+    [formGroup]="ContvesselForm"
+    [formFields]="ContvesselFields"
     [templateId]="'VESSEL'"
     [isMandatoryField]="getMandatoryFields('VESSEL')"
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"

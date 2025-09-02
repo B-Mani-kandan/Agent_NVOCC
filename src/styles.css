@@ -240,3 +240,36 @@ div.mdc-line-ripple {
 .mat-mdc-form-field-subscript-wrapper {
   width: 0px !important;
 }
+
+.swal-title-small {
+  font-size: 16px !important;
+  font-weight: normal;
+}
+
+.swal-confirm-btn {
+  background-color: rgb(61, 80, 149) !important;
+  color: white !important;
+}
+
+.swal-cancel-btn {
+  background-color: rgba(197, 31, 31, 1) !important;
+  color: white !important;
+}
+.esp-bar {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 0.4rem 0.7rem;
+  margin: 0 0 1rem;
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #3d5095;
+  border-radius: 0.5rem;
+  color: #3d5095;
+}
+.esp-bar h5 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

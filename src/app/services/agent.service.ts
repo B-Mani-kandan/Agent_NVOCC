@@ -54,6 +54,20 @@ export class AgentService {
       payload
     );
   }
+
+  NVOCC_Import_GetJobNo(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Imp_GetGobNo.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Cont_GetBookingNo(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Cont_GetBookingNo.ashx',
+      payload
+    );
+  }
   NVOCC_GetCurrency(payload: any) {
     return this._http.post<any>(
       'https://client.f-studio.in/ServiceNVOC/Nvocc_GetCurrency.ashx',
@@ -109,12 +123,43 @@ export class AgentService {
     );
   }
 
+  NVOCC_GetForwarderName(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_GetForwarderName.ashx',
+      payload
+    );
+  }
+  NVOCC_GetSurvoyerName(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_SurvoyerName.ashx',
+      payload
+    );
+  }
+
   //Fetch Grid
 
   fetchGridData(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL:
         'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchGeneralData.ashx',
+      INVOICE:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchInvoiceDetails.ashx',
+      CONTAINER:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchContDetails.ashx',
+      VESSEL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchVesselDetails.ashx',
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+
+  fetchExpConvImpGridData(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Imp_ExportConvert_GeneralData.ashx',
+      BLDETAILS:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchBLIGM_Details.ashx',
       INVOICE:
         'https://client.f-studio.in/ServiceNVOC/Nvocc_Exp_SearchInvoiceDetails.ashx',
       CONTAINER:
@@ -146,11 +191,23 @@ export class AgentService {
   }
 
   // Saerch Details
-  Nvocc_Booking(payload: any) {
-    return this._http.post<any>(
-      'https://client.f-studio.in/ServiceNVOC/NVOCC_Booking.ashx',
-      payload
-    );
+
+  Nvocc_ContainerBooking(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_ContainerBooking.ashx',
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  Nvocc_Booking(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: 'https://client.f-studio.in/ServiceNVOC/NVOCC_Booking.ashx',
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
   }
 
   Nvocc_JobBooking(payload: any) {
@@ -240,5 +297,15 @@ export class AgentService {
       'https://client.f-studio.in/ServiceNVOC/Nvocc_Save_ImportSea_VesselDetailsashx.ashx',
       payload
     );
+  }
+
+  //Print
+  fetchGeneralActionFile(action: string, payload: any) {
+    const apiMap: any = {
+      CAN: `https://client.f-studio.in/ServiceNVOC/CANPrint.ashx`,
+      DO: `https://client.f-studio.in/ServiceNVOC/DOPrint.ashx`,
+    };
+    const apiUrl = apiMap[action];
+    return this._http.post(apiUrl, payload);
   }
 }

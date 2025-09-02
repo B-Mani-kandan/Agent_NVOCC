@@ -5,8 +5,10 @@
   *ngIf="importfirstGridVisible"
   [data]="gridData"
   [columns]="displayedColumns"
+  [tabNameNew]="IMPGENRAL"
   [tabName]="Imp_tabName"
   (rowSelected)="HandleRowActionFirstGrid($event)"
+  (searchClicked)="onSearch()"
 >
 </app-dynamic-gridview>
 <app-tab-panel
@@ -177,6 +179,7 @@
   [data]="gridData"
   [columns]="displayedColumns"
   [tabName]="Imp_tabName"
+  [actionMap]="currentActionMap"
   (rowSelected)="HandleRowAction($event)"
 >
   >

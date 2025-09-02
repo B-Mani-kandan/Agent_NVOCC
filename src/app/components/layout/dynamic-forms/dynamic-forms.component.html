@@ -31,7 +31,11 @@
         </div>
       </div>
       <input
-        *ngIf="field.type === 'text' || field.type === 'date'"
+        *ngIf="
+          field.type === 'text' ||
+          field.type === 'date' ||
+          field.type === 'time'
+        "
         [type]="field.type"
         class="form-control"
         [id]="field.id"
@@ -39,6 +43,7 @@
         [ngClass]="{ important: isMandatoryField(field.id) }"
         autocomplete="off"
         (keypress)="onKeyPress($event, field)"
+        [readonly]="field.readonly || false"
       />
       <select
         *ngIf="field.type === 'select'"

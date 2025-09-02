@@ -23,16 +23,13 @@ import { HttpClient } from '@angular/common/http';
 import { AUTOCOMPLETE_FIELDS } from './autocomplete-fields.config';
 import {
   GENERAL_FIELDS,
-  OPERATION_FIELDS,
-  INVOICE_FIELDS,
   CONTAINER_FIELDS,
   VESSEL_FIELDS,
-} from './export-sea-input-fields.config';
+} from './container-booking-input-fields.config';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 @Component({
-  selector: 'app-export-sea-planning',
-  standalone: true,
+  selector: 'app-container-booking',
   imports: [
     CommonModule,
     TabPanelComponent,
@@ -41,55 +38,41 @@ import { MessageService } from 'primeng/api';
     ToastModule,
   ],
   providers: [MessageService],
-  templateUrl: './export-sea-planning.component.html',
-  styleUrl: './export-sea-planning.component.css',
+  templateUrl: './container-booking.component.html',
+  styleUrl: './container-booking.component.css',
   encapsulation: ViewEncapsulation.None,
 })
-export class ExportSeaPlanningComponent implements OnInit {
+export class ContainerBookingComponent implements OnInit {
   CompanyId: string | undefined;
   FinanceYear: any | undefined;
   BranchID: any | undefined;
   ModifyJobId: any | undefined;
   VesselID: any | undefined;
   ContainerID: any | undefined;
-  InvoiceID: any | undefined;
   tabName: string = 'GENERAL';
-  tabLabels: string[] = [
-    'GENERAL',
-    'OPERATION DETAILS',
-    'INVOICE DETAILS',
-    'CONTAINER DETAILS',
-    'VESSEL DETAILS',
-  ];
+  tabLabels: string[] = ['GENERAL', 'CONTAINER DETAILS', 'VESSEL DETAILS'];
   tabContents: TemplateRef<any>[] = [];
   disabledTabs: boolean[] = [false, true, true, true, true];
-  generalForm!: FormGroup;
-  operationForm!: FormGroup;
-  invoiceForm!: FormGroup;
-  containerForm!: FormGroup;
-  vesselForm!: FormGroup;
+  ContgeneralForm!: FormGroup;
+  ContcontainerForm!: FormGroup;
+  ContvesselForm!: FormGroup;
   gridData: any[] = [];
   displayedColumns: string[] = [];
   isModifyVisible: boolean = false;
-  isoperModifyVisible: boolean = false;
-  isInvoiceModifyVisible: boolean = false;
   isContModifyVisible: boolean = false;
   isVesselModifyVisible: boolean = false;
   isGridVisible: boolean = false;
   searchClicked: boolean = false;
   fullGridData: string[] = [];
   selectedColumns: string[] = [];
-  generalFields = GENERAL_FIELDS;
-  operationFields = OPERATION_FIELDS;
-  invoiceFields = INVOICE_FIELDS;
-  containerFields = CONTAINER_FIELDS;
-  vesselFields = VESSEL_FIELDS;
+  ContgeneralFields = GENERAL_FIELDS;
+  ContcontainerFields = CONTAINER_FIELDS;
+  ContvesselFields = VESSEL_FIELDS;
 
-  @ViewChild('GENERAL', { static: false }) GENERAL!: TemplateRef<any>;
-  @ViewChild('OPERATION', { static: false }) OPERATION!: TemplateRef<any>;
-  @ViewChild('INVOICE', { static: false }) INVOICE!: TemplateRef<any>;
-  @ViewChild('CONTAINER', { static: false }) CONTAINER!: TemplateRef<any>;
-  @ViewChild('VESSEL', { static: false }) VESSEL!: TemplateRef<any>;
+  @ViewChild('CONT_GENERAL', { static: false }) CONT_GENERAL!: TemplateRef<any>;
+  @ViewChild('CONT_CONTAINER', { static: false })
+  CONT_CONTAINER!: TemplateRef<any>;
+  @ViewChild('CONT_VESSEL', { static: false }) CONT_VESSEL!: TemplateRef<any>;
 
   constructor(
     private agentService: AgentService,
@@ -99,13 +82,11 @@ export class ExportSeaPlanningComponent implements OnInit {
 
   ngOnInit() {
     this.tabName = 'GENERAL';
-    this.generalForm = this.createForm(this.generalFields);
-    this.operationForm = this.createForm(this.operationFields);
-    this.invoiceForm = this.createForm(this.invoiceFields);
-    this.containerForm = this.createForm(this.containerFields);
-    this.vesselForm = this.createForm(this.vesselFields);
+    this.ContgeneralForm = this.createForm(this.ContgeneralFields);
+    this.ContcontainerForm = this.createForm(this.ContcontainerFields);
+    this.ContvesselForm = this.createForm(this.ContvesselFields);
     this.setupAutocompleteListeners();
-    this.getJobNo();
+    this.getBookingNo();
     this.getCurrentDate();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
     this.FinanceYear = '2025-2026';
@@ -114,19 +95,11 @@ export class ExportSeaPlanningComponent implements OnInit {
   }
   ngAfterViewInit() {
     setTimeout(() => {
-      if (
-        this.GENERAL &&
-        this.OPERATION &&
-        this.INVOICE &&
-        this.CONTAINER &&
-        this.VESSEL
-      ) {
+      if (this.CONT_GENERAL && this.CONT_CONTAINER && this.CONT_VESSEL) {
         this.tabContents = [
-          this.GENERAL,
-          this.OPERATION,
-          this.INVOICE,
-          this.CONTAINER,
-          this.VESSEL,
+          this.CONT_GENERAL,
+          this.CONT_CONTAINER,
+          this.CONT_VESSEL,
         ];
       } else {
       }
@@ -144,15 +117,24 @@ export class ExportSeaPlanningComponent implements OnInit {
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
       GENERAL: [
-        'gen_ClientName',
-        'gen_Pol',
-        'gen_Pod',
-        'gen_Fpod',
-        'gen_ItemDesc',
+        'Cont_gen_BookingNo',
+        'Cont_gen_BookingDate',
+        'Cont_gen_BookingExpDt',
+        'Cont_gen_ClientName',
+        'Cont_gen_ShipperName',
+        'Cont_gen_Pol',
+        'Cont_gen_Pod',
+        'Cont_gen_CarrierName',
+        'Cont_gen_ForwarderName',
+        'Cont_gen_EmptyName',
+        'Cont_gen_Surveyor',
+        'Cont_gen_PackageType',
+        'Cont_gen_GrossWeight',
+        'Cont_gen_NetWeight',
+        'Cont_gen_UnitType',
       ],
-      INVOICE: ['inv_InvoiceNo', 'inv_InvoiceDate'],
-      CONTAINER: ['cont_ContainerSize', 'cont_ContainerNo'],
-      VESSEL: ['vess_VesselName'],
+      CONTAINER: ['Cont_cont_ContainerSize', 'Cont_cont_ContainerNo'],
+      VESSEL: ['Cont_vess_POL', 'Cont_vess_POD', 'Cont_vess_VesselName'],
     };
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;
@@ -160,23 +142,23 @@ export class ExportSeaPlanningComponent implements OnInit {
 
   getCurrentDate() {
     const today = new Date();
-    this.generalForm.patchValue({
-      gen_JobDate: today.toISOString().split('T')[0],
+    this.ContgeneralForm.patchValue({
+      Cont_gen_BookingDate: today.toISOString().split('T')[0],
     });
   }
-  getJobNo(): void {
+  getBookingNo(): void {
     const payload = {
       CompanyID: 'FST2223005',
       FinanceYear: '2024-2025',
       BranchID: '1594',
     };
 
-    this.agentService.NVOCC_GetJobNo(payload).subscribe(
+    this.agentService.NVOCC_Cont_GetBookingNo(payload).subscribe(
       (res) => {
-        if (res?.Status === 'Success' && res.GetJobNo?.length > 0) {
-          const jobNo = res.GetJobNo[0]?.orderno;
-          this.generalForm.patchValue({
-            gen_JobNo: jobNo,
+        if (res?.Status === 'Success' && res.GetContBookingNo?.length > 0) {
+          const bookingNo = res.GetContBookingNo[0]?.bookingNo;
+          this.ContgeneralForm.patchValue({
+            Cont_gen_BookingNo: bookingNo,
           });
         } else {
           this.messageService.add({
@@ -236,19 +218,6 @@ export class ExportSeaPlanningComponent implements OnInit {
     );
   }
 
-  fetchConsigneeSuggestions(
-    input: string,
-    payloadType: string
-  ): Observable<string[]> {
-    return this.fetchData(
-      input,
-      'NVOCC_GetConsigneeName',
-      'ConsigneeName',
-      'consigneeName',
-      payloadType
-    );
-  }
-
   fetchPortSuggestions(
     input: string,
     payloadType: string
@@ -262,14 +231,37 @@ export class ExportSeaPlanningComponent implements OnInit {
     );
   }
 
-  fetchShippingLineSuggestions(
+  fetchCarrierName(input: string, payloadType: string): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'Nvocc_GetShippingLine',
+      'ShippingLineName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchForwarderSuggestions(
     input: string,
     payloadType: string
   ): Observable<string[]> {
     return this.fetchData(
       input,
-      'Nvocc_GetShippingLine',
-      'ShippingLineName',
+      'NVOCC_GetForwarderName',
+      'ForwarderName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchSurveyorSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetSurvoyerName',
+      'SurvoyerName',
       'AccountName',
       payloadType
     );
@@ -288,33 +280,7 @@ export class ExportSeaPlanningComponent implements OnInit {
     );
   }
 
-  fetchInvCurrencySuggestions(
-    input: string,
-    payloadType: string
-  ): Observable<string[]> {
-    return this.fetchData(
-      input,
-      'NVOCC_GetCurrency',
-      'GetCurrency',
-      'ShortName',
-      payloadType
-    );
-  }
-
-  fetchInvTermsSuggestions(
-    input: string,
-    payloadType: string
-  ): Observable<string[]> {
-    return this.fetchData(
-      input,
-      'NVOCC_GetTerms',
-      'GetTerms',
-      'Term',
-      payloadType
-    );
-  }
-
-  fetchInvTypePackgSuggestions(
+  fetchTypePackgSuggestions(
     input: string,
     payloadType: string
   ): Observable<string[]> {
@@ -327,7 +293,7 @@ export class ExportSeaPlanningComponent implements OnInit {
     );
   }
 
-  fetchInvUnitSuggestions(
+  fetchUnitSuggestions(
     input: string,
     payloadType: string
   ): Observable<string[]> {
@@ -377,7 +343,7 @@ export class ExportSeaPlanningComponent implements OnInit {
     //empty yard autocomplete pol value split and pass country
     let country = '';
     if (payloadType === 'EmptyYard') {
-      const polValue = this.generalForm?.get('gen_Pol')?.value || '';
+      const polValue = this.ContgeneralForm?.get('Cont_gen_Pol')?.value || '';
       country = polValue;
     }
 
@@ -478,7 +444,7 @@ export class ExportSeaPlanningComponent implements OnInit {
   }
 
   OnGeneralSave(): void {
-    if (!this.validateMandatoryFields(this.generalForm, 'GENERAL')) return;
+    if (!this.validateMandatoryFields(this.ContgeneralForm, 'GENERAL')) return;
     const data = {
       CompanyID: this.CompanyId,
       FinanceYear: this.FinanceYear,
@@ -488,7 +454,7 @@ export class ExportSeaPlanningComponent implements OnInit {
     };
 
     this.saveSection(
-      this.generalForm,
+      this.ContgeneralForm,
       this.agentService.NVOCC_Save_ExportSea_General.bind(this.agentService),
       data,
       (res) => {
@@ -497,51 +463,15 @@ export class ExportSeaPlanningComponent implements OnInit {
       }
     );
     this.isModifyVisible = true;
-    this.vesselForm.patchValue({
-      vess_POL: this.generalForm?.get('gen_Pol')?.value || '',
-      vess_POD: this.generalForm?.get('gen_Pod')?.value || '',
+    this.ContvesselForm.patchValue({
+      vess_POL: this.ContgeneralForm?.get('gen_Pol')?.value || '',
+      vess_POD: this.ContgeneralForm?.get('gen_Pod')?.value || '',
     });
   }
-
-  OnOperationsSave(): void {
-    const data = {
-      CompanyID: this.CompanyId,
-      SavedJobID: this.ModifyJobId,
-    };
-
-    this.saveSection(
-      this.operationForm,
-      this.agentService.NVOCC_Save_ExportSea_OperationDetails.bind(
-        this.agentService
-      ),
-      data
-    );
-  }
-
-  OnInvoiceSave(action: any): void {
-    if (!this.validateMandatoryFields(this.invoiceForm, 'INVOICE')) return;
-
-    const data = {
-      SavedJobID: this.ModifyJobId,
-      InvoiceID: action === 'Modify' ? this.InvoiceID : '',
-      CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
-    };
-
-    this.saveSection(
-      this.invoiceForm,
-      this.agentService.NVOCC_Save_ExportSea_InvoiceDetails.bind(
-        this.agentService
-      ),
-      data
-    );
-    this.ClearInvoiceForm();
-  }
-
   OnContainerSave(action: any): void {
-    if (!this.validateMandatoryFields(this.containerForm, 'CONTAINER')) return;
-    const genEmptyName = this.generalForm.get('gen_EmptyName')?.value;
+    if (!this.validateMandatoryFields(this.ContcontainerForm, 'CONTAINER'))
+      return;
+    const genEmptyName = this.ContgeneralForm.get('gen_EmptyName')?.value;
     const data = {
       SavedJobID: this.ModifyJobId,
       ContainerID: action === 'Modify' ? this.ContainerID : '',
@@ -551,7 +481,7 @@ export class ExportSeaPlanningComponent implements OnInit {
       gen_EmptyName: genEmptyName,
     };
     this.saveSection(
-      this.containerForm,
+      this.ContcontainerForm,
       this.agentService.NVOCC_Save_ExportSea_ContainerDetails.bind(
         this.agentService
       ),
@@ -561,13 +491,13 @@ export class ExportSeaPlanningComponent implements OnInit {
   }
 
   OnVesselSave(action: any): void {
-    if (!this.validateMandatoryFields(this.vesselForm, 'VESSEL')) return;
+    if (!this.validateMandatoryFields(this.ContvesselForm, 'VESSEL')) return;
     const data = {
       SavedJobID: this.ModifyJobId,
       VesselID: action === 'Modify' ? this.VesselID : '',
     };
     this.saveSection(
-      this.vesselForm,
+      this.ContvesselForm,
       this.agentService.NVOCC_Save_ExportSea_VesselDetails.bind(
         this.agentService
       ),
@@ -628,7 +558,6 @@ export class ExportSeaPlanningComponent implements OnInit {
             const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
             this.gridData = res[key];
             this.displayedColumns = columnMap[tab];
-            console.log('Grid Data export:', this.gridData);
           } else {
             this.gridData = [];
             this.displayedColumns = [];
@@ -680,16 +609,11 @@ export class ExportSeaPlanningComponent implements OnInit {
 
   fillGeneralForm(row: any) {
     this.isModifyVisible = true;
-    this.isoperModifyVisible = true;
     this.isGridVisible = false;
     this.disabledTabs = [false, false, false, false, false];
     this.ModifyJobId = row.ID || null;
 
-    if (this.tabName === 'INVOICE') {
-      this.InvoiceID = row.InvoiceID || null;
-      this.isInvoiceModifyVisible = true;
-      this.isGridVisible = true;
-    } else if (this.tabName === 'CONTAINER') {
+    if (this.tabName === 'CONTAINER') {
       this.ContainerID = row.ContID || null;
       this.isContModifyVisible = true;
       this.isGridVisible = true;
@@ -700,13 +624,11 @@ export class ExportSeaPlanningComponent implements OnInit {
     }
 
     const formValues: any = {};
-    const operationFormValues: any = {};
-    const invoiceFormValues: any = {};
     const containerFormValues: any = {};
     const vesselFormValues: any = {};
 
     const gendateFields = ['JobDate', 'HblDate', 'MblDate'];
-    this.generalFields.forEach((field) => {
+    this.ContgeneralFields.forEach((field) => {
       const fieldId = field.id;
       const key = this.extractGeneralRowKey(fieldId);
       formValues[fieldId] =
@@ -715,34 +637,14 @@ export class ExportSeaPlanningComponent implements OnInit {
           : row[key] ?? '';
     });
 
-    this.operationFields.forEach((field) => {
-      const fieldId = field.id;
-      const key = this.extractOperationRowKey(fieldId);
-
-      if (key === 'SomeDateField' && row[key]) {
-        operationFormValues[fieldId] = this.convertToDateInputFormat(row[key]);
-      } else {
-        operationFormValues[fieldId] = row[key] ?? '';
-      }
-    });
-
-    this.invoiceFields.forEach((field) => {
-      const fieldId = field.id;
-      const key = this.extractInvoiceRowKey(fieldId);
-      invoiceFormValues[fieldId] =
-        key === 'InvoiceDate' && row[key]
-          ? this.convertToDateInputFormat(row[key])
-          : row[key] ?? '';
-    });
-
-    this.containerFields.forEach((field) => {
+    this.ContcontainerFields.forEach((field) => {
       const fieldId = field.id;
       const key = this.extractContainerRowKey(fieldId);
       containerFormValues[fieldId] = row[key] ?? '';
     });
 
     const dateFields = ['Etd', 'Eta'];
-    this.vesselFields.forEach((field) => {
+    this.ContvesselFields.forEach((field) => {
       const fieldId = field.id;
       const key = this.extractVesselRowKey(fieldId);
       vesselFormValues[fieldId] =
@@ -751,23 +653,13 @@ export class ExportSeaPlanningComponent implements OnInit {
           : row[key] ?? '';
     });
 
-    this.generalForm.patchValue(formValues);
-    this.operationForm.patchValue(operationFormValues);
-    this.invoiceForm.patchValue(invoiceFormValues);
-    this.containerForm.patchValue(containerFormValues);
-    this.vesselForm.patchValue(vesselFormValues);
+    this.ContgeneralForm.patchValue(formValues);
+    this.ContcontainerForm.patchValue(containerFormValues);
+    this.ContvesselForm.patchValue(vesselFormValues);
   }
 
   extractGeneralRowKey(fieldId: string): string {
     return fieldId.replace(/^gen_/, '');
-  }
-
-  extractOperationRowKey(fieldId: string): string {
-    return fieldId.replace(/^Oper_/, '');
-  }
-
-  extractInvoiceRowKey(fieldId: string): string {
-    return fieldId.replace(/^inv_/, '');
   }
 
   extractContainerRowKey(fieldId: string): string {
@@ -843,11 +735,9 @@ export class ExportSeaPlanningComponent implements OnInit {
 
   ClearAllForms(): void {
     const formMap: { [key: string]: FormGroup | undefined } = {
-      generalForm: this.generalForm,
-      invoiceForm: this.invoiceForm,
-      operationForm: this.operationForm,
-      containerForm: this.containerForm,
-      vesselForm: this.vesselForm,
+      generalForm: this.ContgeneralForm,
+      containerForm: this.ContcontainerForm,
+      vesselForm: this.ContvesselForm,
     };
 
     Object.values(formMap).forEach((form) => {
@@ -857,31 +747,17 @@ export class ExportSeaPlanningComponent implements OnInit {
     });
 
     this.ModifyJobId = '';
-    this.InvoiceID = '';
     this.ContainerID = '';
     this.VesselID = '';
     this.isModifyVisible = false;
     this.disabledTabs = [false, true, true, true, true];
-    this.getJobNo();
+    this.getBookingNo();
     this.getCurrentDate();
-  }
-
-  ClearInvoiceForm(): void {
-    const formMap: { [key: string]: FormGroup | undefined } = {
-      invoiceForm: this.invoiceForm,
-    };
-    Object.values(formMap).forEach((form) => {
-      form?.reset();
-      form?.markAsPristine();
-      form?.markAsUntouched();
-    });
-    this.InvoiceID = '';
-    this.isInvoiceModifyVisible = false;
   }
 
   ClearContainerForm(): void {
     const formMap: { [key: string]: FormGroup | undefined } = {
-      containerForm: this.containerForm,
+      containerForm: this.ContcontainerForm,
     };
     Object.values(formMap).forEach((form) => {
       form?.reset();
@@ -894,7 +770,7 @@ export class ExportSeaPlanningComponent implements OnInit {
 
   ClearVesselForm(): void {
     const formMap: { [key: string]: FormGroup | undefined } = {
-      vesselForm: this.vesselForm,
+      vesselForm: this.ContvesselForm,
     };
     Object.values(formMap).forEach((form) => {
       form?.reset();

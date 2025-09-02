@@ -74,11 +74,12 @@ export class JobNvoccComponent implements OnInit {
 
   GetSearchBookingData(): void {
     this.isLoading = true;
+    const tabname = 'GENERAL';
     const companyId = localStorage.getItem('CompanyID');
     const AgentId = localStorage.getItem('AgentID');
     const jsonData = { CompanyID: companyId, NvoccAgentID: AgentId };
 
-    this._CommonService.Nvocc_Booking(jsonData).subscribe(
+    this._CommonService.Nvocc_Booking(tabname, jsonData).subscribe(
       (response) => {
         this.NvoccBookingData = response;
         if (this.NvoccBookingData?.Nvocc_Booking?.length > 0) {

@@ -6,6 +6,8 @@ import { JobNvoccComponent } from './components/pages/job-nvocc/job-nvocc.compon
 import { DashboardComponent } from './components/pages/dashboard/dashboard.component';
 import { ExportSeaPlanningComponent } from './components/pages/export-sea-planning/export-sea-planning.component';
 import { ImportSeaPlanningComponent } from './components/pages/import-sea-planning/import-sea-planning.component';
+import { ContainerBookingComponent } from './components/pages/container-booking/container-booking.component';
+import { EmptyReturnComponent } from './components/pages/empty-return/empty-return.component';
 
 export const routes: Routes = [
   {
@@ -34,8 +36,16 @@ export const routes: Routes = [
         component: ImportSeaPlanningComponent,
       },
       {
+        path: 'container-booking',
+        component: ContainerBookingComponent,
+      },
+      {
         path: 'nvocc-booking',
         component: JobNvoccComponent,
+      },
+      {
+        path: 'empty-return',
+        component: EmptyReturnComponent,
       },
     ],
   },

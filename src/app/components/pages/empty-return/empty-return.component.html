@@ -1,0 +1,10 @@
+<div class="esp-bar">
+  <h6>CONTAINER BOOKING</h6>
+</div>
+<app-dynamic-gridview
+  *ngIf="importfirstGridVisible"
+  [data]="gridData"
+  [columns]="displayedColumns"
+  (rowSelected)="HandleRowActionFirstGrid($event)"
+>
+</app-dynamic-gridview>

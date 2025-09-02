@@ -4,18 +4,13 @@ export const GENERAL_FIELDS = [
     type: 'text',
     id: 'gen_JobNo',
     validators: ['numbersOnly'],
+    readonly: true,
   },
   {
     label: 'Job Date',
     type: 'date',
     id: 'gen_JobDate',
   },
-  // {
-  //   label: 'Client Name',
-  //   type: 'autocomplete',
-  //   id: 'gen_ClientName',
-  //   mandatory: true,
-  // },
   {
     label: 'Shipper/Exporter Name',
     type: 'autocomplete',

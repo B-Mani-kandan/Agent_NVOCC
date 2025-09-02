@@ -24,6 +24,7 @@ import { IMP_AUTOCOMPLETE_FIELDS } from './autocomplete-fields.config';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-import-sea-planning',
   imports: [
@@ -41,6 +42,7 @@ export class ImportSeaPlanningComponent implements OnInit {
   CompanyId: string | undefined;
   FinanceYear: any | undefined;
   BranchID: any | undefined;
+  AgentID: any | undefined;
   ModifyJobId: any | undefined;
   VesselID: any | undefined;
   ContainerID: any | undefined;
@@ -48,6 +50,7 @@ export class ImportSeaPlanningComponent implements OnInit {
   InvoiceID: any | undefined;
   GridSelection: any | undefined;
   Imp_tabName: string = 'GENERAL';
+  IMPGENRAL: string = 'IMPGENERAL';
   Imp_tabLabels: string[] = [
     'GENERAL',
     'BL/IGM DETAILS',
@@ -63,6 +66,8 @@ export class ImportSeaPlanningComponent implements OnInit {
   imp_VesselForm!: FormGroup;
   gridData: any[] = [];
   displayedColumns: string[] = [];
+  currentActionMap: { label: string; icon: string }[] = [];
+
   imp_GeneralFields = IMP_GENERAL_FIELDS;
   imp_BligmFields = IMP_BLIGM_FIELDS;
   imp_InvoiceFields = IMP_INVOICE_FIELDS;
@@ -86,9 +91,13 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.imp_VesselForm = this.createForm(this.imp_VesselFields);
     this.setupAutocompleteListeners();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
-    this.FinanceYear = '2024-2025';
+    this.FinanceYear = '2025-2026';
     this.BranchID = '1594';
+    this.AgentID = localStorage.getItem('AgentID') ?? undefined;
+    this.getJobNo();
+    this.getCurrentDate();
     this.fetchGridData('GENERAL');
+    this.IMPGENRAL = 'IMPGENERAL';
   }
 
   constructor(
@@ -132,6 +141,39 @@ export class ImportSeaPlanningComponent implements OnInit {
       group[field.id] = new FormControl('');
     });
     return new FormGroup(group);
+  }
+
+  getCurrentDate() {
+    const today = new Date();
+    this.imp_GeneralForm.patchValue({
+      Imp_gen_JobDate: today.toISOString().split('T')[0],
+    });
+  }
+
+  getJobNo(): void {
+    const payload = {
+      CompanyID: this.CompanyId,
+      FinanceYear: this.FinanceYear,
+      BranchID: this.BranchID,
+    };
+
+    this.agentService.NVOCC_Import_GetJobNo(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success' && res.GetImpJobNo?.length > 0) {
+          const jobNo = res.GetImpJobNo[0]?.orderno;
+          this.imp_GeneralForm.patchValue({
+            Imp_gen_JobNo: jobNo,
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Job No not found',
+          });
+        }
+      },
+      () => {}
+    );
   }
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
@@ -401,23 +443,84 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.isTabPanelVisible = true;
     this.isGridVisible = false;
     this.GridSelection = 'FirstGridData';
+    this.getJobNo();
+    this.getCurrentDate();
   }
 
   HandleRowAction(event: { action: string; data: any }) {
-    this.isGridVisible = false;
-    this.isTabPanelVisible = true;
-    this.importfirstGridVisible = false;
     if (event.action === 'select') {
       this.fillGeneralForm(event.data);
       this.isModifyVisible = true;
+      this.isGridVisible = false;
+      this.isTabPanelVisible = true;
+      this.importfirstGridVisible = false;
     } else if (event.action === 'delete') {
       this.onRowDelete(event.data);
+      this.isGridVisible = false;
+      this.isTabPanelVisible = true;
+      this.importfirstGridVisible = false;
+    } else {
+      this.handleGeneralTabDownload(event.action, event.data);
     }
     this.GridSelection = 'SecondGridData';
   }
+
+  private handleGeneralTabDownload(action: string, data: any) {
+    const payload = {
+      CompanyID: this.CompanyId,
+      JobID: data.ID,
+    };
+    Swal.fire({
+      title: `Are you sure you want to download ${action} Print?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, download it!',
+      cancelButtonText: 'No, cancel',
+      customClass: {
+        title: 'swal-title-small',
+        confirmButton: 'swal-confirm-btn',
+        cancelButton: 'swal-cancel-btn',
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.agentService.fetchGeneralActionFile(action, payload).subscribe(
+          (resp: any) => {
+            if (resp && resp.File) {
+              this.downloadPdf(resp.File, `${action}.pdf`);
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Failed',
+                detail: `${this.capitalize(action)} Print No Data Found`,
+              });
+            }
+          },
+          (error: any) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Failed',
+              detail: `${this.capitalize(action)} ${
+                error?.Message || 'No Data Found'
+              }`,
+            });
+          }
+        );
+      }
+    });
+  }
+
+  downloadPdf(fileUrl: string, fileName: string): void {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName;
+    link.target = '_blank';
+    link.click();
+  }
+
   fetchGridData(tab: string) {
     const columnMap: any = {
       GENERAL: ['select', 'JobNo', 'JobDate', 'Shipper', 'Pol', 'Pod'],
+      BLDETAILS: ['Mblno', 'MblDate', 'MBLType'],
       INVOICE: [
         'InvoiceNo',
         'InvoiceDate',
@@ -433,55 +536,11 @@ export class ImportSeaPlanningComponent implements OnInit {
       EDIJobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
       BranchID: this.BranchID,
+      AgentID: this.AgentID,
       FinanceYear: this.FinanceYear,
     };
 
-    if (this.Imp_tabName != 'BLDETAILS') {
-      this.agentService.fetchGridData(tab, payload).subscribe(
-        (res: any) => {
-          if (res.Status === 'Success') {
-            const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
-            this.gridData = res[key];
-            this.displayedColumns = columnMap[tab];
-          } else {
-            this.gridData = [];
-            this.displayedColumns = [];
-          }
-        },
-        (error) => {
-          console.error('API Error:', error);
-          this.gridData = [];
-          this.displayedColumns = [];
-          this.isGridVisible = false;
-        }
-      );
-    }
-  }
-
-  fetchSearchGridData(tab: string) {
-    const columnMap: any = {
-      GENERAL: ['select', 'JobNo', 'JobDate', 'Shipper', 'Pol', 'Pod'],
-      BLDETAILS: ['select', 'Mblno', 'MblDate', 'MBLType'],
-      INVOICE: [
-        'select',
-        'InvoiceNo',
-        'InvoiceDate',
-        'InvoiceValue',
-        'Currency',
-        'Terms',
-      ],
-      CONTAINER: ['select', 'ContainerNo', 'ContainerSize', 'LineSealNo'],
-      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta'],
-    };
-
-    const payload = {
-      EDIJobID: this.ModifyJobId,
-      CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
-      FinanceYear: this.FinanceYear,
-    };
-
-    this.agentService.fetchImportSearchGridData(tab, payload).subscribe(
+    this.agentService.fetchExpConvImpGridData(tab, payload).subscribe(
       (res: any) => {
         if (res.Status === 'Success') {
           const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
@@ -501,6 +560,68 @@ export class ImportSeaPlanningComponent implements OnInit {
     );
   }
 
+  fetchSearchGridData(tab: string) {
+    const columnMap: any = {
+      GENERAL: [
+        'select',
+        'JobNo',
+        'JobDate',
+        'Shipper',
+        'Pol',
+        'Pod',
+        'actions',
+      ],
+      BLDETAILS: ['select', 'Mblno', 'MblDate', 'MBLType'],
+      INVOICE: [
+        'select',
+        'InvoiceNo',
+        'InvoiceDate',
+        'InvoiceValue',
+        'Currency',
+        'Terms',
+      ],
+      CONTAINER: ['select', 'ContainerNo', 'ContainerSize', 'LineSealNo'],
+      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+    };
+
+    const actionMap: any = {
+      GENERAL: [
+        { label: 'CAN', icon: 'print' },
+        { label: 'DO', icon: 'print' },
+      ],
+    };
+
+    const payload = {
+      EDIJobID: this.ModifyJobId,
+      CompanyID: this.CompanyId,
+      BranchID: this.BranchID,
+      FinanceYear: this.FinanceYear,
+    };
+
+    this.agentService.fetchImportSearchGridData(tab, payload).subscribe(
+      (res: any) => {
+        if (res.Status === 'Success') {
+          const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
+          this.gridData = res[key];
+          this.displayedColumns = columnMap[tab];
+          this.currentActionMap = actionMap[tab];
+          console.log('Current Action Map:', this.currentActionMap);
+        } else {
+          this.gridData = [];
+          this.displayedColumns = [];
+          this.currentActionMap = [];
+        }
+      },
+      (error) => {
+        console.error('API Error:', error);
+        this.gridData = [];
+        this.displayedColumns = [];
+        this.currentActionMap = [];
+        this.isGridVisible = false;
+      }
+    );
+  }
+
   onTabChange(tabIndex: number): void {
     this.Imp_tabName = this.Imp_tabLabels[tabIndex];
     switch (this.Imp_tabName) {
@@ -512,7 +633,7 @@ export class ImportSeaPlanningComponent implements OnInit {
       case 'BL/IGM DETAILS':
         this.Imp_tabName = 'BLDETAILS';
         if (this.GridSelection === 'FirstGridData') {
-          this.isGridVisible = false;
+          this.isGridVisible = true;
         } else {
           this.isGridVisible = true;
         }
@@ -758,6 +879,7 @@ export class ImportSeaPlanningComponent implements OnInit {
       }
     );
     this.isModifyVisible = true;
+    this.ClearAllForms();
   }
 
   OnBLIGMSave(action: any): void {
@@ -917,6 +1039,8 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.importfirstGridVisible = true;
     this.isTabPanelVisible = false;
     this.isGridVisible = false;
+    this.getJobNo();
+    this.getCurrentDate();
   }
 
   ClearBLIGMForm(): void {
