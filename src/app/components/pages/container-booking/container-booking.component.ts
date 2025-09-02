@@ -47,9 +47,12 @@ export class ContainerBookingComponent implements OnInit {
   FinanceYear: any | undefined;
   BranchID: any | undefined;
   ModifyJobId: any | undefined;
+  JobId: any | undefined;
   VesselID: any | undefined;
   ContainerID: any | undefined;
+  AgentID: any | undefined;
   tabName: string = 'GENERAL';
+  GridSelection: any | undefined;
   tabLabels: string[] = ['GENERAL', 'CONTAINER DETAILS', 'VESSEL DETAILS'];
   tabContents: TemplateRef<any>[] = [];
   disabledTabs: boolean[] = [false, true, true, true, true];
@@ -58,9 +61,14 @@ export class ContainerBookingComponent implements OnInit {
   ContvesselForm!: FormGroup;
   gridData: any[] = [];
   displayedColumns: string[] = [];
+  ContainerfirstGridVisible: boolean = true;
+  IMPGENRAL: string = 'IMPGENERAL';
+  isTabPanelVisible: boolean = false;
   isModifyVisible: boolean = false;
   isContModifyVisible: boolean = false;
   isVesselModifyVisible: boolean = false;
+  isVesselSaveVisible: boolean = false;
+  isContSaveVisible: boolean = false;
   isGridVisible: boolean = false;
   searchClicked: boolean = false;
   fullGridData: string[] = [];
@@ -89,9 +97,11 @@ export class ContainerBookingComponent implements OnInit {
     this.getBookingNo();
     this.getCurrentDate();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
+    this.AgentID = localStorage.getItem('AgentID') ?? undefined;
     this.FinanceYear = '2025-2026';
     this.BranchID = '1594';
     this.onTabChange(0);
+    this.fetchGridData('GENERAL');
   }
   ngAfterViewInit() {
     setTimeout(() => {
@@ -149,7 +159,7 @@ export class ContainerBookingComponent implements OnInit {
   getBookingNo(): void {
     const payload = {
       CompanyID: 'FST2223005',
-      FinanceYear: '2024-2025',
+      FinanceYear: '2025-2026',
       BranchID: '1594',
     };
 
@@ -442,31 +452,41 @@ export class ContainerBookingComponent implements OnInit {
       error: () => {},
     });
   }
-
   OnGeneralSave(): void {
     if (!this.validateMandatoryFields(this.ContgeneralForm, 'GENERAL')) return;
-    const data = {
-      CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
-      Nvocc_AgentID: localStorage.getItem('AgentID'),
-      JobID: this.ModifyJobId,
-    };
+    let data: any;
+    if (this.GridSelection === 'FirstGridData') {
+      data = {
+        CompanyID: this.CompanyId,
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+        Nvocc_AgentID: this.AgentID,
+        JobID: this.ModifyJobId,
+        ContainerBookingID: '',
+      };
+    } else {
+      data = {
+        CompanyID: this.CompanyId,
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+        Nvocc_AgentID: this.AgentID,
+        ContainerBookingID: this.ModifyJobId,
+        JobID: this.JobId,
+      };
+    }
 
     this.saveSection(
       this.ContgeneralForm,
-      this.agentService.NVOCC_Save_ExportSea_General.bind(this.agentService),
+      this.agentService.NVOCC_Save_Container_GeneralDetails.bind(
+        this.agentService
+      ),
       data,
       (res) => {
         this.ModifyJobId = res.ReturnJobID;
-        this.disabledTabs = [false, false, false, false, false];
+        this.JobId = res.ReturnJobID;
       }
     );
-    this.isModifyVisible = true;
-    this.ContvesselForm.patchValue({
-      vess_POL: this.ContgeneralForm?.get('gen_Pol')?.value || '',
-      vess_POD: this.ContgeneralForm?.get('gen_Pod')?.value || '',
-    });
+    //this.isModifyVisible = true;
   }
   OnContainerSave(action: any): void {
     if (!this.validateMandatoryFields(this.ContcontainerForm, 'CONTAINER'))
@@ -510,164 +530,221 @@ export class ContainerBookingComponent implements OnInit {
 
   onSearch() {
     if (this.tabName === 'GENERAL') {
+      this.ContainerfirstGridVisible = false;
+      this.isTabPanelVisible = false;
       this.isGridVisible = true;
-      this.searchClicked = true;
     }
-    this.fetchGridData(this.tabName);
+    this.fetchSearchGridData(this.tabName);
+  }
+
+  HandleRowActionFirstGrid(event: { action: string; data: any }) {
+    this.fillGeneralForm(event.data);
+    this.ContainerfirstGridVisible = false;
+    this.isTabPanelVisible = true;
+    this.isGridVisible = false;
+    this.GridSelection = 'FirstGridData';
+    this.getBookingNo();
+    this.getCurrentDate();
   }
   HandleRowAction(event: { action: string; data: any }) {
     if (event.action === 'select') {
       this.fillGeneralForm(event.data);
+      this.isModifyVisible = true;
+      this.isGridVisible = false;
+      this.isTabPanelVisible = true;
+      this.ContainerfirstGridVisible = false;
     } else if (event.action === 'delete') {
       this.onRowDelete(event.data);
+      this.isGridVisible = false;
+      this.isTabPanelVisible = true;
+      this.ContainerfirstGridVisible = false;
     }
+    this.GridSelection = 'SecondGridData';
   }
   fetchGridData(tab: string) {
     const columnMap: any = {
-      GENERAL: ['select', 'JobNo', 'JobDate', 'Shipper', 'Pol', 'Pod'],
-      INVOICE: [
+      GENERAL: [
         'select',
-        'InvoiceNo',
-        'InvoiceDate',
-        'InvoiceValue',
-        'Currency',
-        'Terms',
-        'delete',
+        'JobNo',
+        'JobDate',
+        'ClientName',
+        'ShipperName',
+        'Pol',
+        'Pod',
       ],
-      CONTAINER: [
-        'select',
-        'ContainerNo',
-        'ContainerSize',
-        'LineSealNo',
-        'delete',
-      ],
-      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta', 'delete'],
+      CONTAINER: ['ContainerNo', 'ContainerSize'],
+      VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
     };
 
     const payload = {
       EDIJobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
       BranchID: this.BranchID,
+      AgentID: this.AgentID,
       FinanceYear: this.FinanceYear,
     };
 
-    if (this.tabName !== 'OPERATION') {
-      this.agentService.fetchGridData(tab, payload).subscribe(
-        (res: any) => {
-          if (res.Status === 'Success') {
-            const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
-            this.gridData = res[key];
-            this.displayedColumns = columnMap[tab];
-          } else {
-            this.gridData = [];
-            this.displayedColumns = [];
-          }
-        },
-        (error) => {
-          console.error('API Error:', error);
+    this.agentService.fetchExpConvContainerGridData(tab, payload).subscribe(
+      (res: any) => {
+        if (res.Status === 'Success') {
+          const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
+          this.gridData = res[key];
+          this.displayedColumns = columnMap[tab];
+        } else {
           this.gridData = [];
           this.displayedColumns = [];
-          this.isGridVisible = false;
         }
-      );
-    }
+      },
+      (error) => {
+        console.error('API Error:', error);
+        this.gridData = [];
+        this.displayedColumns = [];
+        this.isGridVisible = false;
+      }
+    );
   }
 
+  fetchSearchGridData(tab: string) {
+    const columnMap: any = {
+      GENERAL: [
+        'select',
+        'BookingNo',
+        'BookingDate',
+        'ClientName',
+        'ShipperName',
+        'Pol',
+        'Pod',
+      ],
+      CONTAINER: ['ContainerNo', 'ContainerSize'],
+      VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+    };
+
+    const payload = {
+      EDIJobID: this.JobId,
+      CompanyID: this.CompanyId,
+      BranchID: this.BranchID,
+      FinanceYear: this.FinanceYear,
+      AgentID: this.AgentID,
+    };
+
+    this.agentService.fetchContainerGridData(tab, payload).subscribe(
+      (res: any) => {
+        if (res.Status === 'Success') {
+          const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
+          this.gridData = res[key];
+          this.displayedColumns = columnMap[tab];
+        } else {
+          this.gridData = [];
+          this.displayedColumns = [];
+        }
+      },
+      (error) => {
+        console.error('API Error:', error);
+        this.gridData = [];
+        this.displayedColumns = [];
+        this.isGridVisible = false;
+      }
+    );
+  }
   onTabChange(tabIndex: number): void {
     this.tabName = this.tabLabels[tabIndex];
-    if (this.searchClicked && this.tabName !== 'GENERAL') {
-      this.isGridVisible = true;
-    } else {
-      this.isGridVisible = false;
-    }
     switch (this.tabName) {
       case 'GENERAL':
         this.tabName = 'GENERAL';
+        this.isGridVisible = false;
         this.gridData = [];
-        break;
-      case 'OPERATION DETAILS':
-        this.tabName = 'OPERATION';
-        this.gridData = [];
-        break;
-      case 'INVOICE DETAILS':
-        this.tabName = 'INVOICE';
         break;
       case 'CONTAINER DETAILS':
         this.tabName = 'CONTAINER';
+        this.isGridVisible = true;
         break;
       case 'VESSEL DETAILS':
         this.tabName = 'VESSEL';
+        this.isGridVisible = true;
         break;
       default:
         this.tabName = this.tabName;
         return;
     }
-    this.fetchGridData(this.tabName);
+    if (this.GridSelection === 'FirstGridData') {
+      this.fetchGridData(this.tabName);
+    } else {
+      this.fetchSearchGridData(this.tabName);
+    }
   }
 
   // Populate fields
 
   fillGeneralForm(row: any) {
-    this.isModifyVisible = true;
+    debugger;
+    this.isModifyVisible = false;
     this.isGridVisible = false;
-    this.disabledTabs = [false, false, false, false, false];
     this.ModifyJobId = row.ID || null;
+    this.JobId = row.JobID || null;
 
     if (this.tabName === 'CONTAINER') {
       this.ContainerID = row.ContID || null;
       this.isContModifyVisible = true;
       this.isGridVisible = true;
+
+      const containerFormValues: any = {};
+      this.ContcontainerFields.forEach((field) => {
+        const fieldId = field.id;
+        const key = this.extractContainerRowKey(fieldId);
+        containerFormValues[fieldId] = row[key] ?? '';
+      });
+      this.ContcontainerForm.patchValue(containerFormValues);
     } else if (this.tabName === 'VESSEL') {
       this.VesselID = row.VesselID || null;
       this.isVesselModifyVisible = true;
       this.isGridVisible = true;
+
+      const vesselFormValues: any = {};
+      const dateFields = ['Etd', 'Eta'];
+      this.ContvesselFields.forEach((field) => {
+        const fieldId = field.id;
+        const key = this.extractVesselRowKey(fieldId);
+        vesselFormValues[fieldId] =
+          dateFields.includes(key) && row[key]
+            ? this.convertToDateInputFormat(row[key])
+            : row[key] ?? '';
+      });
+      this.ContvesselForm.patchValue(vesselFormValues);
+    } else if (this.tabName === 'GENERAL') {
+      const formValues: any = {};
+      const gendateFields = [
+        'BookingDate',
+        'BookingExpDt',
+        'GateOpenDt',
+        'VgmCutoffDt',
+        'DocCutoffDt',
+        'SiSubDt',
+        'GateCutoffDt',
+        'CfsInDt',
+        'CfsOutDt',
+      ];
+      this.ContgeneralFields.forEach((field) => {
+        const fieldId = field.id;
+        const key = this.extractGeneralRowKey(fieldId);
+        formValues[fieldId] =
+          gendateFields.includes(key) && row[key]
+            ? this.convertToDateInputFormat(row[key])
+            : row[key] ?? '';
+      });
+      this.ContgeneralForm.patchValue(formValues);
     }
-
-    const formValues: any = {};
-    const containerFormValues: any = {};
-    const vesselFormValues: any = {};
-
-    const gendateFields = ['JobDate', 'HblDate', 'MblDate'];
-    this.ContgeneralFields.forEach((field) => {
-      const fieldId = field.id;
-      const key = this.extractGeneralRowKey(fieldId);
-      formValues[fieldId] =
-        gendateFields.includes(key) && row[key]
-          ? this.convertToDateInputFormat(row[key])
-          : row[key] ?? '';
-    });
-
-    this.ContcontainerFields.forEach((field) => {
-      const fieldId = field.id;
-      const key = this.extractContainerRowKey(fieldId);
-      containerFormValues[fieldId] = row[key] ?? '';
-    });
-
-    const dateFields = ['Etd', 'Eta'];
-    this.ContvesselFields.forEach((field) => {
-      const fieldId = field.id;
-      const key = this.extractVesselRowKey(fieldId);
-      vesselFormValues[fieldId] =
-        dateFields.includes(key) && row[key]
-          ? this.convertToDateInputFormat(row[key])
-          : row[key] ?? '';
-    });
-
-    this.ContgeneralForm.patchValue(formValues);
-    this.ContcontainerForm.patchValue(containerFormValues);
-    this.ContvesselForm.patchValue(vesselFormValues);
   }
 
   extractGeneralRowKey(fieldId: string): string {
-    return fieldId.replace(/^gen_/, '');
+    return fieldId.replace(/^Cont_gen_/, '');
   }
 
   extractContainerRowKey(fieldId: string): string {
-    return fieldId.replace(/^cont_/, '');
+    return fieldId.replace(/^Cont_cont_/, '');
   }
 
   extractVesselRowKey(fieldId: string): string {
-    return fieldId.replace(/^vess_/, '');
+    return fieldId.replace(/^Cont_vess_/, '');
   }
 
   convertToDateInputFormat(dateStr: string): string {

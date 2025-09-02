@@ -1,10 +1,19 @@
 <div class="esp-bar">
   <h6>CONTAINER BOOKING</h6>
 </div>
-
+<app-dynamic-gridview
+  *ngIf="ContainerfirstGridVisible"
+  [data]="gridData"
+  [columns]="displayedColumns"
+  [tabNameNew]="IMPGENRAL"
+  [tabName]="tabName"
+  (rowSelected)="HandleRowActionFirstGrid($event)"
+  (searchClicked)="onSearch()"
+>
+</app-dynamic-gridview>
 <app-tab-panel
   [tabs]="tabLabels"
-  *ngIf="!(isGridVisible && tabName === 'GENERAL')"
+  *ngIf="isTabPanelVisible"
   [tabContents]="tabContents"
   (tabChanged)="onTabChange($event)"
 ></app-tab-panel>
@@ -66,7 +75,7 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      *ngIf="!isContModifyVisible"
+      *ngIf="isContSaveVisible"
       (click)="OnContainerSave('Save')"
     >
       Save
@@ -102,7 +111,7 @@
     <button
       type="submit"
       class="btn custom-btn btn-success"
-      *ngIf="!isVesselModifyVisible"
+      *ngIf="isVesselSaveVisible"
       (click)="OnVesselSave('Save')"
     >
       Save

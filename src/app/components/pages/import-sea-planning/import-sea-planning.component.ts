@@ -605,7 +605,6 @@ export class ImportSeaPlanningComponent implements OnInit {
           this.gridData = res[key];
           this.displayedColumns = columnMap[tab];
           this.currentActionMap = actionMap[tab];
-          console.log('Current Action Map:', this.currentActionMap);
         } else {
           this.gridData = [];
           this.displayedColumns = [];
@@ -875,7 +874,6 @@ export class ImportSeaPlanningComponent implements OnInit {
       data,
       (res) => {
         this.ModifyJobId = res.ReturnJobID;
-        console.log('General Save Response:', res.ReturnJobID);
       }
     );
     this.isModifyVisible = true;
