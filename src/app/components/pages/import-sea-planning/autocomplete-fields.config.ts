@@ -91,6 +91,12 @@ export const IMP_AUTOCOMPLETE_FIELDS: IMP_AutocompleteFieldConfig[] = [
     formType: 'imp_ContainerForm',
   },
   {
+    field: 'Imp_cont_ContainerNo',
+    method: 'fetchContNoSuggestions',
+    payloadType: 'ContainerNo',
+    formType: 'imp_ContainerForm',
+  },
+  {
     field: 'Imp_vess_POL',
     method: 'fetchPortSuggestions',
     payloadType: 'common',

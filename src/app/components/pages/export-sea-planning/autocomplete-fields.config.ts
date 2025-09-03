@@ -79,9 +79,9 @@ export const AUTOCOMPLETE_FIELDS: AutocompleteFieldConfig[] = [
     formType: 'invoiceForm',
   },
   {
-    field: 'cont_ContainerSize',
-    method: 'fetchContSizeSuggestions',
-    payloadType: 'InputVal',
+    field: 'cont_ContainerNo',
+    method: 'fetchContNoSuggestions',
+    payloadType: 'ContainerNo',
     formType: 'containerForm',
   },
   {

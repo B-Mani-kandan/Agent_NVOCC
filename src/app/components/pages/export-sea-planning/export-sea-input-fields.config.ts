@@ -224,13 +224,14 @@ export const INVOICE_FIELDS = [
 export const CONTAINER_FIELDS = [
   {
     label: 'Container Size',
-    type: 'autocomplete',
+    type: 'select',
     id: 'cont_ContainerSize',
     mandatory: true,
+    options: [],
   },
   {
     label: 'Container No',
-    type: 'text',
+    type: 'autocomplete',
     id: 'cont_ContainerNo',
     mandatory: true,
   },

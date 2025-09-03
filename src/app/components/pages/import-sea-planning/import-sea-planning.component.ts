@@ -371,6 +371,19 @@ export class ImportSeaPlanningComponent implements OnInit {
     );
   }
 
+  fetchContNoSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetContinerNo',
+      'GetContainerNo',
+      'ContainerNo',
+      payloadType
+    );
+  }
+
   fetchVesselNameSuggestions(
     input: string,
     payloadType: string
@@ -394,11 +407,26 @@ export class ImportSeaPlanningComponent implements OnInit {
 
     //empty yard autocomplete pol value split and pass country
     let country = '';
+    let EmptyyardValue = '';
+    let Contsize = '';
     if (payloadType === 'EmptyYard') {
       const polValue = this.imp_GeneralForm?.get('Imp_gen_Pol')?.value || '';
       country = polValue;
+    } else if (payloadType === 'ContainerNo') {
+      const Empty = this.imp_GeneralForm?.get('Imp_gen_EmptyName')?.value;
+      const contsize = this.imp_ContainerForm?.get(
+        'Imp_cont_ContainerSize'
+      )?.value;
+      EmptyyardValue = Empty;
+      Contsize = contsize;
+      if (Contsize == '' || Contsize == null) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Failed',
+          detail: 'Please Enter Container Size',
+        });
+      }
     }
-
     const payloadMap: Record<string, any> = {
       InputVal: { InputVal: input },
       common: { InputVal: input, CompanyId: this.CompanyId },
@@ -408,6 +436,12 @@ export class ImportSeaPlanningComponent implements OnInit {
         InputVal: input,
         CompanyId: this.CompanyId,
         Country: country,
+      },
+      ContainerNo: {
+        InputVal: input,
+        CompanyID: this.CompanyId,
+        EmptyYard: EmptyyardValue,
+        ContainerSize: Contsize,
       },
     };
 
@@ -451,12 +485,10 @@ export class ImportSeaPlanningComponent implements OnInit {
     if (event.action === 'select') {
       this.fillGeneralForm(event.data);
       this.isModifyVisible = true;
-      this.isGridVisible = false;
       this.isTabPanelVisible = true;
       this.importfirstGridVisible = false;
     } else if (event.action === 'delete') {
       this.onRowDelete(event.data);
-      this.isGridVisible = false;
       this.isTabPanelVisible = true;
       this.importfirstGridVisible = false;
     } else {
@@ -548,7 +580,7 @@ export class ImportSeaPlanningComponent implements OnInit {
           this.displayedColumns = columnMap[tab];
         } else {
           this.gridData = [];
-          this.displayedColumns = [];
+          this.displayedColumns = columnMap[tab];
         }
       },
       (error) => {
@@ -607,7 +639,7 @@ export class ImportSeaPlanningComponent implements OnInit {
           this.currentActionMap = actionMap[tab];
         } else {
           this.gridData = [];
-          this.displayedColumns = [];
+          this.displayedColumns = columnMap[tab];
           this.currentActionMap = [];
         }
       },
@@ -1027,7 +1059,6 @@ export class ImportSeaPlanningComponent implements OnInit {
       form?.markAsUntouched();
     });
 
-    this.fetchGridData('GENERAL');
     this.ModifyJobId = '';
     this.IGMID;
     this.InvoiceID = '';
@@ -1039,6 +1070,7 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.isGridVisible = false;
     this.getJobNo();
     this.getCurrentDate();
+    this.fetchGridData('GENERAL');
   }
 
   ClearBLIGMForm(): void {

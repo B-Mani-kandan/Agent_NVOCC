@@ -100,7 +100,7 @@ export class ContainerBookingComponent implements OnInit {
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
     this.FinanceYear = '2025-2026';
     this.BranchID = '1594';
-    this.onTabChange(0);
+    this.IMPGENRAL = 'IMPGENERAL';
     this.fetchGridData('GENERAL');
   }
   ngAfterViewInit() {
@@ -316,15 +316,15 @@ export class ContainerBookingComponent implements OnInit {
     );
   }
 
-  fetchContSizeSuggestions(
+  fetchContNoSuggestions(
     input: string,
     payloadType: string
   ): Observable<string[]> {
     return this.fetchData(
       input,
-      'NVOCC_GetContainerSize',
-      'GetContainerSize',
-      'CType',
+      'NVOCC_GetContinerNo',
+      'GetContainerNo',
+      'ContainerNo',
       payloadType
     );
   }
@@ -352,9 +352,25 @@ export class ContainerBookingComponent implements OnInit {
 
     //empty yard autocomplete pol value split and pass country
     let country = '';
+    let EmptyyardValue = '';
+    let Contsize = '';
     if (payloadType === 'EmptyYard') {
       const polValue = this.ContgeneralForm?.get('Cont_gen_Pol')?.value || '';
       country = polValue;
+    } else if (payloadType === 'ContainerNo') {
+      const Empty = this.ContgeneralForm?.get('Cont_gen_EmptyName')?.value;
+      const contsize = this.ContcontainerForm?.get(
+        'Cont_cont_ContainerSize'
+      )?.value;
+      EmptyyardValue = Empty;
+      Contsize = contsize;
+      if (Contsize == '' || Contsize == null) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Failed',
+          detail: 'Please Enter Container Size',
+        });
+      }
     }
 
     const payloadMap: Record<string, any> = {
@@ -366,6 +382,12 @@ export class ContainerBookingComponent implements OnInit {
         InputVal: input,
         CompanyId: this.CompanyId,
         Country: country,
+      },
+      ContainerNo: {
+        InputVal: input,
+        CompanyID: this.CompanyId,
+        EmptyYard: EmptyyardValue,
+        ContainerSize: Contsize,
       },
     };
 
@@ -384,6 +406,35 @@ export class ContainerBookingComponent implements OnInit {
   }
   getAutocompleteOptions(fieldId: string): string[] {
     return (this as any)[`${fieldId}Suggestions`] || [];
+  }
+
+  loadContainerSizes(): void {
+    let payload: any;
+    if (this.GridSelection == 'FirstGridData') {
+      payload = { CompanyId: this.CompanyId, JobID: this.ModifyJobId };
+    } else {
+      payload = { CompanyId: this.CompanyId, JobID: this.JobId };
+    }
+
+    this.agentService.NVOCC_GetContainer_ContainerSize(payload).subscribe({
+      next: (res: any) => {
+        if (
+          res?.Status === 'Success' &&
+          Array.isArray(res.GetContainer_ContainerSize)
+        ) {
+          const options = res.GetContainer_ContainerSize.map(
+            (item: any) => item.CDescription
+          );
+
+          const containerSizeField = this.ContcontainerFields.find(
+            (f) => f.id === 'Cont_cont_ContainerSize'
+          );
+          if (containerSizeField) {
+            containerSizeField.options = options;
+          }
+        }
+      },
+    });
   }
 
   // Validations
@@ -440,7 +491,7 @@ export class ContainerBookingComponent implements OnInit {
             detail: `${this.capitalize(this.tabName)} ${res.Message}`,
           });
           onSuccess?.(res);
-          this.fetchGridData(this.tabName);
+          this.fetchSearchGridData(this.tabName);
         } else {
           this.messageService.add({
             severity: 'error',
@@ -486,23 +537,27 @@ export class ContainerBookingComponent implements OnInit {
         this.JobId = res.ReturnJobID;
       }
     );
-    //this.isModifyVisible = true;
+    this.isModifyVisible = true;
   }
   OnContainerSave(action: any): void {
     if (!this.validateMandatoryFields(this.ContcontainerForm, 'CONTAINER'))
       return;
-    const genEmptyName = this.ContgeneralForm.get('gen_EmptyName')?.value;
+    const genEmptyName = this.ContgeneralForm.get('Cont_gen_EmptyName')?.value;
+    const Pol = this.ContgeneralForm.get('Cont_gen_Pol')?.value;
+    const Pod = this.ContgeneralForm.get('Cont_gen_Pod')?.value;
     const data = {
-      SavedJobID: this.ModifyJobId,
+      SavedJobID: this.JobId,
       ContainerID: action === 'Modify' ? this.ContainerID : '',
       CompanyID: this.CompanyId,
       FinanceYear: this.FinanceYear,
       BranchID: this.BranchID,
-      gen_EmptyName: genEmptyName,
+      EmptyName: genEmptyName,
+      POL: Pol,
+      POD: Pod,
     };
     this.saveSection(
       this.ContcontainerForm,
-      this.agentService.NVOCC_Save_ExportSea_ContainerDetails.bind(
+      this.agentService.NVOCC_Save_Container_ContainerDetails.bind(
         this.agentService
       ),
       data
@@ -513,12 +568,12 @@ export class ContainerBookingComponent implements OnInit {
   OnVesselSave(action: any): void {
     if (!this.validateMandatoryFields(this.ContvesselForm, 'VESSEL')) return;
     const data = {
-      SavedJobID: this.ModifyJobId,
+      SavedJobID: this.JobId,
       VesselID: action === 'Modify' ? this.VesselID : '',
     };
     this.saveSection(
       this.ContvesselForm,
-      this.agentService.NVOCC_Save_ExportSea_VesselDetails.bind(
+      this.agentService.NVOCC_Save_Container_VesselDetails.bind(
         this.agentService
       ),
       data
@@ -550,18 +605,17 @@ export class ContainerBookingComponent implements OnInit {
     if (event.action === 'select') {
       this.fillGeneralForm(event.data);
       this.isModifyVisible = true;
-      this.isGridVisible = false;
       this.isTabPanelVisible = true;
       this.ContainerfirstGridVisible = false;
     } else if (event.action === 'delete') {
       this.onRowDelete(event.data);
-      this.isGridVisible = false;
       this.isTabPanelVisible = true;
       this.ContainerfirstGridVisible = false;
     }
     this.GridSelection = 'SecondGridData';
   }
   fetchGridData(tab: string) {
+    debugger;
     const columnMap: any = {
       GENERAL: [
         'select',
@@ -592,7 +646,7 @@ export class ContainerBookingComponent implements OnInit {
           this.displayedColumns = columnMap[tab];
         } else {
           this.gridData = [];
-          this.displayedColumns = [];
+          this.displayedColumns = columnMap[tab];
         }
       },
       (error) => {
@@ -615,8 +669,8 @@ export class ContainerBookingComponent implements OnInit {
         'Pol',
         'Pod',
       ],
-      CONTAINER: ['ContainerNo', 'ContainerSize'],
-      VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+      CONTAINER: ['select', 'ContainerNo', 'ContainerSize'],
+      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta'],
     };
 
     const payload = {
@@ -635,7 +689,7 @@ export class ContainerBookingComponent implements OnInit {
           this.displayedColumns = columnMap[tab];
         } else {
           this.gridData = [];
-          this.displayedColumns = [];
+          this.displayedColumns = columnMap[tab];
         }
       },
       (error) => {
@@ -647,6 +701,7 @@ export class ContainerBookingComponent implements OnInit {
     );
   }
   onTabChange(tabIndex: number): void {
+    debugger;
     this.tabName = this.tabLabels[tabIndex];
     switch (this.tabName) {
       case 'GENERAL':
@@ -656,10 +711,21 @@ export class ContainerBookingComponent implements OnInit {
         break;
       case 'CONTAINER DETAILS':
         this.tabName = 'CONTAINER';
+        if (this.GridSelection == 'FirstGridData') {
+          this.isContSaveVisible = false;
+        } else {
+          this.isContSaveVisible = true;
+        }
         this.isGridVisible = true;
+        this.loadContainerSizes();
         break;
       case 'VESSEL DETAILS':
         this.tabName = 'VESSEL';
+        if (this.GridSelection == 'FirstGridData') {
+          this.isVesselSaveVisible = false;
+        } else {
+          this.isVesselSaveVisible = true;
+        }
         this.isGridVisible = true;
         break;
       default:
@@ -678,15 +744,14 @@ export class ContainerBookingComponent implements OnInit {
   fillGeneralForm(row: any) {
     debugger;
     this.isModifyVisible = false;
-    this.isGridVisible = false;
     this.ModifyJobId = row.ID || null;
     this.JobId = row.JobID || null;
 
     if (this.tabName === 'CONTAINER') {
       this.ContainerID = row.ContID || null;
       this.isContModifyVisible = true;
+      this.isContSaveVisible = false;
       this.isGridVisible = true;
-
       const containerFormValues: any = {};
       this.ContcontainerFields.forEach((field) => {
         const fieldId = field.id;
@@ -697,6 +762,7 @@ export class ContainerBookingComponent implements OnInit {
     } else if (this.tabName === 'VESSEL') {
       this.VesselID = row.VesselID || null;
       this.isVesselModifyVisible = true;
+      this.isVesselSaveVisible = false;
       this.isGridVisible = true;
 
       const vesselFormValues: any = {};
@@ -711,6 +777,7 @@ export class ContainerBookingComponent implements OnInit {
       });
       this.ContvesselForm.patchValue(vesselFormValues);
     } else if (this.tabName === 'GENERAL') {
+      this.isGridVisible = false;
       const formValues: any = {};
       const gendateFields = [
         'BookingDate',
@@ -784,7 +851,6 @@ export class ContainerBookingComponent implements OnInit {
 
     this.http.post(apiUrl, body).subscribe((res: any) => {
       if (res.Status === 'Sucess') {
-        // Remove deleted row index id
         this.gridData = this.gridData.filter(
           (item: any) => item[deleteKey] !== row[deleteKey]
         );
@@ -823,16 +889,20 @@ export class ContainerBookingComponent implements OnInit {
       form?.markAsUntouched();
     });
 
+    this.fetchGridData('GENERAL');
     this.ModifyJobId = '';
     this.ContainerID = '';
     this.VesselID = '';
     this.isModifyVisible = false;
-    this.disabledTabs = [false, true, true, true, true];
+    this.ContainerfirstGridVisible = true;
+    this.isTabPanelVisible = false;
+    this.isGridVisible = false;
     this.getBookingNo();
     this.getCurrentDate();
   }
 
   ClearContainerForm(): void {
+    debugger;
     const formMap: { [key: string]: FormGroup | undefined } = {
       containerForm: this.ContcontainerForm,
     };
@@ -843,6 +913,11 @@ export class ContainerBookingComponent implements OnInit {
     });
     this.ContainerID = '';
     this.isContModifyVisible = false;
+    if (this.GridSelection == 'FirstGridData') {
+      this.isContSaveVisible = false;
+    } else {
+      this.isContSaveVisible = true;
+    }
   }
 
   ClearVesselForm(): void {
@@ -856,5 +931,10 @@ export class ContainerBookingComponent implements OnInit {
     });
     this.VesselID = '';
     this.isVesselModifyVisible = false;
+    if (this.GridSelection == 'FirstGridData') {
+      this.isVesselSaveVisible = false;
+    } else {
+      this.isVesselSaveVisible = true;
+    }
   }
 }

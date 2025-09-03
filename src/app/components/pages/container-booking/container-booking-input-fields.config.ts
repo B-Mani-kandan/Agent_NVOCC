@@ -281,13 +281,14 @@ export const GENERAL_FIELDS = [
 export const CONTAINER_FIELDS = [
   {
     label: 'Container Size',
-    type: 'autocomplete',
+    type: 'select',
     id: 'Cont_cont_ContainerSize',
     mandatory: true,
+    options: [],
   },
   {
     label: 'Container No',
-    type: 'text',
+    type: 'autocomplete',
     id: 'Cont_cont_ContainerNo',
     mandatory: true,
   },

@@ -98,6 +98,26 @@ export class AgentService {
       payload
     );
   }
+
+  NVOCC_GetContinerNo(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_GetContainerNo.ashx',
+      payload
+    );
+  }
+
+  NVOCC_GetImportContinerNo(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_GetImport_ContainerNo.ashx',
+      payload
+    );
+  }
+  NVOCC_GetContainer_ContainerSize(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_GetContainer_ContainerSize.ashx',
+      payload
+    );
+  }
   NVOCC_GetFromToPlaces(payload: any) {
     return this._http.post<any>(
       'https://client.f-studio.in/ServiceNVOC/Nvocc_GetFromToPlaces.ashx',
@@ -330,6 +350,20 @@ export class AgentService {
   NVOCC_Save_Container_GeneralDetails(payload: any) {
     return this._http.post<any>(
       'https://client.f-studio.in/ServiceNVOC/Nvocc_Cont_Save_GeneralDetails.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Save_Container_ContainerDetails(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Cont_Save_ContainerDetails.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Save_Container_VesselDetails(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Cont_Save_VesselDetails.ashx',
       payload
     );
   }

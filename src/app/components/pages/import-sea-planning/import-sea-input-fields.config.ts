@@ -244,7 +244,7 @@ export const IMP_CONTAINER_FIELDS = [
   },
   {
     label: 'Container No',
-    type: 'text',
+    type: 'autocomplete',
     id: 'Imp_cont_ContainerNo',
     mandatory: true,
   },

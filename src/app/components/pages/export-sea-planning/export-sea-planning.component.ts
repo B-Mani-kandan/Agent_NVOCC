@@ -340,15 +340,15 @@ export class ExportSeaPlanningComponent implements OnInit {
     );
   }
 
-  fetchContSizeSuggestions(
+  fetchContNoSuggestions(
     input: string,
     payloadType: string
   ): Observable<string[]> {
     return this.fetchData(
       input,
-      'NVOCC_GetContainerSize',
-      'GetContainerSize',
-      'CType',
+      'NVOCC_GetContinerNo',
+      'GetContainerNo',
+      'ContainerNo',
       payloadType
     );
   }
@@ -376,9 +376,23 @@ export class ExportSeaPlanningComponent implements OnInit {
 
     //empty yard autocomplete pol value split and pass country
     let country = '';
+    let EmptyyardValue = '';
+    let Contsize = '';
     if (payloadType === 'EmptyYard') {
       const polValue = this.generalForm?.get('gen_Pol')?.value || '';
       country = polValue;
+    } else if (payloadType === 'ContainerNo') {
+      const Empty = this.generalForm?.get('gen_EmptyName')?.value;
+      const contsize = this.generalForm?.get('cont_ContainerSize')?.value;
+      EmptyyardValue = Empty;
+      Contsize = contsize;
+      if (Contsize == '' || Contsize == null) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Failed',
+          detail: 'Please Enter Container Size',
+        });
+      }
     }
 
     const payloadMap: Record<string, any> = {
@@ -390,6 +404,12 @@ export class ExportSeaPlanningComponent implements OnInit {
         InputVal: input,
         CompanyId: this.CompanyId,
         Country: country,
+      },
+      ContainerNo: {
+        InputVal: input,
+        CompanyID: this.CompanyId,
+        EmptyYard: EmptyyardValue,
+        ContainerSize: Contsize,
       },
     };
 
@@ -408,6 +428,32 @@ export class ExportSeaPlanningComponent implements OnInit {
   }
   getAutocompleteOptions(fieldId: string): string[] {
     return (this as any)[`${fieldId}Suggestions`] || [];
+  }
+
+  loadContainerSizes(): void {
+    let payload: any;
+
+    payload = { CompanyId: this.CompanyId, JobID: this.ModifyJobId };
+
+    this.agentService.NVOCC_GetContainer_ContainerSize(payload).subscribe({
+      next: (res: any) => {
+        if (
+          res?.Status === 'Success' &&
+          Array.isArray(res.GetContainer_ContainerSize)
+        ) {
+          const options = res.GetContainer_ContainerSize.map(
+            (item: any) => item.CDescription
+          );
+
+          const containerSizeField = this.containerFields.find(
+            (f) => f.id === 'Cont_cont_ContainerSize'
+          );
+          if (containerSizeField) {
+            containerSizeField.options = options;
+          }
+        }
+      },
+    });
   }
 
   // Validations
@@ -628,10 +674,9 @@ export class ExportSeaPlanningComponent implements OnInit {
             const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
             this.gridData = res[key];
             this.displayedColumns = columnMap[tab];
-            console.log('Grid Data export:', this.gridData);
           } else {
             this.gridData = [];
-            this.displayedColumns = [];
+            this.displayedColumns = columnMap[tab];
           }
         },
         (error) => {
@@ -658,16 +703,21 @@ export class ExportSeaPlanningComponent implements OnInit {
         break;
       case 'OPERATION DETAILS':
         this.tabName = 'OPERATION';
+        this.isGridVisible = false;
         this.gridData = [];
         break;
       case 'INVOICE DETAILS':
         this.tabName = 'INVOICE';
+        this.isGridVisible = true;
         break;
       case 'CONTAINER DETAILS':
         this.tabName = 'CONTAINER';
+        this.isGridVisible = true;
+        this.loadContainerSizes();
         break;
       case 'VESSEL DETAILS':
         this.tabName = 'VESSEL';
+        this.isGridVisible = true;
         break;
       default:
         this.tabName = this.tabName;
