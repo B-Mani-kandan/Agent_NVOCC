@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
     }
     const siteUrl = this.document.location.hostname;
     this.siteUrl = siteUrl;
+    this.getClientViewURL();
     this.getClientInfo();
   }
 
@@ -61,8 +62,8 @@ export class LoginComponent implements OnInit {
   }
 
   getClientInfo() {
-    const siteUrl = this.document.location.hostname;
-    this.ClientinfoService.getClientInfo(siteUrl).subscribe(
+    this.clientViewURL = localStorage.getItem('ClientViewApiUrl') ?? undefined;
+    this.ClientinfoService.getClientInfo(this.clientViewURL).subscribe(
       (data) => {
         if (data.Status === 'Success') {
           this.CompanyID = data.CompanyId;

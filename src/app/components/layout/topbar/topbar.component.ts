@@ -18,6 +18,7 @@ export class TopbarComponent implements OnInit {
 
   LogOut() {
     localStorage.clear();
+    sessionStorage.clear();
     this.router.navigateByUrl('/login').then(() => {
       window.location.reload();
     });

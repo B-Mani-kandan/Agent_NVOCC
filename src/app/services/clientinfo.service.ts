@@ -23,16 +23,23 @@ interface ClientViewURL {
   providedIn: 'root',
 })
 export class ClientinfoService {
-  private apiUrl =
-    'https://client.f-studio.in/ServiceNVOC/Nvocc_GetClientInfo.ashx';
+  private BASE_URL: string;
+  constructor(private http: HttpClient) {
+    let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
+    if (!apiUrl.startsWith('http')) {
+      apiUrl = 'https://' + apiUrl;
+    }
+    this.BASE_URL = apiUrl;
+  }
 
   private viewApiUrl = 'https://hrm.f-studio.in/Service/GetNvoccViewURL.ashx';
 
-  constructor(private http: HttpClient) {}
-
   getClientInfo(siteUrl: string): Observable<ClientInfo> {
     const body = { SiteURL: siteUrl };
-    return this.http.post<ClientInfo>(this.apiUrl, body);
+    return this.http.post<ClientInfo>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetClientInfo.ashx`,
+      body
+    );
   }
 
   getClientViewUrl(siteUrl: string): Observable<ClientViewURL> {
