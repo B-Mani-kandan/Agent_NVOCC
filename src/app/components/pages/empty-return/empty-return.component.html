@@ -1,9 +1,46 @@
 <div class="esp-bar">
-  <h6>CONTAINER BOOKING</h6>
+  <h6>EMPTY RETURN-IMPORT</h6>
 </div>
+
+<app-dynamic-forms
+  *ngIf="isGeneralFormVisible"
+  [formGroup]="GeneralForm"
+  [formFields]="GeneralFields"
+  [templateId]="'GENERAL'"
+  [isMandatoryField]="getMandatoryFields('GENERAL')"
+  [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+  (optionSelected)="handleAutocomplete($event)"
+></app-dynamic-forms>
+<div *ngIf="isEmptyFormVisibile">
+  <app-dynamic-forms
+    [formGroup]="EmptyReturnForm"
+    [formFields]="EmptyReturnFields"
+    [templateId]="'EMPTYRETURN'"
+    [isMandatoryField]="getMandatoryFields('EMPTYRETURN')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+  ></app-dynamic-forms>
+  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
+    <button
+      type="submit"
+      class="btn custom-btn btn-success"
+      (click)="OnEmptyReturnSave()"
+    >
+      Save
+    </button>
+    <button
+      type="submit"
+      class="btn custom-btn btn-danger"
+      (click)="ClearEmptyReturn()"
+    >
+      Clear
+    </button>
+  </div>
+</div>
+
 <app-dynamic-gridview
   *ngIf="importfirstGridVisible"
   [data]="gridData"
+  [tabNameNew]="EMPTY"
   [columns]="displayedColumns"
   (rowSelected)="HandleRowActionFirstGrid($event)"
 >

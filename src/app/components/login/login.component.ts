@@ -18,6 +18,8 @@ import { MessageService } from 'primeng/api';
 })
 export class LoginComponent implements OnInit {
   fieldTextType: boolean = false;
+  siteUrl: any;
+  clientViewURL: any;
   loginObj: any = { UserName: '', Password: '' };
   CompanyID: any;
   private secureKey = 'wHq4RhDiO5zZRLg8xzHBhJ8WZJlpjtLHaPEvX3F1+aQ=';
@@ -38,7 +40,27 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl('/dashboard');
       }
     }
+    const siteUrl = this.document.location.hostname;
+    this.siteUrl = siteUrl;
+    this.getClientInfo();
+  }
 
+  getClientViewURL() {
+    this.ClientinfoService.getClientViewUrl(this.siteUrl).subscribe(
+      (data) => {
+        if (data.Status === 'Success') {
+          const viewApiUrl = data.APIURL;
+          this.clientViewURL = viewApiUrl;
+          localStorage.setItem('ClientViewApiUrl', data.APIURL);
+        }
+      },
+      (error) => {
+        console.error('Error fetching client info', error);
+      }
+    );
+  }
+
+  getClientInfo() {
     const siteUrl = this.document.location.hostname;
     this.ClientinfoService.getClientInfo(siteUrl).subscribe(
       (data) => {

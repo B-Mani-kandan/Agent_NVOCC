@@ -20,7 +20,10 @@
             [matAutocomplete]="auto"
             (keypress)="onKeyPress($event, field)"
           />
-          <mat-autocomplete #auto="matAutocomplete">
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="onOptionSelected($event, field)"
+          >
             <mat-option
               *ngFor="let option of getAutocompleteOptions(field.id)"
               [value]="option"

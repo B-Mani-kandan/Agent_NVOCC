@@ -156,6 +156,27 @@ export class AgentService {
     );
   }
 
+  NVOCC_GetEmptyMBLNo(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_GetEmpty_MblNo.ashx',
+      payload
+    );
+  }
+
+  NVOCC_GetEmptyHBLNo(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_GetEmpty_HblNo.ashx',
+      payload
+    );
+  }
+
+  NVOCC_GetEmptyYardName_EmptyReturn(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_GetEmptyYard_EmptyReturn.ashx',
+      payload
+    );
+  }
+
   //Fetch Grid
 
   fetchGridData(tab: string, payload: any) {
@@ -244,6 +265,15 @@ export class AgentService {
     const apiMap: any = {
       GENERAL:
         'https://client.f-studio.in/ServiceNVOC/Nvocc_ContainerBooking.ashx',
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  Nvocc_EmptyReturnData(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL:
+        'https://client.f-studio.in/ServiceNVOC/Nvocc_Empty_Search_HblMblNo.ashx',
     };
 
     const apiUrl = apiMap[tab];
@@ -364,6 +394,13 @@ export class AgentService {
   NVOCC_Save_Container_VesselDetails(payload: any) {
     return this._http.post<any>(
       'https://client.f-studio.in/ServiceNVOC/Nvocc_Cont_Save_VesselDetails.ashx',
+      payload
+    );
+  }
+
+  NVOCC_Save_EmptyReturnDetails(payload: any) {
+    return this._http.post<any>(
+      'https://client.f-studio.in/ServiceNVOC/Nvocc_Empty_Save_EmptyReturn.ashx',
       payload
     );
   }

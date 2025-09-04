@@ -11,7 +11,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
-
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 @Component({
   selector: 'app-dynamic-forms',
   imports: [
@@ -31,7 +31,10 @@ export class DynamicFormsComponent {
   @Input() isMandatoryField!: (fieldId: string) => boolean;
   @Input() getAutocompleteOptions!: (fieldId: string) => string[];
   @Output() formSubmit = new EventEmitter();
-
+  @Output() optionSelected = new EventEmitter<{
+    fieldId: string;
+    value: string;
+  }>();
   @ViewChild(MatAutocompleteTrigger, { static: false })
   autocomplete!: MatAutocompleteTrigger;
 
@@ -47,6 +50,13 @@ export class DynamicFormsComponent {
         }
       }
     }, 50);
+  }
+
+  //Autocomplete select triggering
+  onOptionSelected(event: MatAutocompleteSelectedEvent, field: any) {
+    const value = event.option.value;
+    this.formGroup.get(field.id)?.setValue(value, { emitEvent: false });
+    this.optionSelected.emit({ fieldId: field.id, value });
   }
 
   onKeyPress(event: KeyboardEvent, field: any) {

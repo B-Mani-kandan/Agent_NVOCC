@@ -104,12 +104,12 @@ export class ExportSeaPlanningComponent implements OnInit {
     this.invoiceForm = this.createForm(this.invoiceFields);
     this.containerForm = this.createForm(this.containerFields);
     this.vesselForm = this.createForm(this.vesselFields);
-    this.setupAutocompleteListeners();
-    this.getJobNo();
-    this.getCurrentDate();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
     this.FinanceYear = '2025-2026';
     this.BranchID = '1594';
+    this.setupAutocompleteListeners();
+    this.getJobNo();
+    this.getCurrentDate();
     this.onTabChange(0);
   }
   ngAfterViewInit() {
@@ -166,9 +166,9 @@ export class ExportSeaPlanningComponent implements OnInit {
   }
   getJobNo(): void {
     const payload = {
-      CompanyID: 'FST2223005',
-      FinanceYear: '2024-2025',
-      BranchID: '1594',
+      CompanyID: this.CompanyId,
+      FinanceYear: this.FinanceYear,
+      BranchID: this.BranchID,
     };
 
     this.agentService.NVOCC_GetJobNo(payload).subscribe(
