@@ -11,6 +11,7 @@ import { TabPanelComponent } from '../../layout/tabpanel/tabpanel.component';
 import { AgentService } from '../../../services/agent.service';
 import { DynamicFormsComponent } from '../../layout/dynamic-forms/dynamic-forms.component';
 import { DynamicGridviewComponent } from '../../layout/dynamic-gridview/dynamic-gridview.component';
+import { DynamicGridAddDeleteComponent } from '../../layout/dynamic-grid-add-delete/dynamic-grid-add-delete.component';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -38,6 +39,7 @@ import { MessageService } from 'primeng/api';
     TabPanelComponent,
     DynamicFormsComponent,
     DynamicGridviewComponent,
+    DynamicGridAddDeleteComponent,
     ToastModule,
   ],
   providers: [MessageService],

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -23,16 +24,21 @@ interface ClientViewURL {
   providedIn: 'root',
 })
 export class ClientinfoService {
-  private BASE_URL: string;
-  constructor(private http: HttpClient) {
-    let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
-    if (!apiUrl.startsWith('http')) {
-      apiUrl = 'https://' + apiUrl;
-    }
-    this.BASE_URL = apiUrl;
-  }
-
+  private BASE_URL: string = '';
   private viewApiUrl = 'https://hrm.f-studio.in/Service/GetNvoccViewURL.ashx';
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
+      if (!apiUrl.startsWith('http') && apiUrl) {
+        apiUrl = 'https://' + apiUrl;
+      }
+      this.BASE_URL = apiUrl;
+    }
+  }
 
   getClientInfo(siteUrl: string): Observable<ClientInfo> {
     const body = { SiteURL: siteUrl };

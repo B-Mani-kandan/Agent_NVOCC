@@ -38,10 +38,11 @@ export class LoginComponent implements OnInit {
       const Token = localStorage.getItem('authToken');
       if (Token) {
         this.router.navigateByUrl('/dashboard');
+        return;
       }
     }
-    const siteUrl = this.document.location.hostname;
-    this.siteUrl = siteUrl;
+
+    this.siteUrl = this.document.location.hostname;
     this.getClientViewURL();
     this.getClientInfo();
   }
@@ -50,9 +51,11 @@ export class LoginComponent implements OnInit {
     this.ClientinfoService.getClientViewUrl(this.siteUrl).subscribe(
       (data) => {
         if (data.Status === 'Success') {
-          const viewApiUrl = data.APIURL;
-          this.clientViewURL = viewApiUrl;
-          localStorage.setItem('ClientViewApiUrl', data.APIURL);
+          this.clientViewURL = data.APIURL;
+
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('ClientViewApiUrl', data.APIURL);
+          }
         }
       },
       (error) => {
@@ -62,11 +65,19 @@ export class LoginComponent implements OnInit {
   }
 
   getClientInfo() {
-    this.clientViewURL = localStorage.getItem('ClientViewApiUrl') ?? undefined;
-    this.ClientinfoService.getClientInfo(this.clientViewURL).subscribe(
+    let clientApiUrl: string | undefined;
+
+    if (isPlatformBrowser(this.platformId)) {
+      clientApiUrl = localStorage.getItem('ClientViewApiUrl') ?? undefined;
+    }
+
+    this.ClientinfoService.getClientInfo(
+      clientApiUrl || this.siteUrl
+    ).subscribe(
       (data) => {
         if (data.Status === 'Success') {
           this.CompanyID = data.CompanyId;
+
           if (isPlatformBrowser(this.platformId)) {
             localStorage.setItem('CompanyID', data.CompanyId);
           }
@@ -78,7 +89,7 @@ export class LoginComponent implements OnInit {
           });
         }
       },
-      (error) => {
+      () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -102,7 +113,7 @@ export class LoginComponent implements OnInit {
     const encryptedPassword = CryptoJS.AES.encrypt(
       this.loginObj.Password,
       CryptoJS.enc.Base64.parse(this.secureKey),
-      { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+      { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
     ).toString();
 
     const ivBase64 = CryptoJS.enc.Base64.stringify(iv);
@@ -116,9 +127,11 @@ export class LoginComponent implements OnInit {
 
     this.agentLogin.agentLogin(loginData).subscribe((res: any) => {
       if (res.Status === 'Success') {
-        localStorage.setItem('authToken', res.Token);
-        localStorage.setItem('AgentID', res.AgentID);
-        localStorage.setItem('AgentName', res.AgentName);
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('authToken', res.Token);
+          localStorage.setItem('AgentID', res.AgentID);
+          localStorage.setItem('AgentName', res.AgentName);
+        }
 
         this.messageService.add({
           severity: 'success',

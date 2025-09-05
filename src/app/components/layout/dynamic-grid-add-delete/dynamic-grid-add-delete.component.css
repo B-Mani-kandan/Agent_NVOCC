@@ -1,0 +1,10 @@
+.table th {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.table td {
+  vertical-align: middle;
+}
+.btn i {
+  font-size: 18px;
+}

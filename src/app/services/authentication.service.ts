@@ -5,18 +5,23 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private BASE_URL: string;
-  _http = inject(HttpClient);
-  constructor() {
-    let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
-    if (!apiUrl.startsWith('http')) {
-      apiUrl = 'https://' + apiUrl;
+  private _http = inject(HttpClient);
+
+  private getBaseUrl(): string {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
+      if (apiUrl && !apiUrl.startsWith('http')) {
+        apiUrl = 'https://' + apiUrl;
+      }
+      return apiUrl;
     }
-    this.BASE_URL = apiUrl;
+    return '';
   }
+
   agentLogin(obj: any) {
+    const baseUrl = this.getBaseUrl();
     return this._http.post(
-      `${this.BASE_URL}/ServiceNVOC/ValidateLogin_NVOCC.ashx`,
+      `${baseUrl}/ServiceNVOC/ValidateLogin_NVOCC.ashx`,
       obj
     );
   }

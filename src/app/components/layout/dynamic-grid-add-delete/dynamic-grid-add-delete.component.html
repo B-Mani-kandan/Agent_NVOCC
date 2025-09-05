@@ -1,0 +1,47 @@
+<form [formGroup]="form">
+  <table class="table table-bordered text-center">
+    <thead style="background: #3d5095; color: white">
+      <tr>
+        <th>Container Size</th>
+        <th>No of Container</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody formArrayName="rows">
+      <tr *ngFor="let row of rows.controls; let i = index" [formGroupName]="i">
+        <td>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="containerSize"
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            class="form-control text-center"
+            formControlName="noOfContainer"
+          />
+        </td>
+        <td>
+          <button
+            type="button"
+            class="btn btn-sm btn-danger"
+            (click)="removeRow(i)"
+          >
+            <i class="ri-delete-bin-6-line"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-primary"
+            *ngIf="i === rows.length - 1"
+            (click)="addRow()"
+          >
+            <i class="ri-add-circle-line"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>
