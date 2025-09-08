@@ -1,8 +1,10 @@
 import {
   Component,
   ViewChild,
+  Output,
   OnInit,
   TemplateRef,
+  EventEmitter,
   ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -55,6 +57,8 @@ export class ExportSeaPlanningComponent implements OnInit {
   VesselID: any | undefined;
   ContainerID: any | undefined;
   InvoiceID: any | undefined;
+  latestGridData: any[] = [];
+  ContainerGridDetailsID: any | undefined;
   tabName: string = 'GENERAL';
   tabLabels: string[] = [
     'GENERAL',
@@ -71,6 +75,7 @@ export class ExportSeaPlanningComponent implements OnInit {
   containerForm!: FormGroup;
   vesselForm!: FormGroup;
   gridData: any[] = [];
+  gridContainerData: any[] = [];
   displayedColumns: string[] = [];
   isModifyVisible: boolean = false;
   isoperModifyVisible: boolean = false;
@@ -92,6 +97,12 @@ export class ExportSeaPlanningComponent implements OnInit {
   @ViewChild('INVOICE', { static: false }) INVOICE!: TemplateRef<any>;
   @ViewChild('CONTAINER', { static: false }) CONTAINER!: TemplateRef<any>;
   @ViewChild('VESSEL', { static: false }) VESSEL!: TemplateRef<any>;
+  @Output() gridDataChange = new EventEmitter<any[]>();
+  @ViewChild('gridComp') gridComp!: DynamicGridAddDeleteComponent;
+
+  getGridData(): any[] {
+    return this.latestGridData;
+  }
 
   constructor(
     private agentService: AgentService,
@@ -133,6 +144,9 @@ export class ExportSeaPlanningComponent implements OnInit {
       } else {
       }
     }, 0);
+    if (this.gridComp) {
+      this.gridComp.setGridRows(this.gridContainerData);
+    }
   }
   createForm(fields: any[]): FormGroup {
     let group: any = {};
@@ -448,7 +462,7 @@ export class ExportSeaPlanningComponent implements OnInit {
           );
 
           const containerSizeField = this.containerFields.find(
-            (f) => f.id === 'Cont_cont_ContainerSize'
+            (f) => f.id === 'cont_ContainerSize'
           );
           if (containerSizeField) {
             containerSizeField.options = options;
@@ -513,6 +527,7 @@ export class ExportSeaPlanningComponent implements OnInit {
           });
           onSuccess?.(res);
           this.fetchGridData(this.tabName);
+          this.fetchContainerGridData();
         } else {
           this.messageService.add({
             severity: 'error',
@@ -525,8 +540,9 @@ export class ExportSeaPlanningComponent implements OnInit {
     });
   }
 
-  OnGeneralSave(): void {
+  OnGeneralSave(callback?: () => void): void {
     if (!this.validateMandatoryFields(this.generalForm, 'GENERAL')) return;
+
     const data = {
       CompanyID: this.CompanyId,
       FinanceYear: this.FinanceYear,
@@ -542,13 +558,33 @@ export class ExportSeaPlanningComponent implements OnInit {
       (res) => {
         this.ModifyJobId = res.ReturnJobID;
         this.disabledTabs = [false, false, false, false, false];
+
+        this.isModifyVisible = true;
+        this.vesselForm.patchValue({
+          vess_POL: this.generalForm?.get('gen_Pol')?.value || '',
+          vess_POD: this.generalForm?.get('gen_Pod')?.value || '',
+        });
+
+        if (callback) callback();
       }
     );
-    this.isModifyVisible = true;
-    this.vesselForm.patchValue({
-      vess_POL: this.generalForm?.get('gen_Pol')?.value || '',
-      vess_POD: this.generalForm?.get('gen_Pod')?.value || '',
-    });
+  }
+
+  OnContGridDetailsSave(): void {
+    if (!this.latestGridData || this.latestGridData.length === 0) return;
+
+    const payload = {
+      ContainerDetails: this.latestGridData.map((row: any) => ({
+        JobID: this.ModifyJobId,
+        ContainerID: row.containerId,
+        CompanyID: this.CompanyId,
+        ContainerType: row.containerSize,
+        NoOfContainer: row.noOfContainer,
+      })),
+    };
+    this.agentService
+      .NVOCC_Save_ExportSea_GridContainerDetails(payload)
+      .subscribe();
   }
 
   OnOperationsSave(): void {
@@ -624,6 +660,12 @@ export class ExportSeaPlanningComponent implements OnInit {
     this.ClearVesselForm();
   }
 
+  onSave() {
+    this.OnGeneralSave(() => {
+      this.OnContGridDetailsSave();
+    });
+  }
+
   //Search Details
 
   onSearch() {
@@ -635,6 +677,7 @@ export class ExportSeaPlanningComponent implements OnInit {
   }
   HandleRowAction(event: { action: string; data: any }) {
     if (event.action === 'select') {
+      this.ModifyJobId = event.data.ID;
       this.fillGeneralForm(event.data);
     } else if (event.action === 'delete') {
       this.onRowDelete(event.data);
@@ -688,6 +731,26 @@ export class ExportSeaPlanningComponent implements OnInit {
           this.isGridVisible = false;
         }
       );
+    }
+  }
+
+  fetchContainerGridData() {
+    const payload = {
+      EDIJobID: this.ModifyJobId,
+      CompanyID: this.CompanyId,
+    };
+
+    if (this.tabName === 'GENERAL') {
+      this.agentService
+        .fetchContainerGridAddDeleteData(payload)
+        .subscribe((res: any) => {
+          if (res.Status === 'Success') {
+            this.gridContainerData = res.ContainerDetails || [];
+            if (this.gridComp) {
+              this.gridComp.setGridRows(res.ShowGridContainerDetails);
+            }
+          }
+        });
     }
   }
 
@@ -808,6 +871,9 @@ export class ExportSeaPlanningComponent implements OnInit {
     this.invoiceForm.patchValue(invoiceFormValues);
     this.containerForm.patchValue(containerFormValues);
     this.vesselForm.patchValue(vesselFormValues);
+    if (this.ModifyJobId) {
+      this.fetchContainerGridData();
+    }
   }
 
   extractGeneralRowKey(fieldId: string): string {
@@ -891,6 +957,34 @@ export class ExportSeaPlanningComponent implements OnInit {
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
 
+  onDeleteRow(event: { index: number; row: any }) {
+    const { index, row } = event;
+
+    if (row.containerId) {
+      const payload = {
+        ContainerID: row.containerId,
+        JobID: this.ModifyJobId || '',
+        CompanyID: this.CompanyId,
+      };
+
+      this.agentService
+        .NVOCC_Delete_ExportSea_GridContainerDetails(payload)
+        .subscribe((res: any) => {
+          if (res.Status === 'Sucess') {
+            this.gridComp.rows.removeAt(index);
+            this.gridComp.containerSizeOptions.splice(index, 1);
+            this.gridComp.table.renderRows();
+          }
+        });
+    } else {
+      if (this.gridComp.rows.length > 1) {
+        this.gridComp.rows.removeAt(index);
+        this.gridComp.containerSizeOptions.splice(index, 1);
+        this.gridComp.table.renderRows();
+      }
+    }
+  }
+
   //Clear Forms
 
   ClearAllForms(): void {
@@ -907,7 +1001,7 @@ export class ExportSeaPlanningComponent implements OnInit {
       form?.markAsPristine();
       form?.markAsUntouched();
     });
-
+    this.gridComp.clearGrid();
     this.ModifyJobId = '';
     this.InvoiceID = '';
     this.ContainerID = '';

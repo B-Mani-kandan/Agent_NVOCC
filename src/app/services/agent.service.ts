@@ -246,6 +246,11 @@ export class AgentService {
     return this._http.post(apiUrl, payload);
   }
 
+  fetchContainerGridAddDeleteData(payload: any) {
+    const apiUrl = `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchGridContDetails.ashx`;
+    return this._http.post(apiUrl, payload);
+  }
+
   // Search Details
 
   Nvocc_ContainerBooking(tab: string, payload: any) {
@@ -390,6 +395,13 @@ export class AgentService {
     );
   }
 
+  NVOCC_Save_ExportSea_GridContainerDetails(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ExportSea_GridContainerDetails.ashx`,
+      payload
+    );
+  }
+
   //Print
   fetchGeneralActionFile(action: string, payload: any) {
     const apiMap: any = {
@@ -398,5 +410,14 @@ export class AgentService {
     };
     const apiUrl = apiMap[action];
     return this._http.post(apiUrl, payload);
+  }
+
+  //Delete
+
+  NVOCC_Delete_ExportSea_GridContainerDetails(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_DeleteGrid_ContainerDetails.ashx`,
+      payload
+    );
   }
 }

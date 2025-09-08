@@ -19,13 +19,17 @@
     [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
     (formSubmit)="saveForm($event)"
   ></app-dynamic-forms>
-  <app-dynamic-grid-add-delete></app-dynamic-grid-add-delete>
+  <app-dynamic-grid-add-delete
+    #gridComp
+    (deleteRow)="onDeleteRow($event)"
+    (gridDataChange)="latestGridData = $event"
+  ></app-dynamic-grid-add-delete>
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
     <button
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="!isModifyVisible"
-      (click)="OnGeneralSave()"
+      (click)="onSave()"
     >
       Save
     </button>
@@ -33,7 +37,7 @@
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="isModifyVisible"
-      (click)="OnGeneralSave()"
+      (click)="onSave()"
     >
       Modify
     </button>
