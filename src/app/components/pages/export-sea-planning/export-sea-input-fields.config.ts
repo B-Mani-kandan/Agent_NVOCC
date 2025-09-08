@@ -81,6 +81,7 @@ export const GENERAL_FIELDS = [
     label: 'Container Booking No',
     type: 'text',
     id: 'gen_ContBokNo',
+    readonly: true,
   },
   {
     label: 'Remark',

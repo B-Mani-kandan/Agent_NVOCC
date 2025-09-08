@@ -702,7 +702,7 @@ export class ExportSeaPlanningComponent implements OnInit {
         'LineSealNo',
         'delete',
       ],
-      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta', 'delete'],
+      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Eta', 'Etd', 'delete'],
     };
 
     const payload = {

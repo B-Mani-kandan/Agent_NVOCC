@@ -8,6 +8,13 @@ export const GENERAL_FIELDS = [
     readonly: true,
   },
   {
+    label: 'Job No',
+    type: 'text',
+    id: 'Cont_gen_JobNo',
+    validators: ['numbersOnly'],
+    readonly: true,
+  },
+  {
     label: 'Booking Date',
     type: 'date',
     id: 'Cont_gen_BookingDate',

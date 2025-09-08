@@ -16,6 +16,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   standalone: true,
@@ -28,6 +30,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
+    MatCheckboxModule,
   ],
   selector: 'app-dynamic-gridview',
   templateUrl: './dynamic-gridview.component.html',
@@ -47,6 +50,7 @@ export class DynamicGridviewComponent
   @Output() searchClicked = new EventEmitter<void>();
 
   displayColumns: string[] = [];
+  selection = new SelectionModel<any>(true, []);
 
   ngOnInit() {
     this.setupTable();
@@ -101,5 +105,9 @@ export class DynamicGridviewComponent
 
   refreshPage() {
     window.location.reload();
+  }
+
+  toggleRow(row: any) {
+    this.selection.toggle(row);
   }
 }

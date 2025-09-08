@@ -25,6 +25,9 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { MatDialog } from '@angular/material/dialog';
+import { LoadContainerGridComponent } from '../../layout/load-container-grid/load-container-grid.component';
+import { MatTableDataSource } from '@angular/material/table';
 @Component({
   selector: 'app-import-sea-planning',
   imports: [
@@ -65,6 +68,7 @@ export class ImportSeaPlanningComponent implements OnInit {
   imp_ContainerForm!: FormGroup;
   imp_VesselForm!: FormGroup;
   gridData: any[] = [];
+  LoadGridData: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   displayedColumns: string[] = [];
   currentActionMap: { label: string; icon: string }[] = [];
 
@@ -103,7 +107,8 @@ export class ImportSeaPlanningComponent implements OnInit {
   constructor(
     private agentService: AgentService,
     private messageService: MessageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private dialog: MatDialog
   ) {}
 
   @ViewChild('IMP_GENERAL', { static: false }) IMP_GENERAL!: TemplateRef<any>;
@@ -497,48 +502,112 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.GridSelection = 'SecondGridData';
   }
 
+  // private handleGeneralTabDownload(action: string, data: any) {
+  //   const payload = {
+  //     CompanyID: this.CompanyId,
+  //     JobID: data.ID,
+  //   };
+  //   Swal.fire({
+  //     title: `Are you sure you want to download ${action} Print?`,
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes, download it!',
+  //     cancelButtonText: 'No, cancel',
+  //     customClass: {
+  //       title: 'swal-title-small',
+  //       confirmButton: 'swal-confirm-btn',
+  //       cancelButton: 'swal-cancel-btn',
+  //     },
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       this.agentService.fetchGeneralActionFile(action, payload).subscribe(
+  //         (resp: any) => {
+  //           if (resp && resp.File) {
+  //             this.downloadPdf(resp.File, `${action}.pdf`);
+  //           } else {
+  //             this.messageService.add({
+  //               severity: 'error',
+  //               summary: 'Failed',
+  //               detail: `${this.capitalize(action)} Print No Data Found`,
+  //             });
+  //           }
+  //         },
+  //         (error: any) => {
+  //           this.messageService.add({
+  //             severity: 'error',
+  //             summary: 'Failed',
+  //             detail: `${this.capitalize(action)} ${
+  //               error?.Message || 'No Data Found'
+  //             }`,
+  //           });
+  //         }
+  //       );
+  //     }
+  //   });
+  // }
+
   private handleGeneralTabDownload(action: string, data: any) {
     const payload = {
       CompanyID: this.CompanyId,
       JobID: data.ID,
+      FinanceYear: this.FinanceYear,
+      BranchID: this.BranchID,
     };
-    Swal.fire({
-      title: `Are you sure you want to download ${action} Print?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, download it!',
-      cancelButtonText: 'No, cancel',
-      customClass: {
-        title: 'swal-title-small',
-        confirmButton: 'swal-confirm-btn',
-        cancelButton: 'swal-cancel-btn',
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.agentService.fetchGeneralActionFile(action, payload).subscribe(
-          (resp: any) => {
-            if (resp && resp.File) {
-              this.downloadPdf(resp.File, `${action}.pdf`);
-            } else {
+
+    if (action === 'Empty' || action === 'Surveyor') {
+      this.agentService.NVOCC_LoadContainerDetails_Print(payload).subscribe(
+        (resp: any) => {
+          if (resp.Status === 'Success') {
+            this.LoadGridData = new MatTableDataSource(
+              resp.LoadContainerDetails || []
+            );
+            this.openContainerPopup(resp.LoadContainerDetails || []);
+          } else {
+            this.LoadGridData = new MatTableDataSource<any>([]);
+          }
+        },
+        (error: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: error?.Message || 'Something went wrong',
+          });
+        }
+      );
+    } else {
+      Swal.fire({
+        title: `Are you sure you want to download ${action} Print?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, download it!',
+        cancelButtonText: 'No, cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.agentService.fetchGeneralActionFile(action, payload).subscribe(
+            (resp: any) => {
+              if (resp && resp.File) {
+                this.downloadPdf(resp.File, `${action}.pdf`);
+              } else {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Failed',
+                  detail: `${this.capitalize(action)} Print No Data Found`,
+                });
+              }
+            },
+            (error: any) => {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Failed',
-                detail: `${this.capitalize(action)} Print No Data Found`,
+                detail: `${this.capitalize(action)} ${
+                  error?.Message || 'No Data Found'
+                }`,
               });
             }
-          },
-          (error: any) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Failed',
-              detail: `${this.capitalize(action)} ${
-                error?.Message || 'No Data Found'
-              }`,
-            });
-          }
-        );
-      }
-    });
+          );
+        }
+      });
+    }
   }
 
   downloadPdf(fileUrl: string, fileName: string): void {
@@ -561,7 +630,7 @@ export class ImportSeaPlanningComponent implements OnInit {
         'Terms',
       ],
       CONTAINER: ['ContainerNo', 'ContainerSize', 'LineSealNo'],
-      VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+      VESSEL: ['POL', 'POD', 'VesselName', 'Eta', 'Etd'],
     };
 
     const payload = {
@@ -613,13 +682,15 @@ export class ImportSeaPlanningComponent implements OnInit {
         'Terms',
       ],
       CONTAINER: ['select', 'ContainerNo', 'ContainerSize', 'LineSealNo'],
-      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Eta', 'Etd'],
     };
 
     const actionMap: any = {
       GENERAL: [
-        { label: 'CAN', icon: 'print' },
-        { label: 'DO', icon: 'print' },
+        { label: 'CAN', icon: 'description' },
+        { label: 'DO', icon: 'assignment_turned_in' },
+        { label: 'Empty', icon: 'inventory_2' },
+        { label: 'Surveyor', icon: 'search' },
       ],
     };
 
@@ -1123,5 +1194,19 @@ export class ImportSeaPlanningComponent implements OnInit {
     });
     this.VesselID = '';
     this.isVesselModifyVisible = false;
+  }
+
+  openContainerPopup(data: any[]) {
+    const dialogRef = this.dialog.open(LoadContainerGridComponent, {
+      width: '800px',
+      data: data,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.length > 0) {
+        console.log('User selected containers:', result);
+        // do something with selected containers
+      }
+    });
   }
 }

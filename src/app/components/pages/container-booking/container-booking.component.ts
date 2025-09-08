@@ -615,19 +615,10 @@ export class ContainerBookingComponent implements OnInit {
     this.GridSelection = 'SecondGridData';
   }
   fetchGridData(tab: string) {
-    debugger;
     const columnMap: any = {
-      GENERAL: [
-        'select',
-        'JobNo',
-        'JobDate',
-        'ClientName',
-        'ShipperName',
-        'Pol',
-        'Pod',
-      ],
+      GENERAL: ['select', 'JobNo', 'JobDate', 'ShipperName', 'Pol', 'Pod'],
       CONTAINER: ['ContainerNo', 'ContainerSize'],
-      VESSEL: ['POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+      VESSEL: ['POL', 'POD', 'VesselName', 'Eta', 'Etd'],
     };
 
     const payload = {
@@ -670,7 +661,7 @@ export class ContainerBookingComponent implements OnInit {
         'Pod',
       ],
       CONTAINER: ['select', 'ContainerNo', 'ContainerSize'],
-      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Etd', 'Eta'],
+      VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Eta', 'Etd'],
     };
 
     const payload = {
@@ -701,7 +692,6 @@ export class ContainerBookingComponent implements OnInit {
     );
   }
   onTabChange(tabIndex: number): void {
-    debugger;
     this.tabName = this.tabLabels[tabIndex];
     switch (this.tabName) {
       case 'GENERAL':
@@ -742,7 +732,6 @@ export class ContainerBookingComponent implements OnInit {
   // Populate fields
 
   fillGeneralForm(row: any) {
-    debugger;
     this.isModifyVisible = false;
     this.ModifyJobId = row.ID || null;
     this.JobId = row.JobID || null;
@@ -902,7 +891,6 @@ export class ContainerBookingComponent implements OnInit {
   }
 
   ClearContainerForm(): void {
-    debugger;
     const formMap: { [key: string]: FormGroup | undefined } = {
       containerForm: this.ContcontainerForm,
     };

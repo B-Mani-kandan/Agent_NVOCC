@@ -184,6 +184,13 @@ export class AgentService {
     );
   }
 
+  NVOCC_LoadContainerDetails_Print(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_LoadContainerDetails_Print.ashx`,
+      payload
+    );
+  }
+
   //Fetch Grid
 
   fetchGridData(tab: string, payload: any) {
