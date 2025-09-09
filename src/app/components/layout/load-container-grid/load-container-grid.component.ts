@@ -22,9 +22,8 @@ export class LoadContainerGridComponent {
   displayedColumns: string[] = [
     'select',
     'ContainerNo',
-    'LineSealNo',
     'ContainerType',
-    'Container_IGM_No',
+    'LineSealNo',
   ];
   selection = new SelectionModel<any>(true, []);
 

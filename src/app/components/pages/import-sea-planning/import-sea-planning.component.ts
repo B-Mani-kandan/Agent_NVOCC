@@ -1205,7 +1205,6 @@ export class ImportSeaPlanningComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result && result.length > 0) {
         console.log('User selected containers:', result);
-        // do something with selected containers
       }
     });
   }
