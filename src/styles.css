@@ -68,8 +68,9 @@ html {
   padding-bottom: 0px !important;
 }
 
+/* text rea height fixing */
 .description-text-box {
-  height: 39px !important;
+  height: 39px;
 }
 .input-group-text {
   padding: 5px !important;

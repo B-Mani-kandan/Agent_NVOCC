@@ -1,7 +1,12 @@
 <div class="container-fluid mt-4">
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="row g-3">
     <div class="col-md-3" *ngFor="let field of formFields">
-      <label [for]="field.id" class="form-label">{{ field.label }}</label>
+      <label
+        *ngIf="field.type !== 'checkbox'"
+        [for]="field.id"
+        class="form-label"
+        >{{ field.label }}</label
+      >
       <div class="input-group" *ngIf="field.type === 'autocomplete'">
         <span
           class="input-group-text split-input"
@@ -53,6 +58,7 @@
         class="form-select"
         [id]="field.id"
         formControlName="{{ field.id }}"
+        [ngClass]="{ important: isMandatoryField(field.id) }"
       >
         <option *ngFor="let option of field.options" [value]="option">
           {{ option }}
@@ -67,6 +73,18 @@
         [ngClass]="{ important: isMandatoryField(field.id) }"
         (keypress)="onKeyPress($event, field)"
       ></textarea>
+      <!-- Checkbox -->
+      <div class="form-check mt-2" *ngIf="field.type === 'checkbox'">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          [id]="field.id"
+          formControlName="{{ field.id }}"
+        />
+        <label class="form-check-label" [for]="field.id">
+          {{ field.label }}
+        </label>
+      </div>
     </div>
   </form>
 </div>

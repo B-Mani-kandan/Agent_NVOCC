@@ -7,24 +7,6 @@ export interface AutocompleteFieldConfig {
 
 export const AUTOCOMPLETE_FIELDS: AutocompleteFieldConfig[] = [
   {
-    field: 'gen_ClientName',
-    method: 'fetchClientSuggestions',
-    payloadType: 'client',
-    formType: 'generalForm',
-  },
-  {
-    field: 'gen_Shipper',
-    method: 'fetchShipperSuggestions',
-    payloadType: 'common',
-    formType: 'generalForm',
-  },
-  {
-    field: 'gen_Consignee',
-    method: 'fetchConsigneeSuggestions',
-    payloadType: 'common',
-    formType: 'generalForm',
-  },
-  {
     field: 'gen_Pol',
     method: 'fetchPortSuggestions',
     payloadType: 'common',
@@ -53,30 +35,6 @@ export const AUTOCOMPLETE_FIELDS: AutocompleteFieldConfig[] = [
     method: 'fetchEmptyYardNameSuggestions',
     payloadType: 'EmptyYard',
     formType: 'generalForm',
-  },
-  {
-    field: 'inv_Currency',
-    method: 'fetchInvCurrencySuggestions',
-    payloadType: 'InputVal',
-    formType: 'invoiceForm',
-  },
-  {
-    field: 'inv_Terms',
-    method: 'fetchInvTermsSuggestions',
-    payloadType: 'InputVal',
-    formType: 'invoiceForm',
-  },
-  {
-    field: 'inv_TypeOfPackage',
-    method: 'fetchInvTypePackgSuggestions',
-    payloadType: 'InputVal',
-    formType: 'invoiceForm',
-  },
-  {
-    field: 'inv_UnitType',
-    method: 'fetchInvUnitSuggestions',
-    payloadType: 'InputVal',
-    formType: 'invoiceForm',
   },
   {
     field: 'cont_ContainerNo',

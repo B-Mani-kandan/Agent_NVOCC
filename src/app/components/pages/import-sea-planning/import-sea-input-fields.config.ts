@@ -1,66 +1,41 @@
-export const IMP_GENERAL_FIELDS = [
+export const COMMON_FIELDS = [
   {
     label: 'Job No',
     type: 'text',
     id: 'Imp_gen_JobNo',
     validators: ['numbersOnly'],
+    readonly: true,
   },
+];
+
+export const IMP_GENERAL_FIELDS = [
   {
     label: 'Job Date',
     type: 'date',
     id: 'Imp_gen_JobDate',
   },
   {
-    label: 'Importer Name',
-    type: 'autocomplete',
-    id: 'Imp_gen_Shipper',
-  },
-  {
     label: 'POL',
     type: 'autocomplete',
     id: 'Imp_gen_Pol',
-    validators: ['lettersOnly'],
     mandatory: true,
   },
   {
     label: 'POD',
     type: 'autocomplete',
     id: 'Imp_gen_Pod',
-    validators: ['lettersOnly'],
     mandatory: true,
   },
   {
     label: 'FPOD',
     type: 'autocomplete',
     id: 'Imp_gen_Fpod',
-    validators: ['lettersOnly'],
   },
   {
-    label: 'Commodity',
+    label: 'Item Description',
     type: 'textarea',
     id: 'Imp_gen_ItemDesc',
     mandatory: true,
-  },
-  {
-    label: 'Type of Commodity',
-    type: 'select',
-    id: 'Imp_gen_CommodityType',
-    options: ['', 'Non DG', 'DG'],
-  },
-  {
-    label: 'Marks & No',
-    type: 'text',
-    id: 'Imp_gen_MarksNo',
-  },
-  {
-    label: 'Line / Item No',
-    type: 'text',
-    id: 'Imp_gen_LineItemNo',
-  },
-  {
-    label: 'Sub Item',
-    type: 'text',
-    id: 'Imp_gen_SubItem',
   },
   {
     label: 'Carrier Name',
@@ -81,34 +56,29 @@ export const IMP_GENERAL_FIELDS = [
     validators: ['numbersOnly'],
   },
   {
-    label: 'Remark',
+    label: 'Container Booking No',
     type: 'text',
-    id: 'Imp_gen_Remark',
+    id: 'Imp_gen_ContBokNo',
   },
   {
-    label: 'Can Date',
-    type: 'date',
-    id: 'Imp_gen_CanDate',
-  },
-  {
-    label: 'Can No',
+    label: 'MBL NO',
     type: 'text',
-    id: 'Imp_gen_CanNo',
+    id: 'Imp_gen_MblNo',
   },
   {
-    label: 'Do Date',
+    label: 'MBL Date',
     type: 'date',
-    id: 'Imp_gen_DoDate',
+    id: 'Imp_gen_MblDate',
   },
   {
-    label: 'Do No',
+    label: 'HBL NO',
     type: 'text',
-    id: 'Imp_gen_DoNo',
+    id: 'Imp_gen_HblNo',
   },
   {
-    label: 'Do Valid Date',
+    label: 'HBL Date',
     type: 'date',
-    id: 'Imp_gen_DoValidDate',
+    id: 'Imp_gen_HblDate',
   },
   {
     label: 'Inward Date',
@@ -116,131 +86,160 @@ export const IMP_GENERAL_FIELDS = [
     id: 'Imp_gen_InwardDate',
   },
   {
-    label: 'Empty Yard Name',
-    type: 'autocomplete',
-    id: 'Imp_gen_EmptyName',
-    validators: ['lettersOnly'],
+    label: 'DO Date',
+    type: 'date',
+    id: 'Imp_gen_DODate',
+  },
+  {
+    label: 'Remark',
+    type: 'textarea',
+    id: 'Imp_gen_Remark',
   },
 ];
 
-export const IMP_BLIGM_FIELDS = [
+export const IMP_PRINT_FIELDS = [
   {
-    label: 'MBL NO',
+    label: 'Client Name',
+    type: 'autocomplete',
+    id: 'Imp_gen_ClientName',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Shipper Name',
+    type: 'autocomplete',
+    id: 'Imp_gen_ShipperName',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Shipper Address',
+    type: 'textarea',
+    id: 'Imp_gen_ShipperAddress',
+  },
+  {
+    label: 'Consignee Name',
+    type: 'autocomplete',
+    id: 'Imp_gen_Consignee',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Consignee Address',
+    type: 'textarea',
+    id: 'Imp_gen_ConsigneeAddress',
+  },
+  {
+    label: 'CHA',
+    type: 'autocomplete',
+    id: 'Imp_gen_CHAName',
+  },
+  {
+    label: 'DeStuffing Place',
+    type: 'autocomplete',
+    id: 'Imp_gen_DeStuff',
+  },
+  {
+    label: 'CAN No',
     type: 'text',
-    id: 'Imp_Bligm_Mblno',
+    id: 'Imp_gen_CANNo',
   },
   {
-    label: 'MBL Date',
+    label: 'CAN Date',
     type: 'date',
-    id: 'Imp_Bligm_MblDate',
+    id: 'Imp_gen_CANDate',
   },
-  {
-    label: 'MBL Type',
-    type: 'select',
-    id: 'Imp_Bligm_MBLType',
-    options: [
-      '',
-      'EXPRESS BL',
-      'ORIGINAL BL',
-      'SURRENDER BL',
-      'SEAWAY BL',
-      'FCR',
-      'RFS',
-    ],
-  },
-];
-export const IMP_INVOICE_FIELDS = [
   {
     label: 'Invoice No',
     type: 'text',
-    id: 'Imp_inv_InvoiceNo',
-    mandatory: true,
+    id: 'Imp_gen_InvoiceNo',
   },
   {
     label: 'Invoice Date',
     type: 'date',
-    id: 'Imp_inv_InvoiceDate',
-    mandatory: true,
+    id: 'Imp_gen_InvoiceDate',
   },
   {
-    label: 'Invoice Value',
+    label: 'IGM No',
     type: 'text',
-    id: 'Imp_inv_InvoiceValue',
-    validators: ['numbersOnly'],
+    id: 'Imp_gen_IGMNo',
   },
   {
-    label: 'Currency',
-    type: 'autocomplete',
-    id: 'Imp_inv_Currency',
-    validators: ['lettersOnly'],
+    label: 'IGM Date',
+    type: 'date',
+    id: 'Imp_gen_IGMDate',
   },
   {
-    label: 'Ex-Rate',
+    label: 'Line No',
     type: 'text',
-    id: 'Imp_inv_ExRate',
-    validators: ['numbersOnly'],
+    id: 'Imp_gen_LineItemNo',
   },
   {
-    label: 'Terms',
-    type: 'autocomplete',
-    id: 'Imp_inv_Terms',
-    validators: ['lettersOnly'],
-  },
-  {
-    label: 'No of Packages',
+    label: 'Sub Line No',
     type: 'text',
-    id: 'Imp_inv_NoOfpackage',
-    validators: ['numbersOnly'],
-  },
-  {
-    label: 'Type Of Packages',
-    type: 'autocomplete',
-    id: 'Imp_inv_TypeOfPackage',
-    validators: ['lettersOnly'],
+    id: 'Imp_gen_SubLineNo',
   },
   {
     label: 'Gross Weight',
     type: 'text',
-    id: 'Imp_inv_GrossWeight',
-    validators: ['numbersOnly'],
-  },
-  {
-    label: 'Net Weight',
-    type: 'text',
-    id: 'Imp_inv_NetWeight',
+    id: 'Imp_gen_GrossWt',
     validators: ['numbersOnly'],
   },
   {
     label: 'CBM',
     type: 'text',
-    id: 'Imp_inv_Cbm',
+    id: 'Imp_gen_CBM',
     validators: ['numbersOnly'],
+  },
+  {
+    label: 'No of Package',
+    type: 'text',
+    id: 'Imp_gen_NoOfPackage',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'Package Type',
+    type: 'autocomplete',
+    id: 'Imp_gen_PackageType',
   },
   {
     label: 'Unit Type',
     type: 'autocomplete',
-    id: 'Imp_inv_UnitType',
-    validators: ['lettersOnly'],
+    id: 'Imp_gen_UnitType',
   },
   {
-    label: 'Supplier / Shipper Name',
-    type: 'autocomplete',
-    id: 'Imp_inv_SuplierShipper',
-    validators: ['lettersOnly'],
-  },
-  {
-    label: 'Address',
+    label: 'Marks & Number',
     type: 'text',
-    id: 'Imp_inv_Address',
+    id: 'Imp_gen_MarksNumber',
+  },
+  {
+    label: 'Payment Terms',
+    type: 'textarea',
+    id: 'Imp_gen_PaymtTerms',
+  },
+];
+
+export const IMP_GENERAL_GRID = [
+  {
+    label: 'Container Size',
+    type: 'autocomplete',
+    id: 'gen_ContainerSizeGrid',
+    method: 'fetchContainerTypeSuggestions',
+    payloadType: 'common',
+    readonly: true,
+  },
+  {
+    label: 'Container No',
+    type: 'text',
+    id: 'gen_ContainerNoGrid',
+    readonly: true,
   },
 ];
 
 export const IMP_CONTAINER_FIELDS = [
   {
     label: 'Container Size',
-    type: 'autocomplete',
+    type: 'select',
     id: 'Imp_cont_ContainerSize',
     mandatory: true,
+    options: [],
   },
   {
     label: 'Container No',
@@ -249,14 +248,15 @@ export const IMP_CONTAINER_FIELDS = [
     mandatory: true,
   },
   {
-    label: 'Line Seal No',
-    type: 'text',
-    id: 'Imp_cont_LineSealNo',
+    label: 'Empty Yard Name',
+    type: 'autocomplete',
+    id: 'Imp_cont_EmptyName',
+    validators: ['lettersOnly'],
   },
   {
-    label: 'Custom Seal No',
-    type: 'text',
-    id: 'Imp_cont_CustomsealNo',
+    label: 'Empty Yard Address',
+    type: 'textarea',
+    id: 'Imp_gen_EmptyYardAddress',
   },
   {
     label: 'Empty Return Date',
@@ -268,6 +268,16 @@ export const IMP_CONTAINER_FIELDS = [
     type: 'date',
     id: 'Imp_cont_ValidDate',
   },
+  {
+    label: 'Remarks',
+    type: 'textarea',
+    id: 'Imp_cont_Remarks',
+  },
+  {
+    label: 'Mark as Empty Returned',
+    type: 'checkbox',
+    id: 'Imp_cont_MarkAsEmptyReturn',
+  },
 ];
 
 export const IMP_VESSEL_FIELDS = [
@@ -275,13 +285,11 @@ export const IMP_VESSEL_FIELDS = [
     label: 'POL',
     type: 'autocomplete',
     id: 'Imp_vess_POL',
-    validators: ['lettersOnly'],
   },
   {
     label: 'POD',
     type: 'autocomplete',
     id: 'Imp_vess_POD',
-    validators: ['lettersOnly'],
   },
   {
     label: 'Vessel Name',

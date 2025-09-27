@@ -1,0 +1,133 @@
+<div class="esp-bar">
+  <h6>HBL DRAFT</h6>
+</div>
+
+<app-dynamic-gridview
+  *ngIf="importfirstGridVisible"
+  [data]="gridData"
+  [columns]="displayedColumns"
+  [tabNameNew]="IMPGENRAL"
+  [tabName]="hbl_tabName"
+  (rowSelected)="HandleRowActionFirstGrid($event)"
+  (searchClicked)="onSearch()"
+>
+</app-dynamic-gridview>
+<app-dynamic-forms
+  *ngIf="isTabPanelVisible"
+  [formGroup]="hbl_CommonForm"
+  [formFields]="hbl_CommonFields"
+  [templateId]="'HBL_COMMON'"
+  [isMandatoryField]="getMandatoryFields('HBL_COMMON')"
+  [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+  (formSubmit)="saveForm($event)"
+></app-dynamic-forms>
+<app-tab-panel
+  [tabs]="hbl_tabLabels"
+  *ngIf="isTabPanelVisible"
+  [tabContents]="tabContents"
+  (tabChanged)="onTabChange($event)"
+></app-tab-panel>
+<p-toast></p-toast>
+<ng-template #HBL_GENERAL>
+  <app-dynamic-forms
+    [formGroup]="hbl_GeneralForm"
+    [formFields]="hbl_GeneralFields"
+    [templateId]="'HBL_GENERAL'"
+    [isMandatoryField]="getMandatoryFields('HBL_GENERAL')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+</ng-template>
+<ng-template #HBL_CARGO>
+  <app-dynamic-forms
+    [formGroup]="hbl_CargoForm"
+    [formFields]="hbl_CargoFields"
+    [templateId]="'HBL_CARGO'"
+    [isMandatoryField]="getMandatoryFields('HBL_CARGO')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+</ng-template>
+<ng-template #HBL_FREIGHT>
+  <app-dynamic-forms
+    [formGroup]="hbl_FreightForm"
+    [formFields]="hbl_FreightFields"
+    [templateId]="'HBL_FREIGHT'"
+    [isMandatoryField]="getMandatoryFields('HBL_FREIGHT')"
+    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+    (formSubmit)="saveForm($event)"
+  ></app-dynamic-forms>
+  <app-dynamic-grid-add-delete
+    #gridFreight
+    [fields]="HBL_FREIGHTGRID_FIELDS"
+    [fetchMethod]="fetchGridAutocomplete"
+    (deleteRow)="onDeleteRow($event)"
+    [initialRows]="latestFreightGridData"
+    (gridDataChange)="onFreightGridDataChange($event)"
+  ></app-dynamic-grid-add-delete>
+</ng-template>
+<ng-template #HBL_ANNEXURE>
+  <app-dynamic-grid-add-delete
+    #gridAnnexure
+    [fields]="HBL_ANNEXUREGRID_FIELDS"
+    (deleteRow)="onDeleteRow($event)"
+    [initialRows]="latestAnnexureGridData"
+    (gridDataChange)="onAnnexureGridDataChange($event)"
+  ></app-dynamic-grid-add-delete>
+</ng-template>
+<ng-template #HBL_CONTAINER>
+  <app-dynamic-grid-add-delete
+    #gridContainer
+    [fields]="HBL_CONTAINERGRID_FIELDS"
+    [fetchMethod]="fetchGridAutocomplete"
+    (deleteRow)="onDeleteRow($event)"
+    [initialRows]="latestContainerGridData"
+    (gridDataChange)="onContainerGridDataChange($event)"
+  ></app-dynamic-grid-add-delete>
+</ng-template>
+<div
+  class="container-fluid d-flex gap-2 col-12 ml-2 mt-4"
+  *ngIf="isTabPanelVisible"
+>
+  <button
+    type="submit"
+    class="btn custom-btn btn-success mb-4"
+    *ngIf="!isModifyVisible"
+    (click)="onSave('Save')"
+  >
+    Save
+  </button>
+  <button
+    type="submit"
+    class="btn custom-btn btn-success mb-4"
+    *ngIf="isModifyVisible"
+    (click)="onSave('Modify')"
+  >
+    Modify
+  </button>
+  <button
+    type="submit"
+    class="btn custom-btn btn-primary mb-4"
+    (click)="onSearch()"
+  >
+    Search
+  </button>
+  <button
+    type="reset"
+    class="btn custom-btn btn-danger mb-4"
+    (click)="ClearAllForms()"
+  >
+    Clear
+  </button>
+</div>
+
+<app-dynamic-gridview
+  *ngIf="isGridVisible"
+  [data]="gridData"
+  [columns]="displayedColumns"
+  [tabName]="hbl_tabName"
+  [actionMap]="currentActionMap"
+  (rowSelected)="HandleRowAction($event)"
+>
+  >
+</app-dynamic-gridview>

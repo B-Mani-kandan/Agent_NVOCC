@@ -1,7 +1,13 @@
 <div class="esp-bar">
   <h6>EXPORT SEA PLANNING</h6>
 </div>
-
+<app-dynamic-forms
+  *ngIf="!(isGridVisible && tabName === 'GENERAL')"
+  [formGroup]="commonForm"
+  [formFields]="commonFields"
+  [isMandatoryField]="getMandatoryFields('GENERAL')"
+  (formSubmit)="saveForm($event)"
+></app-dynamic-forms>
 <app-tab-panel
   [tabs]="tabLabels"
   *ngIf="!(isGridVisible && tabName === 'GENERAL')"
@@ -21,15 +27,18 @@
   ></app-dynamic-forms>
   <app-dynamic-grid-add-delete
     #gridComp
+    [fields]="GENERAL_GRID"
+    [fetchMethod]="fetchGridAutocomplete"
     (deleteRow)="onDeleteRow($event)"
-    (gridDataChange)="latestGridData = $event"
+    [initialRows]="latestExpContGridData"
+    (gridDataChange)="onExpContGridDataChange($event)"
   ></app-dynamic-grid-add-delete>
   <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
     <button
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="!isModifyVisible"
-      (click)="onSave()"
+      (click)="onSave('Save')"
     >
       Save
     </button>
@@ -37,7 +46,7 @@
       type="submit"
       class="btn custom-btn btn-success"
       *ngIf="isModifyVisible"
-      (click)="onSave()"
+      (click)="onSave('Modify')"
     >
       Modify
     </button>
@@ -52,77 +61,6 @@
       type="reset"
       class="btn custom-btn btn-danger"
       (click)="ClearAllForms()"
-    >
-      Clear
-    </button>
-  </div>
-</ng-template>
-
-<ng-template #OPERATION>
-  <app-dynamic-forms
-    [formGroup]="operationForm"
-    [formFields]="operationFields"
-    [templateId]="'OPERATION'"
-    [isMandatoryField]="getMandatoryFields('OPERATION')"
-    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
-    (formSubmit)="saveForm($event)"
-  ></app-dynamic-forms>
-  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      (click)="OnOperationsSave()"
-      *ngIf="!isoperModifyVisible"
-    >
-      Save
-    </button>
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      (click)="OnOperationsSave()"
-      *ngIf="isoperModifyVisible"
-    >
-      Modify
-    </button>
-    <input
-      type="reset"
-      class="btn custom-btn btn-danger"
-      (click)="ClearAllForms()"
-      value="Clear"
-    />
-  </div>
-</ng-template>
-
-<ng-template #INVOICE>
-  <app-dynamic-forms
-    [formGroup]="invoiceForm"
-    [formFields]="invoiceFields"
-    [templateId]="'INVOICE'"
-    [isMandatoryField]="getMandatoryFields('INVOICE')"
-    [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
-    (formSubmit)="saveForm($event)"
-  ></app-dynamic-forms>
-  <div class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4">
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      *ngIf="!isInvoiceModifyVisible"
-      (click)="OnInvoiceSave('Save')"
-    >
-      Save
-    </button>
-    <button
-      type="submit"
-      class="btn custom-btn btn-success"
-      *ngIf="isInvoiceModifyVisible"
-      (click)="OnInvoiceSave('Modify')"
-    >
-      Modify
-    </button>
-    <button
-      type="reset"
-      class="btn custom-btn btn-danger"
-      (click)="ClearInvoiceForm()"
     >
       Clear
     </button>

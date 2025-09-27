@@ -1,3 +1,13 @@
+export const COMMON_FIELDS = [
+  {
+    label: 'Job No',
+    type: 'text',
+    id: 'Cont_gen_JobNo',
+    validators: ['numbersOnly'],
+    readonly: true,
+  },
+];
+
 export const GENERAL_FIELDS = [
   {
     label: 'Booking No',
@@ -5,13 +15,6 @@ export const GENERAL_FIELDS = [
     id: 'Cont_gen_BookingNo',
     validators: ['numbersOnly'],
     mandatory: true,
-    readonly: true,
-  },
-  {
-    label: 'Job No',
-    type: 'text',
-    id: 'Cont_gen_JobNo',
-    validators: ['numbersOnly'],
     readonly: true,
   },
   {

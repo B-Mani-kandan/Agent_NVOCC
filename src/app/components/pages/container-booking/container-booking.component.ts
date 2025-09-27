@@ -22,12 +22,14 @@ import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AUTOCOMPLETE_FIELDS } from './autocomplete-fields.config';
 import {
+  COMMON_FIELDS,
   GENERAL_FIELDS,
   CONTAINER_FIELDS,
   VESSEL_FIELDS,
 } from './container-booking-input-fields.config';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-container-booking',
   imports: [
@@ -44,6 +46,7 @@ import { MessageService } from 'primeng/api';
 })
 export class ContainerBookingComponent implements OnInit {
   CompanyId: string | undefined;
+  CompID: string | undefined;
   FinanceYear: any | undefined;
   BranchID: any | undefined;
   ModifyJobId: any | undefined;
@@ -56,6 +59,7 @@ export class ContainerBookingComponent implements OnInit {
   tabLabels: string[] = ['GENERAL', 'CONTAINER DETAILS', 'VESSEL DETAILS'];
   tabContents: TemplateRef<any>[] = [];
   disabledTabs: boolean[] = [false, true, true, true, true];
+  commonForm!: FormGroup;
   ContgeneralForm!: FormGroup;
   ContcontainerForm!: FormGroup;
   ContvesselForm!: FormGroup;
@@ -73,9 +77,11 @@ export class ContainerBookingComponent implements OnInit {
   searchClicked: boolean = false;
   fullGridData: string[] = [];
   selectedColumns: string[] = [];
+  commonFields = COMMON_FIELDS;
   ContgeneralFields = GENERAL_FIELDS;
   ContcontainerFields = CONTAINER_FIELDS;
   ContvesselFields = VESSEL_FIELDS;
+  currentActionMap: { linkid: string; label: string; icon: string }[] = [];
 
   @ViewChild('CONT_GENERAL', { static: false }) CONT_GENERAL!: TemplateRef<any>;
   @ViewChild('CONT_CONTAINER', { static: false })
@@ -90,16 +96,30 @@ export class ContainerBookingComponent implements OnInit {
 
   ngOnInit() {
     this.tabName = 'GENERAL';
+    this.commonForm = this.createForm(this.commonFields);
     this.ContgeneralForm = this.createForm(this.ContgeneralFields);
     this.ContcontainerForm = this.createForm(this.ContcontainerFields);
     this.ContvesselForm = this.createForm(this.ContvesselFields);
     this.setupAutocompleteListeners();
+    this.ContgeneralForm.get('Cont_gen_Pol')?.valueChanges.subscribe((val) => {
+      this.ContgeneralForm.patchValue(
+        { Cont_gen_PrintPol: val },
+        { emitEvent: false }
+      );
+    });
+    this.ContgeneralForm.get('Cont_gen_Pod')?.valueChanges.subscribe((val) => {
+      this.ContgeneralForm.patchValue(
+        { Cont_gen_PrintPod: val },
+        { emitEvent: false }
+      );
+    });
     this.getBookingNo();
     this.getCurrentDate();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
+    this.CompID = localStorage.getItem('CompId') ?? undefined;
+    this.FinanceYear = localStorage.getItem('FinanceYear') ?? undefined;
+    this.BranchID = localStorage.getItem('BranchId') ?? undefined;
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
-    this.FinanceYear = '2025-2026';
-    this.BranchID = '1594';
     this.IMPGENRAL = 'IMPGENERAL';
     this.fetchGridData('GENERAL');
   }
@@ -376,7 +396,11 @@ export class ContainerBookingComponent implements OnInit {
     const payloadMap: Record<string, any> = {
       InputVal: { InputVal: input },
       common: { InputVal: input, CompanyId: this.CompanyId },
-      client: { InputVal: input, CompanyID: this.CompanyId, CompID: '1575' },
+      client: {
+        InputVal: input,
+        CompanyID: this.CompanyId,
+        CompID: this.CompID,
+      },
       forwarder: { InputVal: input, CompanyId: this.CompanyId },
       EmptyYard: {
         InputVal: input,
@@ -526,17 +550,35 @@ export class ContainerBookingComponent implements OnInit {
       };
     }
 
-    this.saveSection(
-      this.ContgeneralForm,
-      this.agentService.NVOCC_Save_Container_GeneralDetails.bind(
-        this.agentService
-      ),
-      data,
-      (res) => {
-        this.ModifyJobId = res.ReturnJobID;
-        this.JobId = res.ReturnJobID;
-      }
-    );
+    const combinedPayload = {
+      ...this.commonForm.getRawValue(),
+      ...this.ContgeneralForm.getRawValue(),
+      ...data,
+    };
+
+    this.agentService
+      .NVOCC_Save_Container_GeneralDetails(combinedPayload)
+      .subscribe({
+        next: (res) => {
+          if (res.Status === 'Success') {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: `General ${res.Message}`,
+            });
+            this.ModifyJobId = res.ReturnJobID;
+            this.JobId = res.ReturnJobID;
+            this.fetchSearchGridData('GENERAL');
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Save Failed',
+              detail: res.Message,
+            });
+          }
+        },
+        error: () => {},
+      });
     this.isModifyVisible = true;
   }
   OnContainerSave(action: any): void {
@@ -611,12 +653,14 @@ export class ContainerBookingComponent implements OnInit {
       this.onRowDelete(event.data);
       this.isTabPanelVisible = true;
       this.ContainerfirstGridVisible = false;
+    } else {
+      this.handleGeneralTabDownload(event.action, event.data);
     }
     this.GridSelection = 'SecondGridData';
   }
   fetchGridData(tab: string) {
     const columnMap: any = {
-      GENERAL: ['select', 'JobNo', 'JobDate', 'ShipperName', 'Pol', 'Pod'],
+      GENERAL: ['select', 'JobNo', 'JobDate', 'Pol', 'Pod'],
       CONTAINER: ['ContainerNo', 'ContainerSize'],
       VESSEL: ['POL', 'POD', 'VesselName', 'Eta', 'Etd'],
     };
@@ -659,6 +703,7 @@ export class ContainerBookingComponent implements OnInit {
         'ShipperName',
         'Pol',
         'Pod',
+        'actions',
       ],
       CONTAINER: ['select', 'ContainerNo', 'ContainerSize'],
       VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Eta', 'Etd'],
@@ -672,24 +717,88 @@ export class ContainerBookingComponent implements OnInit {
       AgentID: this.AgentID,
     };
 
+    const actionMap: any = {
+      GENERAL: [
+        { linkid: 'Booking', label: 'Booking', icon: 'event_note' },
+        { linkid: 'Release', label: 'Release', icon: 'lock_open' },
+      ],
+    };
+
     this.agentService.fetchContainerGridData(tab, payload).subscribe(
       (res: any) => {
         if (res.Status === 'Success') {
           const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
           this.gridData = res[key];
           this.displayedColumns = columnMap[tab];
+          this.currentActionMap = actionMap[tab];
         } else {
           this.gridData = [];
           this.displayedColumns = columnMap[tab];
+          this.currentActionMap = [];
         }
       },
       (error) => {
         console.error('API Error:', error);
         this.gridData = [];
         this.displayedColumns = [];
+        this.currentActionMap = [];
         this.isGridVisible = false;
       }
     );
+  }
+
+  private handleGeneralTabDownload(action: string, data: any) {
+    const payload = {
+      ContBookID: data.ID,
+      CompanyID: this.CompanyId,
+      AgentID: this.AgentID,
+      CompID: this.CompID,
+      FinanceYear: this.FinanceYear,
+      BranchID: this.BranchID,
+    };
+
+    Swal.fire({
+      title: `Are you sure you want to download ${action} Print?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, download it!',
+      cancelButtonText: 'No, cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.agentService
+          .fetchContainerBookingGeneralActionFile(action, payload)
+          .subscribe(
+            (resp: any) => {
+              if (resp && resp.File) {
+                this.downloadPdf(resp.File, `${action}.pdf`);
+              } else {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Failed',
+                  detail: `${this.capitalize(action)} Print No Data Found`,
+                });
+              }
+            },
+            (error: any) => {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Failed',
+                detail: `${this.capitalize(action)} ${
+                  error?.Message || 'No Data Found'
+                }`,
+              });
+            }
+          );
+      }
+    });
+  }
+
+  downloadPdf(fileUrl: string, fileName: string): void {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName;
+    link.target = '_blank';
+    link.click();
   }
   onTabChange(tabIndex: number): void {
     this.tabName = this.tabLabels[tabIndex];
@@ -767,6 +876,14 @@ export class ContainerBookingComponent implements OnInit {
       this.ContvesselForm.patchValue(vesselFormValues);
     } else if (this.tabName === 'GENERAL') {
       this.isGridVisible = false;
+      const CommonValues: any = {};
+      this.commonFields.forEach((field) => {
+        const fieldId = field.id;
+        const key = this.extractGeneralRowKey(fieldId);
+        CommonValues[fieldId] = row[key] ?? '';
+      });
+      this.commonForm.patchValue(CommonValues);
+
       const formValues: any = {};
       const gendateFields = [
         'BookingDate',

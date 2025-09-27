@@ -34,46 +34,33 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const Token = localStorage.getItem('authToken');
-      if (Token) {
-        this.router.navigateByUrl('/dashboard');
-        return;
-      }
-    }
-
+    // if (isPlatformBrowser(this.platformId)) {
+    //   const Token = localStorage.getItem('authToken');
+    //   if (Token) {
+    //     this.router.navigateByUrl('/dashboard');
+    //     return;
+    //   }
+    // }
     this.siteUrl = this.document.location.hostname;
     this.getClientViewURL();
     this.getClientInfo();
   }
 
   getClientViewURL() {
-    this.ClientinfoService.getClientViewUrl(this.siteUrl).subscribe(
-      (data) => {
-        if (data.Status === 'Success') {
-          this.clientViewURL = data.APIURL;
+    this.ClientinfoService.getClientViewUrl(this.siteUrl).subscribe((data) => {
+      if (data.Status === 'Success') {
+        this.clientViewURL = data.APIURL;
 
-          if (isPlatformBrowser(this.platformId)) {
-            localStorage.setItem('ClientViewApiUrl', data.APIURL);
-          }
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('ClientViewApiUrl', data.APIURL);
         }
-      },
-      (error) => {
-        console.error('Error fetching client info', error);
+        this.getClientInfo(data.APIURL);
       }
-    );
+    });
   }
 
-  getClientInfo() {
-    let clientApiUrl: string | undefined;
-
-    if (isPlatformBrowser(this.platformId)) {
-      clientApiUrl = localStorage.getItem('ClientViewApiUrl') ?? undefined;
-    }
-
-    this.ClientinfoService.getClientInfo(
-      clientApiUrl || this.siteUrl
-    ).subscribe(
+  getClientInfo(apiUrl?: string) {
+    this.ClientinfoService.getClientInfo(apiUrl || this.siteUrl).subscribe(
       (data) => {
         if (data.Status === 'Success') {
           this.CompanyID = data.CompanyId;
@@ -81,20 +68,7 @@ export class LoginComponent implements OnInit {
           if (isPlatformBrowser(this.platformId)) {
             localStorage.setItem('CompanyID', data.CompanyId);
           }
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: data.Message,
-          });
         }
-      },
-      () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Client info fetch failed',
-        });
       }
     );
   }
@@ -131,6 +105,9 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('authToken', res.Token);
           localStorage.setItem('AgentID', res.AgentID);
           localStorage.setItem('AgentName', res.AgentName);
+          localStorage.setItem('BranchId', res.BranchId);
+          localStorage.setItem('CompId', res.CompId);
+          localStorage.setItem('FinanceYear', res.FinacYear);
         }
 
         this.messageService.add({

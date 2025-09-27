@@ -30,26 +30,23 @@ export class ClientinfoService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    if (isPlatformBrowser(this.platformId)) {
-      let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
-      if (!apiUrl.startsWith('http') && apiUrl) {
-        apiUrl = 'https://' + apiUrl;
-      }
-      this.BASE_URL = apiUrl;
-    }
-  }
+  ) {}
 
   getClientInfo(siteUrl: string): Observable<ClientInfo> {
-    const body = { SiteURL: siteUrl };
+    let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
+    if (!apiUrl.startsWith('http') && apiUrl) {
+      apiUrl = 'https://' + apiUrl;
+    }
+    console.log(siteUrl, 'client info');
     return this.http.post<ClientInfo>(
-      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetClientInfo.ashx`,
-      body
+      `${apiUrl}/ServiceNVOC/Nvocc_GetClientInfo.ashx`,
+      { SiteURL: siteUrl }
     );
   }
 
   getClientViewUrl(siteUrl: string): Observable<ClientViewURL> {
     const body = { SiteURL: siteUrl };
+    console.log(this.viewApiUrl, body, 'client View');
     return this.http.post<ClientViewURL>(this.viewApiUrl, body);
   }
 }

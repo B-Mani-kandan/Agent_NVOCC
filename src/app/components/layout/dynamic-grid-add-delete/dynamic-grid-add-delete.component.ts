@@ -1,11 +1,22 @@
 import {
   Component,
+  Input,
   OnInit,
+  OnChanges,
+  SimpleChanges,
+  AfterViewInit,
   Output,
   EventEmitter,
   ViewChild,
+  ChangeDetectorRef,
 } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTable, MatTableModule } from '@angular/material/table';
@@ -13,9 +24,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { debounceTime, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { AgentService } from '../../../services/agent.service'; // adjust path
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  switchMap,
+} from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dynamic-grid-add-delete',
@@ -32,135 +47,201 @@ import { AgentService } from '../../../services/agent.service'; // adjust path
   templateUrl: './dynamic-grid-add-delete.component.html',
   styleUrls: ['./dynamic-grid-add-delete.component.css'],
 })
-export class DynamicGridAddDeleteComponent implements OnInit {
-  form!: FormGroup;
-  displayedColumns: string[] = ['containerSize', 'noOfContainer', 'actions'];
-  containerSizeOptions: any[][] = [];
+export class DynamicGridAddDeleteComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
+  @Input() fields: any[] = [];
+  @Input() initialRows: any[] = [];
+  @Input() fetchMethod!: (
+    method: string,
+    input: string,
+    payloadType: string
+  ) => Observable<string[]>;
 
-  @ViewChild(MatTable) table!: MatTable<any>;
+  @Input() HideAction: string = '';
   @Output() gridDataChange = new EventEmitter<any[]>();
   @Output() deleteRow = new EventEmitter<{ index: number; row: any }>();
 
-  constructor(private fb: FormBuilder, private agentService: AgentService) {}
+  form!: FormGroup;
+  displayedColumns: string[] = [];
+
+  @ViewChild(MatTable, { static: false }) table!: MatTable<any>;
+
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
+    this.form = this.fb.group({
+      rows: this.fb.array([]),
+    });
+  }
 
   ngOnInit(): void {
+    this.displayedColumns = [...this.fields.map((f) => f.id)];
+    if (this.HideAction !== 'HIDEGRIDACTION') {
+      this.displayedColumns.push('actions');
+    }
+
     this.form = this.fb.group({
       rows: this.fb.array([this.createRow()]),
     });
-    this.containerSizeOptions.push([]);
-    this.subscribeToContainerSizeChanges(0);
+
     this.form.valueChanges.subscribe(() => {
-      this.gridDataChange.emit(this.getGridData());
+      if (!this.isPatching) {
+        this.gridDataChange.emit(this.getGridData());
+      }
     });
   }
+
+  // ngOnInit(): void {
+  //   this.displayedColumns = [...this.fields.map((f) => f.id), 'actions'];
+  //   this.form = this.fb.group({
+  //     rows: this.fb.array([this.createRow()]),
+  //   });
+
+  //   this.form.valueChanges.subscribe(() => {
+  //     if (!this.isPatching) {
+  //       this.gridDataChange.emit(this.getGridData());
+  //     }
+  //   });
+  // }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.refreshTable();
+    }, 0);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialRows'] && changes['initialRows'].currentValue) {
+      this.setGridRows(changes['initialRows'].currentValue);
+    }
+
+    if (changes['HideAction']) {
+      this.displayedColumns = [...this.fields.map((f) => f.id)];
+      if (this.HideAction !== 'HIDEGRIDACTION') {
+        this.displayedColumns.push('actions');
+      }
+    }
+  }
+
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (changes['initialRows'] && changes['initialRows'].currentValue) {
+  //     this.setGridRows(changes['initialRows'].currentValue);
+  //   }
+  // }
 
   get rows(): FormArray {
     return this.form.get('rows') as FormArray;
   }
 
-  createRow(): FormGroup {
-    return this.fb.group({
-      containerSize: [
-        '',
-        { validators: [Validators.required], updateOn: 'change' },
-      ],
-      noOfContainer: [
-        '',
-        { validators: [Validators.required], updateOn: 'change' },
-      ],
-      containerId: [''],
+  createRow(initialData: any = {}): FormGroup {
+    const group: any = {};
+    const idKey =
+      Object.keys(initialData).find((k) =>
+        /(FreightID|AnnexureID|ContainerID|ID)$/i.test(k)
+      ) || 'ID';
+
+    group[idKey] = [initialData[idKey] ?? null];
+    this.fields.forEach((field) => {
+      const validators: any[] = [];
+      if (field.Validators?.includes('numbersOnly')) {
+        validators.push(Validators.pattern(/^[0-9]*$/));
+      }
+      if (field.required) {
+        validators.push(Validators.required);
+      }
+
+      const control = this.fb.control('', validators) as FormControl & {
+        options: string[];
+      };
+      control.options = [];
+      group[field.id] = control;
+
+      if (field.type === 'autocomplete' && this.fetchMethod) {
+        control.valueChanges
+          .pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            filter((input: string | null): input is string => !!input),
+            switchMap((input: string) =>
+              this.fetchMethod(field.method, input, field.payloadType)
+            )
+          )
+          .subscribe((options: string[]) => {
+            control.options = options;
+          });
+      }
     });
+
+    return this.fb.group(group);
   }
 
   addRow(): void {
     this.rows.push(this.createRow());
-    const rowIndex = this.rows.length - 1;
-    this.containerSizeOptions.push([]);
-    this.subscribeToContainerSizeChanges(rowIndex);
-    this.table.renderRows();
+    this.refreshTable();
   }
 
   removeRow(index: number): void {
-    const row = this.rows.at(index) as FormGroup;
-    this.deleteRow.emit({ index, row: row.getRawValue() });
-  }
-  getGridData(): any[] {
-    const allRows = this.rows.getRawValue();
-    return allRows;
-  }
-
-  private subscribeToContainerSizeChanges(rowIndex: number): void {
-    const row = this.rows.at(rowIndex);
-    if (!row) return; // ✅ safety check
-
-    row
-      .get('containerSize')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        switchMap((value: string) => {
-          if (value && value.trim() !== '') {
-            return this.agentService.NVOCC_GetContainerSize({
-              InputVal: value,
-            });
-          }
-          return of({ Status: 'Failed', GetContainerSize: [] });
-        })
-      )
-      .subscribe((res: any) => {
-        this.containerSizeOptions[rowIndex] =
-          res.Status === 'Success' ? res.GetContainerSize : [];
-      });
-  }
-
-  onContainerSizeSelected(event: any, rowIndex: number): void {
-    const selectedValue = event.option.value;
-    this.rows.at(rowIndex).patchValue({
-      containerSize: selectedValue,
-    });
-  }
-
-  clearFormArray(formArray: FormArray) {
-    while (formArray.length !== 0) {
-      formArray.removeAt(0);
+    if (this.rows.length > 1) {
+      const row = this.rows.at(index).value;
+      this.deleteRow.emit({ index, row });
+      this.rows.removeAt(index);
+      this.refreshTable();
     }
   }
 
-  setGridRows(data: any[]): void {
+  getGridData(): any[] {
+    return this.rows.getRawValue();
+  }
+
+  private isPatching = false;
+  setGridRows(data: any[] = []): void {
+    this.isPatching = true;
     const rowsArray = this.fb.array<FormGroup>([]);
-    this.clearFormArray(rowsArray);
-    this.containerSizeOptions = [];
 
     if (!data || data.length === 0) {
       rowsArray.push(this.createRow());
-      this.containerSizeOptions.push([]);
     } else {
       data.forEach((item) => {
-        rowsArray.push(
-          this.fb.group({
-            containerId: [item.containerId || null],
-            containerSize: [item.containerSize || '', Validators.required],
-            noOfContainer: [item.noOfContainer || '', Validators.required],
-          })
-        );
-        this.containerSizeOptions.push([]);
+        const rowGroup = this.createRow(item);
+        this.fields.forEach((field) => {
+          const candidates = [
+            field.id,
+            `common_${field.id}`,
+            field.id.replace(/^common_/, ''),
+            field.id.replace(/^common_/, '').toLowerCase(),
+          ];
+          let value = '';
+          for (const k of candidates) {
+            if (k && item.hasOwnProperty(k)) {
+              value = item[k];
+              break;
+            }
+          }
+          rowGroup.get(field.id)?.setValue(value);
+        });
+        rowsArray.push(rowGroup);
       });
     }
 
     this.form.setControl('rows', rowsArray);
 
-    this.rows.controls.forEach((_, i) => {
-      this.subscribeToContainerSizeChanges(i);
+    setTimeout(() => {
+      this.table?.renderRows();
+      this.isPatching = false;
     });
-
-    Promise.resolve().then(() => this.table?.renderRows());
   }
 
   clearGrid(): void {
-    this.clearFormArray(this.rows);
-    this.containerSizeOptions = [];
+    this.rows.clear();
     this.rows.push(this.createRow());
-    this.containerSizeOptions.push([]);
-    this.subscribeToContainerSizeChanges(0);
-    this.table.renderRows();
+    this.refreshTable();
+  }
+
+  private refreshTable() {
+    setTimeout(() => {
+      if (this.table) {
+        this.table.dataSource = this.rows.controls;
+        this.table.renderRows();
+      }
+    }, 0);
   }
 }

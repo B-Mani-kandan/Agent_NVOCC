@@ -62,9 +62,16 @@ export class AgentService {
     );
   }
 
+  NVOCC_HBL_BLNo(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetHblNo.ashx`,
+      payload
+    );
+  }
+
   NVOCC_Import_GetJobNo(payload: any) {
     return this._http.post<any>(
-      `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_GetGobNo.ashx`,
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetImpJobNo.ashx`,
       payload
     );
   }
@@ -190,13 +197,86 @@ export class AgentService {
       payload
     );
   }
+  NVOCC_AgentName(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetAgentName.ashx`,
+      payload
+    );
+  }
+  NVOCC_ChargeName(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetChargeName.ashx`,
+      payload
+    );
+  }
+
+  NVOCC_PackageCode(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetPackageIGM.ashx`,
+      payload
+    );
+  }
+  NVOCC_GetShipperAddress(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetShipperAddress.ashx`,
+      payload
+    );
+  }
+
+  NVOCC_GetConsigneeAddress(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetConsigneeAddress.ashx`,
+      payload
+    );
+  }
+  NVOCC_GetAgentAddress(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetAgentAddress.ashx`,
+      payload
+    );
+  }
+  NVOCC_GetEmptyYardAddress(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetEmptyYard_Address.ashx`,
+      payload
+    );
+  }
+  NVOCC_GetApproverName(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetApproverName.ashx`,
+      payload
+    );
+  }
+  NVOCC_GetIncoTerms(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetIncoTerms.ashx`,
+      payload
+    );
+  }
+  NVOCC_GetCHAName(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetCHAName.ashx`,
+      payload
+    );
+  }
+  NVOCC_GetDeStuffPlace(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetDeStuffPlace.ashx`,
+      payload
+    );
+  }
+  NVOCC_UpdateVesselDeparture(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_CheckBoxUpdate.ashx`,
+      payload
+    );
+  }
 
   //Fetch Grid
 
   fetchGridData(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchGeneralData.ashx`,
-      INVOICE: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchInvoiceDetails.ashx`,
       CONTAINER: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchContDetails.ashx`,
       VESSEL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchVesselDetails.ashx`,
     };
@@ -208,10 +288,8 @@ export class AgentService {
   fetchExpConvImpGridData(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_ExportConvert_GeneralData.ashx`,
-      BLDETAILS: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchBLIGM_Details.ashx`,
-      INVOICE: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchInvoiceDetails.ashx`,
-      CONTAINER: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchContDetails.ashx`,
-      VESSEL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchVesselDetails.ashx`,
+      CONTAINER: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_ExportConvert_ContainerDetails.ashx`,
+      VESSEL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_ExportConvert_VesselDetails.ashx`,
     };
 
     const apiUrl = apiMap[tab];
@@ -221,8 +299,6 @@ export class AgentService {
   fetchImportSearchGridData(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_SearchGeneralData.ashx`,
-      BLDETAILS: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_SearchBLIGMDetails.ashx`,
-      INVOICE: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_SearchInvoiceDetails.ashx`,
       CONTAINER: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_SearchContDetails.ashx`,
       VESSEL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_SearchVesselDetails.ashx`,
     };
@@ -246,7 +322,24 @@ export class AgentService {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Cont_Search_GeneralDetails.ashx`,
       CONTAINER: `${this.BASE_URL}/ServiceNVOC/Nvocc_Cont_ExpConvert_ContainerDetails.ashx`,
-      VESSEL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Cont_ExpConvert_VesselDetails.ashx`,
+      VESSEL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Cont_Search_VesselDetails.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+
+  fetchHBLExPortConvertGridData(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_ExportConvert_GeneralDetails.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  fetchHBLAllDetails(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_SearchAllDetails.ashx`,
     };
 
     const apiUrl = apiMap[tab];
@@ -255,6 +348,24 @@ export class AgentService {
 
   fetchContainerGridAddDeleteData(payload: any) {
     const apiUrl = `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_SearchGridContDetails.ashx`;
+    return this._http.post(apiUrl, payload);
+  }
+
+  fetchImpContainerGridAddDeleteData(payload: any) {
+    const apiUrl = `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_SearchGridCont_Details.ashx`;
+    return this._http.post(apiUrl, payload);
+  }
+
+  fetchFreightGridData(payload: any) {
+    const apiUrl = `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_SearchFreightGrid.ashx`;
+    return this._http.post(apiUrl, payload);
+  }
+  fetchAnnexureGridData(payload: any) {
+    const apiUrl = `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_SearchAnnexureGrid.ashx`;
+    return this._http.post(apiUrl, payload);
+  }
+  fetchHBLContainerGridData(payload: any) {
+    const apiUrl = `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_SearchContainerGrid.ashx`;
     return this._http.post(apiUrl, payload);
   }
 
@@ -313,19 +424,6 @@ export class AgentService {
       payload
     );
   }
-  NVOCC_Save_ExportSea_OperationDetails(payload: any) {
-    return this._http.post<any>(
-      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ExportSea_OperationDetails.ashx`,
-      payload
-    );
-  }
-
-  NVOCC_Save_ExportSea_InvoiceDetails(payload: any) {
-    return this._http.post<any>(
-      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ExportSea_InvoiceDetails.ashx`,
-      payload
-    );
-  }
   NVOCC_Save_ExportSea_ContainerDetails(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ExportSea_ContainerDetails.ashx`,
@@ -335,6 +433,13 @@ export class AgentService {
   NVOCC_Save_ExportSea_VesselDetails(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ExportSea_VesselDetails.ashx`,
+      payload
+    );
+  }
+
+  NVOCC_SaveAllForms_HBLDraft(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_Save_AllDetails.ashx`,
       payload
     );
   }
@@ -409,11 +514,49 @@ export class AgentService {
     );
   }
 
+  NVOCC_Save_HBL_FreightGrid(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_Save_FreightGrid.ashx`,
+      payload
+    );
+  }
+  NVOCC_Save_HBL_AnnexureGrid(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_Save_AnnexureGrid.ashx`,
+      payload
+    );
+  }
+  NVOCC_Save_HBL_ContainerGrid(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_Save_ContainerGrid.ashx`,
+      payload
+    );
+  }
+
   //Print
   fetchGeneralActionFile(action: string, payload: any) {
     const apiMap: any = {
-      CAN: `${this.BASE_URL}/ServiceNVOC/CANPrint.ashx`,
-      DO: `${this.BASE_URL}/ServiceNVOC/DOPrint.ashx`,
+      CAN: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_CANPrint.ashx`,
+      DO: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_DOPrint.ashx`,
+      Empty: `${this.BASE_URL}/ServiceNVOC/Nvocc_Imp_EmptyPrint.ashx`,
+    };
+    const apiUrl = apiMap[action];
+    return this._http.post(apiUrl, payload);
+  }
+  fetchHBLGeneralActionFile(action: string, payload: any) {
+    const apiMap: any = {
+      BLDraft: `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_BLDraftPrint.ashx`,
+      NonNegotiable: `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_BLDraftPrint.ashx`,
+      BLSet: `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_BLSetPrint.ashx`,
+    };
+    const apiUrl = apiMap[action];
+    return this._http.post(apiUrl, payload);
+  }
+
+  fetchContainerBookingGeneralActionFile(action: string, payload: any) {
+    const apiMap: any = {
+      Booking: `${this.BASE_URL}/ServiceNVOC/Nvocc_Cont_BookingPrint.ashx`,
+      Release: `${this.BASE_URL}/ServiceNVOC/Nvocc_Cont_ReleasePrint.ashx`,
     };
     const apiUrl = apiMap[action];
     return this._http.post(apiUrl, payload);
@@ -424,6 +567,13 @@ export class AgentService {
   NVOCC_Delete_ExportSea_GridContainerDetails(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_DeleteGrid_ContainerDetails.ashx`,
+      payload
+    );
+  }
+
+  NVOCC_HBL_AllGridDelete(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_AllGridDataDelete.ashx`,
       payload
     );
   }

@@ -11,6 +11,13 @@
   (searchClicked)="onSearch()"
 >
 </app-dynamic-gridview>
+<app-dynamic-forms
+  *ngIf="isTabPanelVisible"
+  [formGroup]="commonForm"
+  [formFields]="commonFields"
+  [isMandatoryField]="getMandatoryFields('GENERAL')"
+  (formSubmit)="saveForm($event)"
+></app-dynamic-forms>
 <app-tab-panel
   [tabs]="tabLabels"
   *ngIf="isTabPanelVisible"
@@ -139,6 +146,7 @@
   [data]="gridData"
   [columns]="displayedColumns"
   [tabName]="tabName"
+  [actionMap]="currentActionMap"
   (rowSelected)="HandleRowAction($event)"
 >
   >

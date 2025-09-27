@@ -61,6 +61,7 @@
   border: none;
   background: #b0b9db;
   color: #fff;
+  outline: 0;
 }
 
 .search-icon {

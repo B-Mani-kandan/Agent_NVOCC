@@ -17,9 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { SelectionModel } from '@angular/cdk/collections';
-
-@Component({
+import { SelectionModel } from '@angular/cdk/collections';@Component({
   standalone: true,
   imports: [
     CommonModule,
@@ -46,7 +44,7 @@ export class DynamicGridviewComponent
   @Input() tabNameNew: string = '';
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @Input() actionMap: { label: string; icon: string }[] = [];
+  @Input() actionMap: { linkid: string; label: string; icon: string }[] = [];
   @Output() searchClicked = new EventEmitter<void>();
 
   displayColumns: string[] = [];
@@ -98,6 +96,11 @@ export class DynamicGridviewComponent
   onAction(action: string, row: any) {
     this.rowSelected.emit({ action, data: row });
   }
+
+  onRowCheck(row: any) {
+    this.rowSelected.emit({ action: 'vesselDepart', data: row });
+  }
+
 
   onSearch(): void {
     this.searchClicked.emit();

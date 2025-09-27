@@ -19,12 +19,7 @@ import { MatTableModule } from '@angular/material/table';
   styleUrl: './load-container-grid.component.css',
 })
 export class LoadContainerGridComponent {
-  displayedColumns: string[] = [
-    'select',
-    'ContainerNo',
-    'ContainerType',
-    'LineSealNo',
-  ];
+  displayedColumns: string[] = ['select', 'ContainerNo', 'ContainerType'];
   selection = new SelectionModel<any>(true, []);
 
   constructor(

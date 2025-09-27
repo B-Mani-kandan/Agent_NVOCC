@@ -60,40 +60,28 @@ export class DynamicFormsComponent {
   }
 
   onKeyPress(event: KeyboardEvent, field: any) {
-    const decimalAllowedFields = new Set([
-      'inv_GrossWeight',
-      'inv_NetWeight',
-      'inv_InvoiceValue',
-      'inv_ExRate',
-      'inv_FobValue',
-      'inv_Cbm',
-    ]);
     const char = event.key;
     const isLetter = /^[a-zA-Z]$/.test(char);
     const isDigit = /^[0-9]$/.test(char);
-    const isDot = char === '.';
 
     // Letters only
-    if (field.validators?.includes('lettersOnly') && !isLetter) {
+    if (
+      field.validators?.includes('lettersOnly') &&
+      !isLetter &&
+      char !== ' '
+    ) {
       event.preventDefault();
       return;
     }
 
     // Numbers only
-    if (field.validators?.includes('numbersOnly')) {
-      if (decimalAllowedFields.has(field.id)) {
-        const currentValue = (event.target as HTMLInputElement).value;
-        if (!isDigit && !(isDot && !currentValue.includes('.'))) {
-          event.preventDefault();
-        }
-      } else if (!isDigit) {
-        event.preventDefault();
-      }
+    if (field.validators?.includes('numbersOnly') && !isDigit) {
+      event.preventDefault();
       return;
     }
 
-    // No validators - block special characters
-    if (!field.validators && !/^[a-zA-Z0-9]$/.test(char)) {
+    // No validators - allow letters, numbers, and spaces
+    if (!field.validators && !/^[a-zA-Z0-9 ]$/.test(char)) {
       event.preventDefault();
     }
   }

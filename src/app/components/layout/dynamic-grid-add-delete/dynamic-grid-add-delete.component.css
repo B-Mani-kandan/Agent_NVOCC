@@ -17,7 +17,7 @@
 }
 .mdc-data-table__cell,
 .mdc-data-table__header-cell {
-  padding: 16px 18px !important;
+  /* padding: 16px 18px !important; */
   border: 0.5px solid #e7e5e5 !important;
 }
 
@@ -60,7 +60,6 @@
 }
 
 table.mat-table input[matInput] {
-  width: 100%;
   padding: 10px 10px;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
@@ -120,4 +119,8 @@ div.mat-mdc-autocomplete-panel::-webkit-scrollbar-track {
 .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
   width: 8px !important;
   height: 4px !important;
+}
+
+.mdc-text-field {
+  padding: 0px !important;
 }

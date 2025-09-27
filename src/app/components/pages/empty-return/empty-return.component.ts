@@ -20,7 +20,6 @@ import {
   switchMap,
 } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { debug } from 'console';
 
 @Component({
   selector: 'app-empty-return',
@@ -37,6 +36,7 @@ import { debug } from 'console';
 })
 export class EmptyReturnComponent implements OnInit {
   CompanyId: string | undefined;
+  CompID: string | undefined;
   FinanceYear: any | undefined;
   BranchID: any | undefined;
   AgentID: any | undefined;
@@ -63,8 +63,9 @@ export class EmptyReturnComponent implements OnInit {
     this.GeneralForm = this.createForm(this.GeneralFields);
     this.EmptyReturnForm = this.createForm(this.EmptyReturnFields);
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
-    this.FinanceYear = '2025-2026';
-    this.BranchID = '1594';
+    this.CompID = localStorage.getItem('CompId') ?? undefined;
+    this.FinanceYear = localStorage.getItem('FinanceYear') ?? undefined;
+    this.BranchID = localStorage.getItem('BranchId') ?? undefined;
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
     this.setupAutocompleteListeners();
     this.EMPTY = 'EMPTY';
