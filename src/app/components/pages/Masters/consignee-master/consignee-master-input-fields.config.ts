@@ -8,14 +8,14 @@ export const GENERAL_FIELDS = [
   },
   {
     label: 'Address 1',
-    type: 'text',
+    type: 'textarea',
     id: 'consignee_Gen_Address1',
     mandatory: true,
     validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Address 2',
-    type: 'text',
+    type: 'textarea',
     id: 'consignee_Gen_Address2',
     mandatory: true,
     validators: ['lettersNumbersCommaDot'],

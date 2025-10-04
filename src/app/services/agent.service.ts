@@ -165,7 +165,7 @@ export class AgentService {
   }
   NVOCC_GetSurvoyerName(payload: any) {
     return this._http.post<any>(
-      `${this.BASE_URL}/ServiceNVOC/Nvocc_SurvoyerName.ashx`,
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetSurvoyerName.ashx`,
       payload
     );
   }
@@ -415,6 +415,22 @@ export class AgentService {
     const apiUrl = apiMap[tab];
     return this._http.post(apiUrl, payload);
   }
+  Nvocc_NonAccountMaster(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Search_NonAccountMaster.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  Nvocc_VesselMaster(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Search_VesselMaster.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
   Nvocc_EmptyReturnData(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Empty_Search_HblMblNo.ashx`,
@@ -571,6 +587,18 @@ export class AgentService {
   NVOCC_Save_ConsigneeMaster(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ConsigneeMaster.ashx`,
+      payload
+    );
+  }
+  NVOCC_Save_CommonMaster(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_NonAccountMaster.ashx`,
+      payload
+    );
+  }
+  NVOCC_Save_VesselMaster(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_VesselMaster.ashx`,
       payload
     );
   }

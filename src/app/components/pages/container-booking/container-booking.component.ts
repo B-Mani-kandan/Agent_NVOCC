@@ -394,18 +394,23 @@ export class ContainerBookingComponent implements OnInit {
     }
 
     const payloadMap: Record<string, any> = {
-      InputVal: { InputVal: input },
-      common: { InputVal: input, CompanyId: this.CompanyId },
+      InputVal: { InputVal: input, AgentID: this.AgentID },
+      common: {
+        InputVal: input,
+        CompanyId: this.CompanyId,
+        AgentID: this.AgentID,
+      },
       client: {
         InputVal: input,
         CompanyID: this.CompanyId,
         CompID: this.CompID,
+        AgentID: this.AgentID,
       },
-      forwarder: { InputVal: input, CompanyId: this.CompanyId },
       EmptyYard: {
         InputVal: input,
         CompanyId: this.CompanyId,
         Country: country,
+        AgentID: this.AgentID,
       },
       ContainerNo: {
         InputVal: input,

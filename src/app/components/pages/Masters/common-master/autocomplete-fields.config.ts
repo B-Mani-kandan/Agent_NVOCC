@@ -7,13 +7,13 @@ export interface AutocompleteFieldConfig {
 
 export const AUTOCOMPLETE_FIELDS: AutocompleteFieldConfig[] = [
   {
-    field: 'consignee_Gen_Country',
+    field: 'common_Gen_Country',
     method: 'fetchCountryNameSuggestions',
     payloadType: 'common',
     formType: 'generalForm',
   },
   {
-    field: 'consignee_Gen_State',
+    field: 'common_Gen_State',
     method: 'fetchStateNameSuggestions',
     payloadType: 'common',
     formType: 'generalForm',

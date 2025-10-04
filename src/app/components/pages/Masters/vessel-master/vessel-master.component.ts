@@ -20,12 +20,12 @@ import {
 } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { AUTOCOMPLETE_FIELDS } from './autocomplete-fields.config';
-import { GENERAL_FIELDS } from './common-master-input-fields.config';
+import { AUTOCOMPLETE_FIELDS } from '../client-master/autocomplete-fields.config';
+import { GENERAL_FIELDS } from './vessel-master-input-fields.config';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 @Component({
-  selector: 'app-common-master',
+  selector: 'app-vessel-master',
   standalone: true,
   imports: [
     CommonModule,
@@ -34,14 +34,14 @@ import { MessageService } from 'primeng/api';
     ToastModule,
   ],
   providers: [MessageService],
-  templateUrl: './common-master.component.html',
-  styleUrl: './common-master.component.css',
+  templateUrl: './vessel-master.component.html',
+  styleUrl: './vessel-master.component.css',
 })
-export class CommonMasterComponent implements OnInit {
+export class VesselMasterComponent implements OnInit {
   CompanyId: string | undefined;
   FinanceYear: any | undefined;
   BranchID: any | undefined;
-  ModifyNonAccountId: any | undefined;
+  ModifyVesselId: any | undefined;
   CompID: any | undefined;
   AgentID: any | undefined;
   tabName: string = 'GENERAL';
@@ -90,11 +90,7 @@ export class CommonMasterComponent implements OnInit {
   saveForm(data: any) {}
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
-      GENERAL: [
-        'common_Gen_AccountName',
-        'common_Gen_Address1',
-        'common_Gen_Address2',
-      ],
+      GENERAL: ['vessel_Gen_VesselName'],
     };
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;
@@ -212,23 +208,21 @@ export class CommonMasterComponent implements OnInit {
   }
   HandleRowAction(event: { action: string; data: any }) {
     if (event.action === 'select') {
-      this.ModifyNonAccountId = event.data.NonAccountID;
+      this.ModifyVesselId = event.data.VesselID;
       this.fillGeneralForm(event.data);
     }
   }
 
   fetchGridData(tab: string) {
     const columnMap: any = {
-      GENERAL: ['select', 'AccountName', 'EmailID', 'Address1', 'Address2'],
+      GENERAL: ['select', 'VesselName', 'VesselCode', 'ImoCode'],
     };
 
     const payload = {
-      CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
     };
 
-    this.agentService.Nvocc_NonAccountMaster(tab, payload).subscribe(
+    this.agentService.Nvocc_VesselMaster(tab, payload).subscribe(
       (res: any) => {
         if (res.Status === 'Success') {
           const key = Object.keys(res).find((k) => k.startsWith('Show'))!;
@@ -253,7 +247,7 @@ export class CommonMasterComponent implements OnInit {
     this.isModifyVisible = true;
     this.isFormVisible = true;
     this.isGridVisible = false;
-    this.ModifyNonAccountId = row.NonAccountID || null;
+    this.ModifyVesselId = row.VesselID || null;
 
     const formValues: any = {};
     this.generalFields.forEach((field) => {
@@ -269,7 +263,7 @@ export class CommonMasterComponent implements OnInit {
   }
 
   extractGeneralRowKey(fieldId: string): string {
-    return fieldId.replace(/^common_Gen_/, '');
+    return fieldId.replace(/^vessel_Gen_/, '');
   }
 
   convertToDateInputFormat(dateStr: string): string {
@@ -287,10 +281,8 @@ export class CommonMasterComponent implements OnInit {
     if (!this.validateMandatoryFields(this.generalForm, 'GENERAL')) return;
     const data = {
       Strmode: action,
-      CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
       Nvocc_AgentID: this.AgentID,
-      NonAccountID: action === 'Update' ? this.ModifyNonAccountId : '',
+      VesselID: action === 'Update' ? this.ModifyVesselId : '',
     };
 
     const combinedPayload = {
@@ -298,7 +290,7 @@ export class CommonMasterComponent implements OnInit {
       ...data,
     };
 
-    this.agentService.NVOCC_Save_CommonMaster(combinedPayload).subscribe({
+    this.agentService.NVOCC_Save_VesselMaster(combinedPayload).subscribe({
       next: (res) => {
         if (res.Status === 'Success') {
           this.messageService.add({
@@ -307,7 +299,7 @@ export class CommonMasterComponent implements OnInit {
             detail: `${res.Message}`,
           });
 
-          this.ModifyNonAccountId = res.ReturnNonAccountID;
+          this.ModifyVesselId = res.ReturnVesselID;
           this.isModifyVisible = true;
           this.ClearForms();
         } else {
@@ -337,7 +329,7 @@ export class CommonMasterComponent implements OnInit {
       form?.markAsPristine();
       form?.markAsUntouched();
     });
-    this.ModifyNonAccountId = '';
+    this.ModifyVesselId = '';
     this.isModifyVisible = false;
     this.isFormVisible = true;
     this.isGridVisible = false;

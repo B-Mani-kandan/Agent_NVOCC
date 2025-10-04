@@ -11,6 +11,7 @@ import { ClientMasterComponent } from './components/pages/Masters/client-master/
 import { ShipperMasterComponent } from './components/pages/Masters/shipper-master/shipper-master.component';
 import { ConsigneeMasterComponent } from './components/pages/Masters/consignee-master/consignee-master.component';
 import { CommonMasterComponent } from './components/pages/Masters/common-master/common-master.component';
+import { VesselMasterComponent } from './components/pages/Masters/vessel-master/vessel-master.component';
 
 export const routes: Routes = [
   {
@@ -31,19 +32,19 @@ export const routes: Routes = [
         component: DashboardComponent,
       },
       {
-        path: 'export-sea-planning',
+        path: 'export/export-sea-planning',
         component: ExportSeaPlanningComponent,
       },
       {
-        path: 'import-sea-planning',
+        path: 'import/import-sea-planning',
         component: ImportSeaPlanningComponent,
       },
       {
-        path: 'container-booking',
+        path: 'export/container-booking',
         component: ContainerBookingComponent,
       },
       {
-        path: 'hbl-draft',
+        path: 'export/hbl-draft',
         component: HblDraftComponent,
       },
       {
@@ -61,6 +62,10 @@ export const routes: Routes = [
       {
         path: 'master/common-master',
         component: CommonMasterComponent,
+      },
+      {
+        path: 'master/vessel-master',
+        component: VesselMasterComponent,
       },
     ],
   },

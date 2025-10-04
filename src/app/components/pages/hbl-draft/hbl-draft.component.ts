@@ -548,12 +548,17 @@ export class HblDraftComponent implements OnInit {
       }
     }
     const payloadMap: Record<string, any> = {
-      InputVal: { InputVal: input },
-      common: { InputVal: input, CompanyId: this.CompanyId },
+      InputVal: { InputVal: input, AgentID: this.AgentID },
+      common: {
+        InputVal: input,
+        CompanyId: this.CompanyId,
+        AgentID: this.AgentID,
+      },
       ChargeName: {
         InputVal: input,
         CompanyId: this.CompanyId,
         CompID: this.CompID,
+        AgentID: this.AgentID,
       },
       ContainerNo: {
         InputVal: input,
