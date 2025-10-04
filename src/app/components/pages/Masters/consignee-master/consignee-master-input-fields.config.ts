@@ -1,0 +1,70 @@
+export const GENERAL_FIELDS = [
+  {
+    label: 'Consignee Name',
+    type: 'text',
+    id: 'consignee_Gen_ConsigneeName',
+    mandatory: true,
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Address 1',
+    type: 'text',
+    id: 'consignee_Gen_Address1',
+    mandatory: true,
+    validators: ['lettersNumbersCommaDot'],
+  },
+  {
+    label: 'Address 2',
+    type: 'text',
+    id: 'consignee_Gen_Address2',
+    mandatory: true,
+    validators: ['lettersNumbersCommaDot'],
+  },
+  {
+    label: 'City Name',
+    type: 'text',
+    id: 'consignee_Gen_City',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Postal / Zip Code',
+    type: 'text',
+    id: 'consignee_Gen_ZipCode',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'Country Name',
+    type: 'autocomplete',
+    id: 'consignee_Gen_Country',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'State Name',
+    type: 'autocomplete',
+    id: 'consignee_Gen_State',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Pan No',
+    type: 'text',
+    id: 'consignee_Gen_PanNo',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'Email ID',
+    type: 'text',
+    id: 'consignee_Gen_EmailID',
+    validators: ['lettersNumbersCommaDot'],
+  },
+  {
+    label: 'Mobile No',
+    type: 'text',
+    id: 'consignee_Gen_MobileNo',
+    validators: ['numbersOnly'],
+  },
+  {
+    label: 'In Active',
+    type: 'checkbox',
+    id: 'consignee_Gen_InActive',
+  },
+];

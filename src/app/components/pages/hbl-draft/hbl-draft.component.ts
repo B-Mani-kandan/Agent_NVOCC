@@ -280,8 +280,8 @@ export class HblDraftComponent implements OnInit {
   }
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
-      GENERAL: [
-        'Imp_gen_Pol',
+      HBL_COMMON: [
+        'common_JobNo',
         'Imp_gen_Pod',
         'Imp_gen_Fpod',
         'Imp_gen_ItemDesc',
@@ -1028,6 +1028,7 @@ export class HblDraftComponent implements OnInit {
   validateMandatoryFields(formGroup: FormGroup, templateId: string): boolean {
     const isMandatory = this.getMandatoryFields(templateId);
     let allValid = true;
+    const missingFields: string[] = [];
 
     Object.keys(formGroup.controls).forEach((fieldId) => {
       if (isMandatory(fieldId)) {
@@ -1035,6 +1036,9 @@ export class HblDraftComponent implements OnInit {
         if (!control?.value || control.value.toString().trim() === '') {
           control?.markAsTouched();
           allValid = false;
+
+          const parts = fieldId.split('_');
+          missingFields.push(parts[parts.length - 1]);
         }
       }
     });
@@ -1043,12 +1047,13 @@ export class HblDraftComponent implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Mandatory',
-        detail: 'Please Fill mandatory Fields',
+        detail: `Please fill mandatory fields: ${missingFields.join(', ')}`,
       });
     }
 
     return allValid;
   }
+
   private buildPayload(form: FormGroup, extraData: any = {}): any {
     return {
       ...form.getRawValue(),

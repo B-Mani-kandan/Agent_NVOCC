@@ -114,6 +114,7 @@ export const IMP_PRINT_FIELDS = [
     label: 'Shipper Address',
     type: 'textarea',
     id: 'Imp_gen_ShipperAddress',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Consignee Name',
@@ -125,6 +126,7 @@ export const IMP_PRINT_FIELDS = [
     label: 'Consignee Address',
     type: 'textarea',
     id: 'Imp_gen_ConsigneeAddress',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'CHA',

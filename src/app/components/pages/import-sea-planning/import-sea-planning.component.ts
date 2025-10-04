@@ -206,7 +206,7 @@ export class ImportSeaPlanningComponent implements OnInit {
       (res) => {
         if (res?.Status === 'Success' && res.GetImpJobNo?.length > 0) {
           const jobNo = res.GetImpJobNo[0]?.orderno;
-          this.imp_GeneralForm.patchValue({
+          this.commonForm.patchValue({
             Imp_gen_JobNo: jobNo,
           });
         } else {
@@ -747,7 +747,6 @@ export class ImportSeaPlanningComponent implements OnInit {
         { linkid: 'CAN', label: 'CAN', icon: 'description' },
         { linkid: 'DO', label: 'DO', icon: 'assignment_turned_in' },
         { linkid: 'Empty', label: 'Empty', icon: 'inventory_2' },
-        //{ linkid: 'Surveyor', label: 'Surveyor', icon: 'search' },
       ],
     };
 
@@ -986,6 +985,7 @@ export class ImportSeaPlanningComponent implements OnInit {
   validateMandatoryFields(formGroup: FormGroup, templateId: string): boolean {
     const isMandatory = this.getMandatoryFields(templateId);
     let allValid = true;
+    const missingFields: string[] = [];
 
     Object.keys(formGroup.controls).forEach((fieldId) => {
       if (isMandatory(fieldId)) {
@@ -993,6 +993,10 @@ export class ImportSeaPlanningComponent implements OnInit {
         if (!control?.value || control.value.toString().trim() === '') {
           control?.markAsTouched();
           allValid = false;
+
+          // take last part after underscore and push
+          const parts = fieldId.split('_');
+          missingFields.push(parts[parts.length - 1]);
         }
       }
     });
@@ -1001,12 +1005,13 @@ export class ImportSeaPlanningComponent implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Mandatory',
-        detail: 'Please Fill mandatory Fields',
+        detail: `Please fill mandatory fields: ${missingFields.join(', ')}`,
       });
     }
 
     return allValid;
   }
+
   private buildPayload(form: FormGroup, extraData: any = {}): any {
     return {
       ...form.getRawValue(),

@@ -80,6 +80,14 @@ export class DynamicFormsComponent {
       return;
     }
 
+    if (
+      field.validators?.includes('lettersNumbersCommaDot') &&
+      !/^[a-zA-Z0-9 ,.@]$/.test(char)
+    ) {
+      event.preventDefault();
+      return;
+    }
+
     // No validators - allow letters, numbers, and spaces
     if (!field.validators && !/^[a-zA-Z0-9 ]$/.test(char)) {
       event.preventDefault();

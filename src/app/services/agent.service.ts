@@ -271,6 +271,18 @@ export class AgentService {
       payload
     );
   }
+  NVOCC_GetCountry(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetCountry.ashx`,
+      payload
+    );
+  }
+  NVOCC_StateName(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetStateName.ashx`,
+      payload
+    );
+  }
 
   //Fetch Grid
 
@@ -379,6 +391,30 @@ export class AgentService {
     const apiUrl = apiMap[tab];
     return this._http.post(apiUrl, payload);
   }
+  Nvocc_ClientMaster(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Search_ClientMaster.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  Nvocc_ShipperMaster(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Search_ShipperMaster.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  Nvocc_ConsigneeMaster(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Search_ConsigneeMaster.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
   Nvocc_EmptyReturnData(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Empty_Search_HblMblNo.ashx`,
@@ -404,19 +440,6 @@ export class AgentService {
   }
 
   //Save
-
-  NVOCC_Save_JobBooking(payload: any) {
-    return this._http
-      .post<any>(
-        `${this.BASE_URL}/ServiceNVOC/Nvocc_SaveJobBooking.ashx`,
-        payload
-      )
-      .pipe(
-        map((response) => {
-          return response;
-        })
-      );
-  }
 
   NVOCC_Save_ExportSea_General(payload: any) {
     return this._http.post<any>(
@@ -529,6 +552,25 @@ export class AgentService {
   NVOCC_Save_HBL_ContainerGrid(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_Save_ContainerGrid.ashx`,
+      payload
+    );
+  }
+
+  NVOCC_Save_ClientMaster(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ClientMaster.ashx`,
+      payload
+    );
+  }
+  NVOCC_Save_ShipperMaster(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ShipperMaster.ashx`,
+      payload
+    );
+  }
+  NVOCC_Save_ConsigneeMaster(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_ConsigneeMaster.ashx`,
       payload
     );
   }

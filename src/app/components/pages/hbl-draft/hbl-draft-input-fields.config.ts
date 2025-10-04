@@ -44,6 +44,7 @@ export const HBL_GENERAL_FIELDS = [
     label: 'Shipper Address',
     type: 'textarea',
     id: 'common_ShipperAddress',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Consignee Name',
@@ -55,6 +56,7 @@ export const HBL_GENERAL_FIELDS = [
     label: 'Consignee Address',
     type: 'textarea',
     id: 'common_ConsigneeAddress',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Notify-1 Name',
@@ -66,6 +68,7 @@ export const HBL_GENERAL_FIELDS = [
     label: 'Notify-1 Address',
     type: 'textarea',
     id: 'common_Notify_1Address',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Notify-2 Name',
@@ -77,6 +80,7 @@ export const HBL_GENERAL_FIELDS = [
     label: 'Notify-2 Address',
     type: 'textarea',
     id: 'common_Notify_2Address',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Destination Agent',
@@ -97,6 +101,7 @@ export const HBL_GENERAL_FIELDS = [
     label: 'Forwarding Agent Address',
     type: 'textarea',
     id: 'common_ForwardingAgentAddress',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Export Reference',

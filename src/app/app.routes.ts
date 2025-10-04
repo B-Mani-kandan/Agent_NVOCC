@@ -6,7 +6,6 @@ import { DashboardComponent } from './components/pages/dashboard/dashboard.compo
 import { ExportSeaPlanningComponent } from './components/pages/export-sea-planning/export-sea-planning.component';
 import { ImportSeaPlanningComponent } from './components/pages/import-sea-planning/import-sea-planning.component';
 import { ContainerBookingComponent } from './components/pages/container-booking/container-booking.component';
-import { EmptyReturnComponent } from './components/pages/empty-return/empty-return.component';
 import { HblDraftComponent } from './components/pages/hbl-draft/hbl-draft.component';
 import { ClientMasterComponent } from './components/pages/Masters/client-master/client-master.component';
 import { ShipperMasterComponent } from './components/pages/Masters/shipper-master/shipper-master.component';
@@ -46,10 +45,6 @@ export const routes: Routes = [
       {
         path: 'hbl-draft',
         component: HblDraftComponent,
-      },
-      {
-        path: 'empty-return',
-        component: EmptyReturnComponent,
       },
       {
         path: 'master/client-master',

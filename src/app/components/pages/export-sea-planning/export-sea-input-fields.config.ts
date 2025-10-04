@@ -36,6 +36,7 @@ export const GENERAL_FIELDS = [
     type: 'textarea',
     id: 'gen_ItemDesc',
     mandatory: true,
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Carrier Name',
@@ -71,6 +72,7 @@ export const GENERAL_FIELDS = [
     label: 'Remark',
     type: 'textarea',
     id: 'gen_Remark',
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'MBL No',
