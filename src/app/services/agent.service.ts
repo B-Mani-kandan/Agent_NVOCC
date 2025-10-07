@@ -283,6 +283,18 @@ export class AgentService {
       payload
     );
   }
+  NVOCC_GenerateMail(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GenerateMail.ashx`,
+      payload
+    );
+  }
+  NVOCC_SendMail(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_ExpSendMail.ashx`,
+      payload
+    );
+  }
 
   //Fetch Grid
 
@@ -426,6 +438,14 @@ export class AgentService {
   Nvocc_VesselMaster(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Search_VesselMaster.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  Nvocc_MailSetting(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_Search_MailSetting.ashx`,
     };
 
     const apiUrl = apiMap[tab];
@@ -599,6 +619,12 @@ export class AgentService {
   NVOCC_Save_VesselMaster(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_VesselMaster.ashx`,
+      payload
+    );
+  }
+  NVOCC_Save_MailSettingMaster(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_Save_MailSetting.ashx`,
       payload
     );
   }

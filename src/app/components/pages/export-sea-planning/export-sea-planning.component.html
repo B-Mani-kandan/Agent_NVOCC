@@ -139,6 +139,80 @@
   </div>
 </ng-template>
 
+<ng-template #MAIL>
+  <div class="container-fluid mt-4">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="mailOption" class="form-label">Mail Option</label>
+        <select
+          id="mailOption"
+          class="form-select"
+          [(ngModel)]="selectedMailOption"
+        >
+          <option *ngFor="let option of mailFields" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-4 gap-3 d-flex align-items-end">
+        <button
+          type="button"
+          class="btn btn-primary w-100"
+          (click)="onGenerateMail()"
+        >
+          Generate Mail <i class="ri-mail-line"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary w-100"
+          (click)="onSendMail()"
+        >
+          Send Mail <i class="ri-mail-send-line"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <label for="mailSubject" class="form-label">Subject</label>
+        <textarea
+          id="mailSubject"
+          class="form-control subject-text"
+          rows="1"
+          [(ngModel)]="mailSubject"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="toMail" class="form-label">To Mail</label>
+        <textarea
+          id="toMail"
+          class="form-control"
+          rows="1"
+          [(ngModel)]="toMail"
+        ></textarea>
+      </div>
+      <div class="col-md-6">
+        <label for="ccMail" class="form-label">CC Mail</label>
+        <textarea
+          id="ccMail"
+          class="form-control"
+          rows="1"
+          [(ngModel)]="ccMail"
+        ></textarea>
+      </div>
+    </div>
+    <div class="row mb-3" *ngIf="mailBody">
+      <div class="col-md-12">
+        <label class="form-label">Generated Mail Preview</label>
+        <div [innerHTML]="mailBody"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
 <app-dynamic-gridview
   *ngIf="isGridVisible"
   [data]="gridData"

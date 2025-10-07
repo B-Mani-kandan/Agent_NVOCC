@@ -12,6 +12,7 @@ import { ShipperMasterComponent } from './components/pages/Masters/shipper-maste
 import { ConsigneeMasterComponent } from './components/pages/Masters/consignee-master/consignee-master.component';
 import { CommonMasterComponent } from './components/pages/Masters/common-master/common-master.component';
 import { VesselMasterComponent } from './components/pages/Masters/vessel-master/vessel-master.component';
+import { MailSettingComponent } from './components/pages/Masters/mail-setting/mail-setting.component';
 
 export const routes: Routes = [
   {
@@ -66,6 +67,10 @@ export const routes: Routes = [
       {
         path: 'master/vessel-master',
         component: VesselMasterComponent,
+      },
+      {
+        path: 'master/mail-setting',
+        component: MailSettingComponent,
       },
     ],
   },

@@ -61,6 +61,13 @@ export const MENU_ITEMS: MenuItem[] = [
         route: 'master/vessel-master',
         icon: 'ri-ship-2-fill',
       },
+      {
+        id: 13,
+        position: 6,
+        label: 'Mail Setting',
+        route: 'master/mail-setting',
+        icon: 'ri-mail-settings-line',
+      },
     ],
   },
   {

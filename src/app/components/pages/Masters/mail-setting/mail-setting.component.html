@@ -1,0 +1,50 @@
+<div class="esp-bar">
+  <h6>MAIL SETTING</h6>
+</div>
+<p-toast></p-toast>
+<app-dynamic-forms
+  *ngIf="isFormVisible"
+  [formGroup]="generalForm"
+  [formFields]="generalFields"
+  [templateId]="'GENERAL'"
+  [isMandatoryField]="getMandatoryFields('GENERAL')"
+  [getAutocompleteOptions]="getAutocompleteOptions.bind(this)"
+  [initialUploadedFiles]="previewFiles"
+  (formSubmit)="saveForm($event)"
+></app-dynamic-forms>
+<div
+  *ngIf="isFormVisible"
+  class="container-fluid d-flex gap-2 col-12 ml-2 mt-4 mb-4"
+>
+  <button
+    type="button"
+    class="btn custom-btn btn-success"
+    *ngIf="!isModifyVisible"
+    (click)="OnMasterSave()"
+  >
+    Save
+  </button>
+  <button
+    type="button"
+    class="btn custom-btn btn-success"
+    *ngIf="isModifyVisible"
+    (click)="OnMasterSave()"
+  >
+    Modify
+  </button>
+  <button type="submit" class="btn custom-btn btn-primary" (click)="onSearch()">
+    Search
+  </button>
+  <button type="reset" class="btn custom-btn btn-danger" (click)="ClearForms()">
+    Clear
+  </button>
+</div>
+<app-dynamic-gridview
+  *ngIf="isGridVisible"
+  [data]="gridData"
+  [columns]="displayedColumns"
+  [tabName]="tabName"
+  (rowSelected)="HandleRowAction($event)"
+>
+  >
+</app-dynamic-gridview>

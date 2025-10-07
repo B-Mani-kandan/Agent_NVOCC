@@ -1,4 +1,7 @@
-<div class="container-fluid mt-4">
+<div
+  class="container-fluid mt-4"
+  *ngIf="isInitialized && formGroup && formFields?.length"
+>
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="row g-3">
     <div class="col-md-3" *ngFor="let field of formFields">
       <label
@@ -73,6 +76,7 @@
         [ngClass]="{ important: isMandatoryField(field.id) }"
         (keypress)="onKeyPress($event, field)"
       ></textarea>
+
       <!-- Checkbox -->
       <div class="form-check mt-2" *ngIf="field.type === 'checkbox'">
         <input
@@ -84,6 +88,35 @@
         <label class="form-check-label" [for]="field.id">
           {{ field.label }}
         </label>
+      </div>
+      <!-- File Upload -->
+      <div
+        class="upload-box"
+        *ngIf="field.type === 'upload' && formGroup?.get(field.id)"
+      >
+        <input
+          type="file"
+          [id]="field.id"
+          hidden
+          #fileInput
+          accept="image/*"
+          (change)="onFileSelected($event, field)"
+        />
+        <div
+          *ngIf="uploadedFiles?.[field.id]; else uploadPlaceholder"
+          class="preview-box"
+        >
+          <img [src]="uploadedFiles[field.id]" alt="Preview" />
+          <button type="button" class="remove-btn" (click)="removeFile(field)">
+            ✕
+          </button>
+        </div>
+        <ng-template #uploadPlaceholder>
+          <div class="upload-placeholder" (click)="fileInput.click()">
+            <i class="ri-upload-2-line upload-icon"></i>
+            <p class="upload-text">Upload Image</p>
+          </div>
+        </ng-template>
       </div>
     </div>
   </form>

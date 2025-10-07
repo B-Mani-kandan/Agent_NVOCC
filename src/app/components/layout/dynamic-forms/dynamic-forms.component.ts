@@ -1,9 +1,14 @@
 import {
   Component,
+  OnInit,
+  AfterViewInit,
   Input,
   Output,
   EventEmitter,
   ViewChild,
+  ChangeDetectorRef,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -24,23 +29,46 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
   templateUrl: './dynamic-forms.component.html',
   styleUrl: './dynamic-forms.component.css',
 })
-export class DynamicFormsComponent {
+export class DynamicFormsComponent implements AfterViewInit, OnChanges {
   @Input() formGroup!: FormGroup;
   @Input() formFields: any[] = [];
   @Input() templateId!: string;
   @Input() isMandatoryField!: (fieldId: string) => boolean;
   @Input() getAutocompleteOptions!: (fieldId: string) => string[];
+  @Input() initialUploadedFiles?: { [key: string]: string };
   @Output() formSubmit = new EventEmitter();
   @Output() optionSelected = new EventEmitter<{
     fieldId: string;
     value: string;
   }>();
+  isInitialized: boolean = false;
+  uploadedFiles: { [key: string]: string } = {};
   @ViewChild(MatAutocompleteTrigger, { static: false })
   autocomplete!: MatAutocompleteTrigger;
+
+  constructor(public cdr: ChangeDetectorRef) {}
+
+  ngAfterViewInit() {
+    this.isInitialized = true;
+    this.cdr.detectChanges();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['initialUploadedFiles'] && this.initialUploadedFiles) {
+      this.uploadedFiles = {
+        ...this.uploadedFiles,
+        ...this.initialUploadedFiles,
+      };
+      try {
+        this.cdr.detectChanges();
+      } catch (e) {}
+    }
+  }
 
   onSubmit() {
     this.formSubmit.emit(this.formGroup.value);
   }
+
   highlightFirstOption() {
     setTimeout(() => {
       if (this.autocomplete && this.autocomplete.panelOpen) {
@@ -91,6 +119,41 @@ export class DynamicFormsComponent {
     // No validators - allow letters, numbers, and spaces
     if (!field.validators && !/^[a-zA-Z0-9 ]$/.test(char)) {
       event.preventDefault();
+    }
+  }
+
+  onFileSelected(event: Event, field: any) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (!file.type.startsWith('image/')) {
+        alert('Only image files are allowed');
+        input.value = '';
+        return;
+      }
+
+      const control = this.formGroup.get(field.id);
+      if (!control) return;
+      control.setValue(file);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTimeout(() => {
+          this.uploadedFiles = {
+            ...this.uploadedFiles,
+            [field.id]: reader.result as string,
+          };
+          this.cdr.detectChanges();
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeFile(field: any) {
+    delete this.uploadedFiles[field.id];
+    if (this.formGroup.get(field.id)) {
+      this.formGroup.get(field.id)?.reset();
     }
   }
 }

@@ -37,6 +37,24 @@ export const AUTOCOMPLETE_FIELDS: AutocompleteFieldConfig[] = [
     formType: 'generalForm',
   },
   {
+    field: 'gen_ClientName',
+    method: 'fetchClientSuggestions',
+    payloadType: 'common',
+    formType: 'generalForm',
+  },
+  {
+    field: 'gen_ShipperName',
+    method: 'fetchShipperNameSuggestions',
+    payloadType: 'common',
+    formType: 'generalForm',
+  },
+  {
+    field: 'gen_Consignee',
+    method: 'fetchConsigneeNameSuggestions',
+    payloadType: 'common',
+    formType: 'generalForm',
+  },
+  {
     field: 'cont_ContainerNo',
     method: 'fetchContNoSuggestions',
     payloadType: 'ContainerNo',

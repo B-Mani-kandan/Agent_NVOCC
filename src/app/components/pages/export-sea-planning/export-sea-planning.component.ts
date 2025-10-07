@@ -33,6 +33,8 @@ import {
 } from './export-sea-input-fields.config';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 @Component({
   selector: 'app-export-sea-planning',
   standalone: true,
@@ -43,6 +45,7 @@ import { MessageService } from 'primeng/api';
     DynamicGridviewComponent,
     DynamicGridAddDeleteComponent,
     ToastModule,
+    FormsModule,
   ],
   providers: [MessageService],
   templateUrl: './export-sea-planning.component.html',
@@ -61,9 +64,14 @@ export class ExportSeaPlanningComponent implements OnInit {
   latestExpContGridData: any[] = [];
   ContainerGridDetailsID: any | undefined;
   tabName: string = 'GENERAL';
-  tabLabels: string[] = ['GENERAL', 'CONTAINER DETAILS', 'VESSEL DETAILS'];
+  tabLabels: string[] = [
+    'GENERAL',
+    'CONTAINER DETAILS',
+    'VESSEL DETAILS',
+    'MAIL',
+  ];
   tabContents: TemplateRef<any>[] = [];
-  disabledTabs: boolean[] = [false, true, true];
+  disabledTabs: boolean[] = [false, true, true, true];
   commonForm!: FormGroup;
   generalForm!: FormGroup;
   containerForm!: FormGroup;
@@ -85,16 +93,38 @@ export class ExportSeaPlanningComponent implements OnInit {
   GENERAL_GRID = GENERAL_GRID;
   IMPGENRAL: string = 'IMPGENERAL';
 
+  //Mail
+
+  mailFields = [
+    { label: 'Job Booking Confirmation', value: 'Job Booking Confirmation' },
+    { label: 'Container Dispatch Report', value: 'Container Dispatch Report' },
+    { label: 'Stuffing Confirmation', value: 'Stuffing Confirmation' },
+    { label: 'Gate In Confirmation', value: 'Gate In Confirmation' },
+    { label: 'On–Board Confirmation', value: 'On–Board Confirmation' },
+    {
+      label: 'Transshipment Vessel Details',
+      value: 'Transshipment Vessel Details',
+    },
+  ];
+  selectedMailOption: string = 'Job Booking Confirmation';
+  mailSubject: string = '';
+  toMail: string = '';
+  ccMail: string = '';
+  mailBody: SafeHtml = '';
+  sendMailBody: string = '';
+
   @ViewChild('GENERAL', { static: false }) GENERAL!: TemplateRef<any>;
   @ViewChild('CONTAINER', { static: false }) CONTAINER!: TemplateRef<any>;
   @ViewChild('VESSEL', { static: false }) VESSEL!: TemplateRef<any>;
+  @ViewChild('MAIL', { static: false }) MAIL!: TemplateRef<any>;
   @Output() gridDataChange = new EventEmitter<any[]>();
   @ViewChild('gridExpCont') gridExpCont!: DynamicGridAddDeleteComponent;
 
   constructor(
     private agentService: AgentService,
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -116,8 +146,13 @@ export class ExportSeaPlanningComponent implements OnInit {
   }
   ngAfterViewInit() {
     setTimeout(() => {
-      if (this.GENERAL && this.CONTAINER && this.VESSEL) {
-        this.tabContents = [this.GENERAL, this.CONTAINER, this.VESSEL];
+      if (this.GENERAL && this.CONTAINER && this.VESSEL && this.MAIL) {
+        this.tabContents = [
+          this.GENERAL,
+          this.CONTAINER,
+          this.VESSEL,
+          this.MAIL,
+        ];
       }
     }, 0);
   }
@@ -127,6 +162,72 @@ export class ExportSeaPlanningComponent implements OnInit {
       group[field.id] = new FormControl('');
     });
     return new FormGroup(group);
+  }
+
+  onGenerateMail() {
+    const payload = {
+      JobID: this.ModifyJobId,
+      CompanyID: this.CompanyId,
+      CompID: this.CompID,
+      BranchID: this.BranchID,
+      AgentID: this.AgentID,
+      FinanceYear: this.FinanceYear,
+      MailOptions: this.selectedMailOption,
+    };
+
+    this.agentService.NVOCC_GenerateMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.mailSubject = res.ReturnSubject;
+          this.sendMailBody = res.ReturnBody;
+          this.mailBody = this.sanitizer.bypassSecurityTrustHtml(
+            res.ReturnBody
+          );
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Generated successfully',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Failed to Generate Mail',
+          });
+        }
+      },
+      () => {}
+    );
+  }
+
+  onSendMail() {
+    const payload = {
+      AgentID: this.AgentID,
+      CompanyID: this.CompanyId,
+      MailBody: this.sendMailBody,
+      ToMail: this.toMail,
+      Subject: this.mailSubject,
+      CCMail: this.ccMail,
+    };
+
+    this.agentService.NVOCC_SendMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Sended Successfully',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Failed to Send Mail',
+          });
+        }
+      },
+      () => {}
+    );
   }
 
   saveForm(data: any) {}
@@ -208,6 +309,45 @@ export class ExportSeaPlanningComponent implements OnInit {
       'Nvocc_GetPortCountry',
       'PortCountry',
       'PortName',
+      payloadType
+    );
+  }
+
+  fetchClientSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetClientName',
+      'ClientName',
+      'AccountName',
+      payloadType
+    );
+  }
+
+  fetchShipperNameSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetShipperName',
+      'ShipperName',
+      'PartyName',
+      payloadType
+    );
+  }
+
+  fetchConsigneeNameSuggestions(
+    input: string,
+    payloadType: string
+  ): Observable<string[]> {
+    return this.fetchData(
+      input,
+      'NVOCC_GetConsigneeName',
+      'ConsigneeName',
+      'consigneeName',
       payloadType
     );
   }
@@ -311,6 +451,7 @@ export class ExportSeaPlanningComponent implements OnInit {
       common: {
         InputVal: input,
         CompanyId: this.CompanyId,
+        CompID: this.CompID,
         AgentID: this.AgentID,
       },
       EmptyYard: {
@@ -476,7 +617,7 @@ export class ExportSeaPlanningComponent implements OnInit {
           });
 
           this.ModifyJobId = res.ReturnJobID;
-          this.disabledTabs = [false, false, false, false, false];
+          this.disabledTabs = [false, false, false, false];
 
           this.isModifyVisible = true;
           this.vesselForm.patchValue({
@@ -669,7 +810,7 @@ export class ExportSeaPlanningComponent implements OnInit {
       FinanceYear: this.FinanceYear,
     };
 
-    if (this.tabName !== 'OPERATION') {
+    if (this.tabName !== 'MAIL') {
       this.agentService.fetchGridData(tab, payload).subscribe(
         (res: any) => {
           if (res.Status === 'Success') {
@@ -733,6 +874,11 @@ export class ExportSeaPlanningComponent implements OnInit {
         this.tabName = 'VESSEL';
         this.isGridVisible = true;
         break;
+      case 'MAIL':
+        this.tabName = 'MAIL';
+        this.isGridVisible = false;
+        this.gridData = [];
+        break;
       default:
         this.tabName = this.tabName;
         return;
@@ -745,7 +891,7 @@ export class ExportSeaPlanningComponent implements OnInit {
   fillGeneralForm(row: any) {
     this.isModifyVisible = true;
     this.isGridVisible = false;
-    this.disabledTabs = [false, false, false];
+    this.disabledTabs = [false, false, false, false];
     this.ModifyJobId = row.ID || null;
 
     if (this.tabName === 'CONTAINER') {
@@ -920,7 +1066,11 @@ export class ExportSeaPlanningComponent implements OnInit {
     this.ContainerID = '';
     this.VesselID = '';
     this.isModifyVisible = false;
-    this.disabledTabs = [false, true, true];
+    this.disabledTabs = [false, true, true, true];
+    this.mailBody = '';
+    this.mailSubject = '';
+    this.toMail = '';
+    this.ccMail = '';
     this.getJobNo();
     this.getCurrentDate();
   }

@@ -32,6 +32,24 @@ export const GENERAL_FIELDS = [
     id: 'gen_Fpod',
   },
   {
+    label: 'Client Name',
+    type: 'autocomplete',
+    id: 'gen_ClientName',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Shipper Name',
+    type: 'autocomplete',
+    id: 'gen_ShipperName',
+    validators: ['lettersOnly'],
+  },
+  {
+    label: 'Consignee Name',
+    type: 'autocomplete',
+    id: 'gen_Consignee',
+    validators: ['lettersOnly'],
+  },
+  {
     label: 'Item Description',
     type: 'textarea',
     id: 'gen_ItemDesc',
