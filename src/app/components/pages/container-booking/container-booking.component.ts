@@ -30,6 +30,9 @@ import {
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
+import { LoaderComponent } from '../../layout/loader/loader.component';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-container-booking',
   imports: [
@@ -38,6 +41,8 @@ import Swal from 'sweetalert2';
     DynamicFormsComponent,
     DynamicGridviewComponent,
     ToastModule,
+    FormsModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './container-booking.component.html',
@@ -56,7 +61,12 @@ export class ContainerBookingComponent implements OnInit {
   AgentID: any | undefined;
   tabName: string = 'GENERAL';
   GridSelection: any | undefined;
-  tabLabels: string[] = ['GENERAL', 'CONTAINER DETAILS', 'VESSEL DETAILS'];
+  tabLabels: string[] = [
+    'GENERAL',
+    'CONTAINER DETAILS',
+    'VESSEL DETAILS',
+    'MAIL',
+  ];
   tabContents: TemplateRef<any>[] = [];
   disabledTabs: boolean[] = [false, true, true, true, true];
   commonForm!: FormGroup;
@@ -82,16 +92,37 @@ export class ContainerBookingComponent implements OnInit {
   ContcontainerFields = CONTAINER_FIELDS;
   ContvesselFields = VESSEL_FIELDS;
   currentActionMap: { linkid: string; label: string; icon: string }[] = [];
+  isLoading = false;
+  //Mail
+
+  mailFields = [
+    {
+      label: 'Container Booking Confirmation',
+      value: 'Container Booking Confirmation',
+    },
+    {
+      label: 'Container Release Confirmation',
+      value: 'Container Release Confirmation',
+    },
+  ];
+  selectedMailOption: string = 'Container Booking Confirmation';
+  mailSubject: string = '';
+  toMail: string = '';
+  ccMail: string = '';
+  mailBody: SafeHtml = '';
+  sendMailBody: string = '';
 
   @ViewChild('CONT_GENERAL', { static: false }) CONT_GENERAL!: TemplateRef<any>;
   @ViewChild('CONT_CONTAINER', { static: false })
   CONT_CONTAINER!: TemplateRef<any>;
   @ViewChild('CONT_VESSEL', { static: false }) CONT_VESSEL!: TemplateRef<any>;
+  @ViewChild('MAIL', { static: false }) MAIL!: TemplateRef<any>;
 
   constructor(
     private agentService: AgentService,
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -125,11 +156,17 @@ export class ContainerBookingComponent implements OnInit {
   }
   ngAfterViewInit() {
     setTimeout(() => {
-      if (this.CONT_GENERAL && this.CONT_CONTAINER && this.CONT_VESSEL) {
+      if (
+        this.CONT_GENERAL &&
+        this.CONT_CONTAINER &&
+        this.CONT_VESSEL &&
+        this.MAIL
+      ) {
         this.tabContents = [
           this.CONT_GENERAL,
           this.CONT_CONTAINER,
           this.CONT_VESSEL,
+          this.MAIL,
         ];
       } else {
       }
@@ -837,6 +874,13 @@ export class ContainerBookingComponent implements OnInit {
         }
         this.isGridVisible = true;
         break;
+      case 'MAIL':
+        this.tabName = 'MAIL';
+        this.isGridVisible = false;
+        this.gridData = [];
+        if (this.GridSelection == 'FirstGridData') {
+        }
+        break;
       default:
         this.tabName = this.tabName;
         return;
@@ -1013,6 +1057,10 @@ export class ContainerBookingComponent implements OnInit {
     this.ContainerfirstGridVisible = true;
     this.isTabPanelVisible = false;
     this.isGridVisible = false;
+    this.mailBody = '';
+    this.mailSubject = '';
+    this.toMail = '';
+    this.ccMail = '';
     this.getBookingNo();
     this.getCurrentDate();
   }
@@ -1051,5 +1099,78 @@ export class ContainerBookingComponent implements OnInit {
     } else {
       this.isVesselSaveVisible = true;
     }
+  }
+
+  // Mail
+  onGenerateMail() {
+    const payload = {
+      ContainerID: this.ModifyJobId,
+      JobID: this.JobId,
+      CompanyID: this.CompanyId,
+      CompID: this.CompID,
+      BranchID: this.BranchID,
+      AgentID: this.AgentID,
+      MailOptions: this.selectedMailOption,
+    };
+
+    this.agentService.NVOCC_GenerateContainerBookingMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.mailSubject = res.ReturnSubject;
+          this.sendMailBody = res.ReturnBody;
+          this.mailBody = this.sanitizer.bypassSecurityTrustHtml(
+            res.ReturnBody
+          );
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Generated successfully',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Failed to Generate Mail',
+          });
+        }
+      },
+      () => {}
+    );
+  }
+
+  onSendMail() {
+    this.isLoading = true;
+    const payload = {
+      AgentID: this.AgentID,
+      CompanyID: this.CompanyId,
+      MailBody: this.sendMailBody,
+      ToMail: this.toMail,
+      Subject: this.mailSubject,
+      CCMail: this.ccMail,
+    };
+    this.agentService.NVOCC_SendMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Sended Successfully',
+          });
+          this.isLoading = false;
+          this.toMail = '';
+          this.mailSubject = '';
+          this.mailBody = '';
+          this.ccMail = '';
+        } else {
+          this.isLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: `${res.Error}`,
+          });
+        }
+      },
+      () => {}
+    );
   }
 }

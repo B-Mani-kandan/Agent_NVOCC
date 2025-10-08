@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -286,6 +285,18 @@ export class AgentService {
   NVOCC_GenerateMail(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_GenerateMail.ashx`,
+      payload
+    );
+  }
+  NVOCC_GenerateContainerBookingMail(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GenerateContMail.ashx`,
+      payload
+    );
+  }
+  NVOCC_GenerateHBLMail(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GenerateHBLMail.ashx`,
       payload
     );
   }

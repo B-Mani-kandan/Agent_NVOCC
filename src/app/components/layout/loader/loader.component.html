@@ -1,0 +1,12 @@
+<div
+  *ngIf="isLoading"
+  class="loader-overlay"
+  [ngStyle]="{ 'background-color': bdColor }"
+>
+  <div class="la-ball-atom" [ngClass]="sizeClass">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>

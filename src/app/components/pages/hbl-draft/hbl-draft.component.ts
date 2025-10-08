@@ -38,6 +38,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { LoadContainerGridComponent } from '../../layout/load-container-grid/load-container-grid.component';
 import { DynamicGridAddDeleteComponent } from '../../layout/dynamic-grid-add-delete/dynamic-grid-add-delete.component';
 import { MatTableDataSource } from '@angular/material/table';
+import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { LoaderComponent } from '../../layout/loader/loader.component';
 @Component({
   selector: 'app-hbl-draft',
   standalone: true,
@@ -48,6 +51,8 @@ import { MatTableDataSource } from '@angular/material/table';
     DynamicGridviewComponent,
     DynamicGridAddDeleteComponent,
     ToastModule,
+    FormsModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './hbl-draft.component.html',
@@ -71,6 +76,7 @@ export class HblDraftComponent implements OnInit {
     'FREIGHT DETAILS',
     'ANNEXURE DETAILS',
     'CONTAINER DETAILS',
+    'MAIL',
   ];
   tabContents: TemplateRef<any>[] = [];
   hbl_CommonForm!: FormGroup;
@@ -100,10 +106,20 @@ export class HblDraftComponent implements OnInit {
 
   importfirstGridVisible: boolean = true;
   isTabPanelVisible: boolean = false;
+  isButtonVisible: boolean = false;
   isGridVisible: boolean = false;
   isModifyVisible: boolean = false;
   isContModifyVisible: boolean = false;
   searchClicked: boolean = false;
+
+  //Mail
+  selectedMailOption: string = 'HOUSE BILL OF LADING';
+  mailSubject: string = '';
+  toMail: string = '';
+  ccMail: string = '';
+  mailBody: SafeHtml = '';
+  sendMailBody: string = '';
+  isLoading = false;
 
   ngOnInit() {
     this.hbl_CommonForm = this.createForm(this.hbl_CommonFields);
@@ -127,7 +143,8 @@ export class HblDraftComponent implements OnInit {
     private agentService: AgentService,
     private messageService: MessageService,
     private http: HttpClient,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
   ) {}
 
   @ViewChild('HBL_COMMON', { static: false }) HBL_COMMON!: TemplateRef<any>;
@@ -135,6 +152,7 @@ export class HblDraftComponent implements OnInit {
   @ViewChild('HBL_CARGO', { static: false }) HBL_CARGO!: TemplateRef<any>;
   @ViewChild('HBL_FREIGHT', { static: false }) HBL_FREIGHT!: TemplateRef<any>;
   @ViewChild('HBL_ANNEXURE', { static: false }) HBL_ANNEXURE!: TemplateRef<any>;
+  @ViewChild('MAIL', { static: false }) MAIL!: TemplateRef<any>;
   @ViewChild('HBL_CONTAINER', { static: false })
   HBL_CONTAINER!: TemplateRef<any>;
   @Output() gridDataChange = new EventEmitter<any[]>();
@@ -149,7 +167,8 @@ export class HblDraftComponent implements OnInit {
         this.HBL_CARGO &&
         this.HBL_FREIGHT &&
         this.HBL_ANNEXURE &&
-        this.HBL_CONTAINER
+        this.HBL_CONTAINER &&
+        this.MAIL
       ) {
         this.tabContents = [
           this.HBL_GENERAL,
@@ -157,6 +176,7 @@ export class HblDraftComponent implements OnInit {
           this.HBL_FREIGHT,
           this.HBL_ANNEXURE,
           this.HBL_CONTAINER,
+          this.MAIL,
         ];
       }
     }, 0);
@@ -654,6 +674,7 @@ export class HblDraftComponent implements OnInit {
   onSearch() {
     this.importfirstGridVisible = false;
     this.isTabPanelVisible = false;
+    this.isButtonVisible = false;
     this.isGridVisible = true;
     this.fetchSearchGridData('GENERAL');
   }
@@ -664,6 +685,7 @@ export class HblDraftComponent implements OnInit {
     this.GridSelection = 'FirstGridData';
     this.importfirstGridVisible = false;
     this.isTabPanelVisible = true;
+    this.isButtonVisible = true;
     this.isGridVisible = false;
     this.getJobNo();
     this.fillGeneralForm(event.data);
@@ -675,6 +697,7 @@ export class HblDraftComponent implements OnInit {
       this.ModifyHBLID = event.data.HBLID;
       this.ModifyJobId = event.data.ID;
       this.isTabPanelVisible = true;
+      this.isButtonVisible = true;
       this.importfirstGridVisible = false;
       this.isGridVisible = false;
       this.fillGeneralForm(event.data);
@@ -930,27 +953,38 @@ export class HblDraftComponent implements OnInit {
       case 'GENERAL':
         this.hbl_tabName = 'GENERAL';
         this.isGridVisible = false;
+        this.isButtonVisible = true;
         this.gridData = [];
         break;
       case 'CARGO DETAILS':
         this.hbl_tabName = 'CARGO';
         this.isGridVisible = false;
+        this.isButtonVisible = true;
         break;
       case 'FREIGHT DETAILS':
         this.hbl_tabName = 'FREIGHT';
         this.isGridVisible = false;
+        this.isButtonVisible = true;
         this.fetchFreightGridData();
         this.loadApproverName();
         break;
       case 'ANNEXURE DETAILS':
         this.hbl_tabName = 'ANNEXURE';
         this.isGridVisible = false;
+        this.isButtonVisible = true;
         this.fetchAnnexureGridData();
         break;
       case 'CONTAINER DETAILS':
         this.hbl_tabName = 'CONTAINER';
         this.isGridVisible = false;
+        this.isButtonVisible = true;
         this.fetchContainerGridData();
+        break;
+      case 'MAIL':
+        this.hbl_tabName = 'MAIL';
+        this.isGridVisible = false;
+        this.isButtonVisible = false;
+        this.gridData = [];
         break;
       default:
         this.hbl_tabName = this.hbl_tabName;
@@ -1283,6 +1317,7 @@ export class HblDraftComponent implements OnInit {
     this.isModifyVisible = false;
     this.importfirstGridVisible = true;
     this.isTabPanelVisible = false;
+    this.isButtonVisible = false;
     this.isGridVisible = false;
     this.getJobNo();
     this.fetchGridData('GENERAL');
@@ -1299,5 +1334,76 @@ export class HblDraftComponent implements OnInit {
         console.log('User selected containers:', result);
       }
     });
+  }
+
+  //Mail below
+  onGenerateMail() {
+    const payload = {
+      HBLID: this.ModifyHBLID,
+      CompanyID: this.CompanyId,
+      CompID: this.CompID,
+      BranchID: this.BranchID,
+      AgentID: this.AgentID,
+    };
+
+    this.agentService.NVOCC_GenerateHBLMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.mailSubject = res.ReturnSubject;
+          this.sendMailBody = res.ReturnBody;
+          this.mailBody = this.sanitizer.bypassSecurityTrustHtml(
+            res.ReturnBody
+          );
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Generated successfully',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Failed to Generate Mail',
+          });
+        }
+      },
+      () => {}
+    );
+  }
+
+  onSendMail() {
+    this.isLoading = true;
+    const payload = {
+      AgentID: this.AgentID,
+      CompanyID: this.CompanyId,
+      MailBody: this.sendMailBody,
+      ToMail: this.toMail,
+      Subject: this.mailSubject,
+      CCMail: this.ccMail,
+    };
+    this.agentService.NVOCC_SendMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Sended Successfully',
+          });
+          this.isLoading = false;
+          this.toMail = '';
+          this.mailSubject = '';
+          this.mailBody = '';
+          this.ccMail = '';
+        } else {
+          this.isLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: `${res.Error}`,
+          });
+        }
+      },
+      () => {}
+    );
   }
 }

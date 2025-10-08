@@ -13,9 +13,9 @@ export const GENERAL_FIELDS = [
   },
   {
     label: 'Password',
-    type: 'text',
+    type: 'password',
     id: 'mail_Gen_Password',
-    validators: ['numbersOnly'],
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Host Name',

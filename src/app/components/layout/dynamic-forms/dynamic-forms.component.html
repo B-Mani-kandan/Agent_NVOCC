@@ -41,6 +41,31 @@
           </mat-autocomplete>
         </div>
       </div>
+
+      <!-- Password Field -->
+      <div class="input-group" *ngIf="field.type === 'password'">
+        <input
+          [type]="passwordVisible[field.id] ? 'text' : 'password'"
+          class="form-control"
+          [id]="field.id"
+          [placeholder]="field.label"
+          [ngClass]="{ important: isMandatoryField(field.id) }"
+          formControlName="{{ field.id }}"
+          autocomplete="off"
+        />
+
+        <span
+          class="input-group-text eye-icon"
+          (click)="togglePasswordVisibility(field.id)"
+        >
+          <i
+            [ngClass]="
+              passwordVisible[field.id] ? 'ri-eye-line' : 'ri-eye-off-line'
+            "
+          ></i>
+        </span>
+      </div>
+
       <input
         *ngIf="
           field.type === 'text' ||

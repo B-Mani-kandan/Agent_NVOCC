@@ -35,6 +35,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { LoaderComponent } from '../../layout/loader/loader.component';
 @Component({
   selector: 'app-export-sea-planning',
   standalone: true,
@@ -46,6 +47,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     DynamicGridAddDeleteComponent,
     ToastModule,
     FormsModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './export-sea-planning.component.html',
@@ -94,7 +96,6 @@ export class ExportSeaPlanningComponent implements OnInit {
   IMPGENRAL: string = 'IMPGENERAL';
 
   //Mail
-
   mailFields = [
     { label: 'Job Booking Confirmation', value: 'Job Booking Confirmation' },
     { label: 'Container Dispatch Report', value: 'Container Dispatch Report' },
@@ -112,6 +113,7 @@ export class ExportSeaPlanningComponent implements OnInit {
   ccMail: string = '';
   mailBody: SafeHtml = '';
   sendMailBody: string = '';
+  isLoading = false;
 
   @ViewChild('GENERAL', { static: false }) GENERAL!: TemplateRef<any>;
   @ViewChild('CONTAINER', { static: false }) CONTAINER!: TemplateRef<any>;
@@ -162,72 +164,6 @@ export class ExportSeaPlanningComponent implements OnInit {
       group[field.id] = new FormControl('');
     });
     return new FormGroup(group);
-  }
-
-  onGenerateMail() {
-    const payload = {
-      JobID: this.ModifyJobId,
-      CompanyID: this.CompanyId,
-      CompID: this.CompID,
-      BranchID: this.BranchID,
-      AgentID: this.AgentID,
-      FinanceYear: this.FinanceYear,
-      MailOptions: this.selectedMailOption,
-    };
-
-    this.agentService.NVOCC_GenerateMail(payload).subscribe(
-      (res) => {
-        if (res?.Status === 'Success') {
-          this.mailSubject = res.ReturnSubject;
-          this.sendMailBody = res.ReturnBody;
-          this.mailBody = this.sanitizer.bypassSecurityTrustHtml(
-            res.ReturnBody
-          );
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Mail Generated successfully',
-          });
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Failed',
-            detail: 'Failed to Generate Mail',
-          });
-        }
-      },
-      () => {}
-    );
-  }
-
-  onSendMail() {
-    const payload = {
-      AgentID: this.AgentID,
-      CompanyID: this.CompanyId,
-      MailBody: this.sendMailBody,
-      ToMail: this.toMail,
-      Subject: this.mailSubject,
-      CCMail: this.ccMail,
-    };
-
-    this.agentService.NVOCC_SendMail(payload).subscribe(
-      (res) => {
-        if (res?.Status === 'Success') {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Mail Sended Successfully',
-          });
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Failed',
-            detail: 'Failed to Send Mail',
-          });
-        }
-      },
-      () => {}
-    );
   }
 
   saveForm(data: any) {}
@@ -1099,5 +1035,79 @@ export class ExportSeaPlanningComponent implements OnInit {
     });
     this.VesselID = '';
     this.isVesselModifyVisible = false;
+  }
+
+  //Mail below
+  onGenerateMail() {
+    const payload = {
+      JobID: this.ModifyJobId,
+      CompanyID: this.CompanyId,
+      CompID: this.CompID,
+      BranchID: this.BranchID,
+      AgentID: this.AgentID,
+      FinanceYear: this.FinanceYear,
+      Type: 'Export',
+      MailOptions: this.selectedMailOption,
+    };
+
+    this.agentService.NVOCC_GenerateMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.mailSubject = res.ReturnSubject;
+          this.sendMailBody = res.ReturnBody;
+          this.mailBody = this.sanitizer.bypassSecurityTrustHtml(
+            res.ReturnBody
+          );
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Generated successfully',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Failed to Generate Mail',
+          });
+        }
+      },
+      () => {}
+    );
+  }
+
+  onSendMail() {
+    this.isLoading = true;
+    const payload = {
+      AgentID: this.AgentID,
+      CompanyID: this.CompanyId,
+      MailBody: this.sendMailBody,
+      ToMail: this.toMail,
+      Subject: this.mailSubject,
+      CCMail: this.ccMail,
+    };
+    this.agentService.NVOCC_SendMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Sended Successfully',
+          });
+          this.isLoading = false;
+          this.toMail = '';
+          this.mailSubject = '';
+          this.mailBody = '';
+          this.ccMail = '';
+        } else {
+          this.isLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: `${res.Error}`,
+          });
+        }
+      },
+      () => {}
+    );
   }
 }

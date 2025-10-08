@@ -61,3 +61,35 @@
 .remove-btn:hover {
   background: rgba(255, 0, 0, 0.7);
 }
+
+/* password */
+
+.password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.password-toggle-icon:hover {
+  color: #000;
+}
+
+.eye-icon {
+  cursor: pointer;
+  background: #fff;
+  border-left: none;
+}
+
+.eye-icon i {
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.eye-icon i:hover {
+  color: #000;
+}

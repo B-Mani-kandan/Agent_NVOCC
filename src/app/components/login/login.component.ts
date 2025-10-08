@@ -7,11 +7,18 @@ import { ClientinfoService } from '../../services/clientinfo.service';
 import CryptoJS from 'crypto-js';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { LoaderComponent } from '../layout/loader/loader.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterOutlet, FormsModule, CommonModule, ToastModule],
+  imports: [
+    RouterOutlet,
+    FormsModule,
+    CommonModule,
+    ToastModule,
+    LoaderComponent,
+  ],
   providers: [MessageService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -19,6 +26,7 @@ import { MessageService } from 'primeng/api';
 export class LoginComponent implements OnInit {
   fieldTextType: boolean = false;
   siteUrl: any;
+  isLoading = false;
   clientViewURL: any;
   loginObj: any = { UserName: '', Password: '' };
   CompanyID: any;
@@ -43,7 +51,7 @@ export class LoginComponent implements OnInit {
     // }
     this.siteUrl = this.document.location.hostname;
     this.getClientViewURL();
-    this.getClientInfo();
+    //this.getClientInfo();
   }
 
   getClientViewURL() {
@@ -82,7 +90,7 @@ export class LoginComponent implements OnInit {
       });
       return;
     }
-
+    this.isLoading = true;
     const iv = CryptoJS.lib.WordArray.random(16);
     const encryptedPassword = CryptoJS.AES.encrypt(
       this.loginObj.Password,
@@ -115,9 +123,10 @@ export class LoginComponent implements OnInit {
           summary: 'Login Successful',
           detail: 'Redirecting to dashboard...',
         });
-
+        this.isLoading = false;
         setTimeout(() => this.router.navigateByUrl('/dashboard'), 1000);
       } else {
+        this.isLoading = false;
         this.messageService.add({
           severity: 'error',
           summary: 'Login Failed',

@@ -43,6 +43,7 @@ export class DynamicFormsComponent implements AfterViewInit, OnChanges {
   }>();
   isInitialized: boolean = false;
   uploadedFiles: { [key: string]: string } = {};
+  passwordVisible: { [key: string]: boolean } = {};
   @ViewChild(MatAutocompleteTrigger, { static: false })
   autocomplete!: MatAutocompleteTrigger;
 
@@ -148,6 +149,10 @@ export class DynamicFormsComponent implements AfterViewInit, OnChanges {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  togglePasswordVisibility(fieldId: string): void {
+    this.passwordVisible[fieldId] = !this.passwordVisible[fieldId];
   }
 
   removeFile(field: any) {

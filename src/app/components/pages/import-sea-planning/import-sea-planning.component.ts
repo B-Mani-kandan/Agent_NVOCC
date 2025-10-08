@@ -38,6 +38,9 @@ import { LoadContainerGridComponent } from '../../layout/load-container-grid/loa
 import { DynamicGridAddDeleteComponent } from '../../layout/dynamic-grid-add-delete/dynamic-grid-add-delete.component';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { LoaderComponent } from '../../layout/loader/loader.component';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-import-sea-planning',
   imports: [
@@ -48,6 +51,8 @@ import { MatIconModule } from '@angular/material/icon';
     TabPanelComponent,
     ToastModule,
     MatIconModule,
+    FormsModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './import-sea-planning.component.html',
@@ -69,7 +74,12 @@ export class ImportSeaPlanningComponent implements OnInit {
   GridSelection: any | undefined;
   Imp_tabName: string = 'GENERAL';
   IMPGENRAL: string = 'IMPGENERAL';
-  Imp_tabLabels: string[] = ['GENERAL', 'CONTAINER DETAILS', 'VESSEL DETAILS'];
+  Imp_tabLabels: string[] = [
+    'GENERAL',
+    'CONTAINER DETAILS',
+    'VESSEL DETAILS',
+    'MAIL',
+  ];
   tabContents: TemplateRef<any>[] = [];
   commonForm!: FormGroup;
   imp_GeneralForm!: FormGroup;
@@ -98,6 +108,22 @@ export class ImportSeaPlanningComponent implements OnInit {
   searchClicked: boolean = false;
   extraFieldsVisible: boolean = false;
   HIDEGRIDACTION = 'HIDEGRIDACTION';
+  isLoading = false;
+  //Mail
+  mailFields = [
+    {
+      label: 'Cargo Arrival Notification',
+      value: 'Cargo Arrival Notification',
+    },
+    { label: 'Delivery Order Details', value: 'Delivery Order Details' },
+    { label: 'Job Booking Confirmation', value: 'Job Booking Confirmation' },
+  ];
+  selectedMailOption: string = 'Cargo Arrival Notification';
+  mailSubject: string = '';
+  toMail: string = '';
+  ccMail: string = '';
+  mailBody: SafeHtml = '';
+  sendMailBody: string = '';
 
   ngOnInit() {
     this.commonForm = this.createForm(this.commonFields);
@@ -122,22 +148,30 @@ export class ImportSeaPlanningComponent implements OnInit {
     private agentService: AgentService,
     private messageService: MessageService,
     private http: HttpClient,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
   ) {}
 
   @ViewChild('IMP_GENERAL', { static: false }) IMP_GENERAL!: TemplateRef<any>;
   @ViewChild('IMP_CONTAINER', { static: false })
   IMP_CONTAINER!: TemplateRef<any>;
   @ViewChild('IMP_VESSEL', { static: false }) IMP_VESSEL!: TemplateRef<any>;
+  @ViewChild('MAIL', { static: false }) MAIL!: TemplateRef<any>;
   @Output() gridDataChange = new EventEmitter<any[]>();
   @ViewChild('gridImpCont') gridImpCont!: DynamicGridAddDeleteComponent;
   ngAfterViewInit() {
     setTimeout(() => {
-      if (this.IMP_GENERAL && this.IMP_CONTAINER && this.IMP_VESSEL) {
+      if (
+        this.IMP_GENERAL &&
+        this.IMP_CONTAINER &&
+        this.IMP_VESSEL &&
+        this.MAIL
+      ) {
         this.tabContents = [
           this.IMP_GENERAL,
           this.IMP_CONTAINER,
           this.IMP_VESSEL,
+          this.MAIL,
         ];
       }
     }, 0);
@@ -853,6 +887,11 @@ export class ImportSeaPlanningComponent implements OnInit {
         this.Imp_tabName = 'VESSEL';
         this.isGridVisible = true;
         break;
+      case 'MAIL':
+        this.Imp_tabName = 'MAIL';
+        this.isGridVisible = false;
+        this.gridData = [];
+        break;
       default:
         this.Imp_tabName = this.Imp_tabName;
         return;
@@ -1308,6 +1347,10 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.importfirstGridVisible = true;
     this.isTabPanelVisible = false;
     this.isGridVisible = false;
+    this.mailBody = '';
+    this.mailSubject = '';
+    this.toMail = '';
+    this.ccMail = '';
     this.getJobNo();
     this.getCurrentDate();
     this.fetchGridData('GENERAL');
@@ -1393,5 +1436,79 @@ export class ImportSeaPlanningComponent implements OnInit {
         );
       }
     });
+  }
+
+  //mail Below
+  onGenerateMail() {
+    const payload = {
+      JobID: this.ModifyJobId,
+      CompanyID: this.CompanyId,
+      CompID: this.CompID,
+      BranchID: this.BranchID,
+      AgentID: this.AgentID,
+      FinanceYear: this.FinanceYear,
+      Type: 'Import',
+      MailOptions: this.selectedMailOption,
+    };
+
+    this.agentService.NVOCC_GenerateMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.mailSubject = res.ReturnSubject;
+          this.sendMailBody = res.ReturnBody;
+          this.mailBody = this.sanitizer.bypassSecurityTrustHtml(
+            res.ReturnBody
+          );
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Generated successfully',
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: 'Failed to Generate Mail',
+          });
+        }
+      },
+      () => {}
+    );
+  }
+
+  onSendMail() {
+    this.isLoading = true;
+    const payload = {
+      AgentID: this.AgentID,
+      CompanyID: this.CompanyId,
+      MailBody: this.sendMailBody,
+      ToMail: this.toMail,
+      Subject: this.mailSubject,
+      CCMail: this.ccMail,
+    };
+    this.agentService.NVOCC_SendMail(payload).subscribe(
+      (res) => {
+        if (res?.Status === 'Success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Mail Sended Successfully',
+          });
+          this.isLoading = false;
+          this.toMail = '';
+          this.mailSubject = '';
+          this.mailBody = '';
+          this.ccMail = '';
+        } else {
+          this.isLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Failed',
+            detail: `${res.Error}`,
+          });
+        }
+      },
+      () => {}
+    );
   }
 }
