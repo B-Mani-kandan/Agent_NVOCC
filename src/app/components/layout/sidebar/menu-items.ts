@@ -26,13 +26,13 @@ export const MENU_ITEMS: MenuItem[] = [
     route: '/layout',
     icon: 'ri-user-line',
     children: [
-      {
-        id: 3,
-        position: 1,
-        label: 'Client Master',
-        route: 'master/client-master',
-        icon: 'ri-service-line',
-      },
+      // {
+      //   id: 3,
+      //   position: 1,
+      //   label: 'Client Master',
+      //   route: 'master/client-master',
+      //   icon: 'ri-service-line',
+      // },
       {
         id: 4,
         position: 2,
@@ -98,17 +98,24 @@ export const MENU_ITEMS: MenuItem[] = [
         route: 'export/hbl-draft',
         icon: 'ri-file-list-3-line',
       },
+      {
+        id: 11,
+        position: 4,
+        label: 'Pre Alert Mail',
+        route: 'export/pre-alert-mail',
+        icon: 'ri-mail-send-line',
+      },
     ],
   },
   {
-    id: 11,
+    id: 12,
     position: 3,
     label: 'Import',
     route: '/layout',
     icon: 'ri-download-2-line',
     children: [
       {
-        id: 12,
+        id: 13,
         position: 1,
         label: 'Import Sea Planning',
         route: 'import/import-sea-planning',

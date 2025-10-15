@@ -98,12 +98,12 @@ export const IMP_GENERAL_FIELDS = [
 ];
 
 export const IMP_PRINT_FIELDS = [
-  {
-    label: 'Client Name',
-    type: 'autocomplete',
-    id: 'Imp_gen_ClientName',
-    validators: ['lettersOnly'],
-  },
+  // {
+  //   label: 'Client Name',
+  //   type: 'autocomplete',
+  //   id: 'Imp_gen_ClientName',
+  //   validators: ['lettersOnly'],
+  // },
   {
     label: 'Shipper Name',
     type: 'autocomplete',

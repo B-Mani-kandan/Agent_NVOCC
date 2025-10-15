@@ -17,7 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { SelectionModel } from '@angular/cdk/collections';@Component({
+import { SelectionModel } from '@angular/cdk/collections';
+@Component({
   standalone: true,
   imports: [
     CommonModule,
@@ -57,13 +58,11 @@ export class DynamicGridviewComponent
   ngOnChanges() {
     this.setupTable();
   }
-
   ngAfterViewInit() {
     if (this.dataSource && this.paginator) {
       this.dataSource.paginator = this.paginator;
     }
   }
-
   ngAfterViewChecked() {
     if (this.dataSource && this.paginator && !this.dataSource.paginator) {
       this.dataSource.paginator = this.paginator;
@@ -101,6 +100,9 @@ export class DynamicGridviewComponent
     this.rowSelected.emit({ action: 'vesselDepart', data: row });
   }
 
+  onCheckRow(row: any) {
+    this.rowSelected.emit({ action: 'checkbox', data: row });
+  }
 
   onSearch(): void {
     this.searchClicked.emit();

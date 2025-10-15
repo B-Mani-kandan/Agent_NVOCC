@@ -114,6 +114,21 @@
           {{ field.label }}
         </label>
       </div>
+
+      <!-- Dynamic Button -->
+      <div *ngIf="field.type === 'button'">
+        <button
+          type="button"
+          [id]="field.id"
+          class="btn btn-primary w-100"
+          [ngClass]="field.class || 'btn-primary'"
+          (click)="onButtonClick(field)"
+        >
+          <i *ngIf="field.icon" [class]="field.icon + ' me-1'"></i>
+          {{ field.label }}
+        </button>
+      </div>
+
       <!-- File Upload -->
       <div
         class="upload-box"

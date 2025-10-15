@@ -40,6 +40,7 @@ export class MailSettingComponent implements OnInit {
   tabName: string = 'GENERAL';
   generalForm!: FormGroup;
   gridData: any[] = [];
+  StrMode: any | undefined;
   displayedColumns: string[] = [];
   isModifyVisible: boolean = false;
   isFormVisible: boolean = true;
@@ -220,24 +221,26 @@ export class MailSettingComponent implements OnInit {
   }
 
   //  Save all Forms
-
   async OnMasterSave(): Promise<void> {
     if (!this.validateMandatoryFields(this.generalForm, 'GENERAL')) return;
+
     const formValues = { ...this.generalForm.getRawValue() };
+
     // Convert upload field to Base64 if a file is selected
     const uploadFieldId = 'mail_Gen_Logo';
     const file = this.generalForm.get(uploadFieldId)?.value;
+
     if (file instanceof File) {
       formValues[uploadFieldId] = await this.convertFileToBase64(file);
     }
 
     const combinedPayload = {
       ...formValues,
+      StrMode: this.StrMode,
       CompanyID: this.CompanyId,
       AgentID: this.AgentID,
     };
 
-    // Send payload
     this.agentService.NVOCC_Save_MailSettingMaster(combinedPayload).subscribe({
       next: (res) => {
         this.messageService.add({
@@ -246,9 +249,25 @@ export class MailSettingComponent implements OnInit {
           detail: `${res.Message}`,
         });
         this.isModifyVisible = true;
-        this.ClearForms();
+        //this.ClearForms();
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Save failed. Please try again.',
+        });
       },
     });
+  }
+
+  OnSave(action: any): void {
+    if (action == 'Add') {
+      this.StrMode = 'Add';
+    } else {
+      this.StrMode = 'Modify';
+    }
+    this.OnMasterSave();
   }
 
   // Utility to convert File to Base64

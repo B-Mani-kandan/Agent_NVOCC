@@ -20,6 +20,7 @@
       <button
         type="submit"
         *ngIf="
+          tabNameNew !== 'PREALERT' &&
           tabNameNew !== 'EMPTY' &&
           tabNameNew !== 'IMPGENERAL' &&
           tabName !== 'CONTAINER' &&
@@ -60,6 +61,10 @@
               [disabled]="element.OperationDone === 'Y'"
             >
             </mat-checkbox>
+          </ng-container>
+
+          <ng-container *ngIf="column === 'checkbox'">
+            <mat-checkbox (change)="onCheckRow(element)"> </mat-checkbox>
           </ng-container>
 
           <ng-container *ngIf="column === 'delete'">

@@ -31,12 +31,12 @@ export const GENERAL_FIELDS = [
     type: 'autocomplete',
     id: 'gen_Fpod',
   },
-  {
-    label: 'Client Name',
-    type: 'autocomplete',
-    id: 'gen_ClientName',
-    validators: ['lettersOnly'],
-  },
+  // {
+  //   label: 'Client Name',
+  //   type: 'autocomplete',
+  //   id: 'gen_ClientName',
+  //   validators: ['lettersOnly'],
+  // },
   {
     label: 'Shipper Name',
     type: 'autocomplete',

@@ -264,6 +264,12 @@ export class AgentService {
       payload
     );
   }
+  NVOCC_GetMBLNoPreAlert(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GetMBLNoPreAlertMail.ashx`,
+      payload
+    );
+  }
   NVOCC_UpdateVesselDeparture(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_Exp_CheckBoxUpdate.ashx`,
@@ -297,6 +303,12 @@ export class AgentService {
   NVOCC_GenerateHBLMail(payload: any) {
     return this._http.post<any>(
       `${this.BASE_URL}/ServiceNVOC/Nvocc_GenerateHBLMail.ashx`,
+      payload
+    );
+  }
+  NVOCC_GeneratePreAlertMail(payload: any) {
+    return this._http.post<any>(
+      `${this.BASE_URL}/ServiceNVOC/Nvocc_GeneratePreAlertMail.ashx`,
       payload
     );
   }
@@ -367,6 +379,14 @@ export class AgentService {
   fetchHBLExPortConvertGridData(tab: string, payload: any) {
     const apiMap: any = {
       GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_HBL_ExportConvert_GeneralDetails.ashx`,
+    };
+
+    const apiUrl = apiMap[tab];
+    return this._http.post(apiUrl, payload);
+  }
+  fetchJobDetails(tab: string, payload: any) {
+    const apiMap: any = {
+      GENERAL: `${this.BASE_URL}/ServiceNVOC/Nvocc_GetPreAlertMailJobDetails.ashx`,
     };
 
     const apiUrl = apiMap[tab];

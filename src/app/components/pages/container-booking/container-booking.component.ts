@@ -187,7 +187,6 @@ export class ContainerBookingComponent implements OnInit {
         'Cont_gen_BookingNo',
         'Cont_gen_BookingDate',
         'Cont_gen_BookingExpDt',
-        'Cont_gen_ClientName',
         'Cont_gen_ShipperName',
         'Cont_gen_Pol',
         'Cont_gen_Pod',

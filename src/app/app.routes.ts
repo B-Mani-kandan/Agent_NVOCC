@@ -7,12 +7,13 @@ import { ExportSeaPlanningComponent } from './components/pages/export-sea-planni
 import { ImportSeaPlanningComponent } from './components/pages/import-sea-planning/import-sea-planning.component';
 import { ContainerBookingComponent } from './components/pages/container-booking/container-booking.component';
 import { HblDraftComponent } from './components/pages/hbl-draft/hbl-draft.component';
-import { ClientMasterComponent } from './components/pages/Masters/client-master/client-master.component';
+// import { ClientMasterComponent } from './components/pages/Masters/client-master/client-master.component';
 import { ShipperMasterComponent } from './components/pages/Masters/shipper-master/shipper-master.component';
 import { ConsigneeMasterComponent } from './components/pages/Masters/consignee-master/consignee-master.component';
 import { CommonMasterComponent } from './components/pages/Masters/common-master/common-master.component';
 import { VesselMasterComponent } from './components/pages/Masters/vessel-master/vessel-master.component';
 import { MailSettingComponent } from './components/pages/Masters/mail-setting/mail-setting.component';
+import { PreAlertMailComponent } from './components/pages/pre-alert-mail/pre-alert-mail.component';
 
 export const routes: Routes = [
   {
@@ -49,9 +50,13 @@ export const routes: Routes = [
         component: HblDraftComponent,
       },
       {
-        path: 'master/client-master',
-        component: ClientMasterComponent,
+        path: 'export/pre-alert-mail',
+        component: PreAlertMailComponent,
       },
+      // {
+      //   path: 'master/client-master',
+      //   component: ClientMasterComponent,
+      // },
       {
         path: 'master/Shipper-master',
         component: ShipperMasterComponent,

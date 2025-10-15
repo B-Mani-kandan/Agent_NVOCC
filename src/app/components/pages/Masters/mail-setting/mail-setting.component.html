@@ -20,7 +20,7 @@
     type="button"
     class="btn custom-btn btn-success"
     *ngIf="!isModifyVisible"
-    (click)="OnMasterSave()"
+    (click)="OnSave('Add')"
   >
     Save
   </button>
@@ -28,7 +28,7 @@
     type="button"
     class="btn custom-btn btn-success"
     *ngIf="isModifyVisible"
-    (click)="OnMasterSave()"
+    (click)="OnSave('Modify')"
   >
     Modify
   </button>

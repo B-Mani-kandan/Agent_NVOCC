@@ -37,6 +37,10 @@ export class DynamicFormsComponent implements AfterViewInit, OnChanges {
   @Input() getAutocompleteOptions!: (fieldId: string) => string[];
   @Input() initialUploadedFiles?: { [key: string]: string };
   @Output() formSubmit = new EventEmitter();
+  @Output() buttonClick = new EventEmitter<{
+    fieldId: string;
+    action: string;
+  }>();
   @Output() optionSelected = new EventEmitter<{
     fieldId: string;
     value: string;
@@ -159,6 +163,12 @@ export class DynamicFormsComponent implements AfterViewInit, OnChanges {
     delete this.uploadedFiles[field.id];
     if (this.formGroup.get(field.id)) {
       this.formGroup.get(field.id)?.reset();
+    }
+  }
+
+  onButtonClick(field: any) {
+    if (field.function) {
+      this.buttonClick.emit({ fieldId: field.id, action: field.function });
     }
   }
 }
