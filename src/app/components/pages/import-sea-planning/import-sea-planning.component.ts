@@ -60,10 +60,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class ImportSeaPlanningComponent implements OnInit {
   CompanyId: string | undefined;
-  CompID: string | undefined;
-  FinanceYear: any | undefined;
-  BranchID: any | undefined;
   AgentID: any | undefined;
+  BranchID: any | undefined;
+  FinanceYear: any | undefined;
+  CompID: any | undefined;
   ExpJobId: any | undefined;
   ModifyJobId: any | undefined;
   GridContExpJobID: any | undefined;
@@ -134,9 +134,6 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.setupAutocompleteListeners();
     this.PatchAdressValues();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
-    this.CompID = localStorage.getItem('CompId') ?? undefined;
-    this.FinanceYear = localStorage.getItem('FinanceYear') ?? undefined;
-    this.BranchID = localStorage.getItem('BranchId') ?? undefined;
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
     this.getJobNo();
     this.getCurrentDate();
@@ -232,8 +229,7 @@ export class ImportSeaPlanningComponent implements OnInit {
   getJobNo(): void {
     const payload = {
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
+      AgentID: this.AgentID,
     };
 
     this.agentService.NVOCC_Import_GetJobNo(payload).subscribe(
@@ -510,12 +506,6 @@ export class ImportSeaPlanningComponent implements OnInit {
         CompanyId: this.CompanyId,
         AgentID: this.AgentID,
       },
-      client: {
-        InputVal: input,
-        CompanyID: this.CompanyId,
-        CompID: this.CompID,
-        AgentID: this.AgentID,
-      },
       EmptyYard: {
         InputVal: input,
         CompanyId: this.CompanyId,
@@ -669,10 +659,7 @@ export class ImportSeaPlanningComponent implements OnInit {
   private handleGeneralTabDownload(action: string, data: any) {
     const payload = {
       CompanyID: this.CompanyId,
-      CompID: this.CompID,
       AgentID: this.AgentID,
-      BranchID: this.BranchID,
-      FinanceYear: this.FinanceYear,
       JobID: data.ID,
     };
 
@@ -750,9 +737,7 @@ export class ImportSeaPlanningComponent implements OnInit {
     const payload = {
       EDIJobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
-      FinanceYear: this.FinanceYear,
     };
 
     this.agentService.fetchExpConvImpGridData(tab, payload).subscribe(
@@ -767,7 +752,6 @@ export class ImportSeaPlanningComponent implements OnInit {
         }
       },
       (error) => {
-        console.error('API Error:', error);
         this.gridData = [];
         this.displayedColumns = [];
         this.isGridVisible = false;
@@ -793,8 +777,7 @@ export class ImportSeaPlanningComponent implements OnInit {
     const payload = {
       EDIJobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
-      FinanceYear: this.FinanceYear,
+      AgentID: this.AgentID,
     };
 
     this.agentService.fetchImportSearchGridData(tab, payload).subscribe(
@@ -811,7 +794,6 @@ export class ImportSeaPlanningComponent implements OnInit {
         }
       },
       (error) => {
-        console.error('API Error:', error);
         this.gridData = [];
         this.displayedColumns = [];
         this.currentActionMap = [];
@@ -909,6 +891,9 @@ export class ImportSeaPlanningComponent implements OnInit {
     this.isGridVisible = false;
     this.ModifyJobId = row.ID || null;
     this.ExpJobId = row.ExpID || null;
+    this.BranchID = row.BranchID || null;
+    this.FinanceYear = row.FinanceYear || null;
+    this.CompID = row.CompID || null;
 
     if (this.Imp_tabName === 'CONTAINER') {
       this.ContainerID = row.ContID || null;
@@ -1106,23 +1091,23 @@ export class ImportSeaPlanningComponent implements OnInit {
       data = {
         ExpSave: 'Y',
         CompanyID: this.CompanyId,
-        CompID: this.CompID,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
         Nvocc_AgentID: this.AgentID,
         JobID: this.ModifyJobId,
         EDIJOBID: '',
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+        CompID: this.CompID,
       };
     } else {
       data = {
         ExpSave: 'N',
         CompanyID: this.CompanyId,
-        CompID: this.CompID,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
         Nvocc_AgentID: this.AgentID,
         EDIJOBID: this.ModifyJobId,
         JobID: this.ExpJobId,
+        FinanceYear: this.FinanceYear,
+        BranchID: this.BranchID,
+        CompID: this.CompID,
       };
     }
 
@@ -1170,8 +1155,6 @@ export class ImportSeaPlanningComponent implements OnInit {
       CTrackId: action === 'Modify' ? this.CTrackId : '',
       NVOCContId: action === 'Modify' ? this.NVOCContId : '',
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
       gen_EmptyName: genEmptyName,
     };
     this.saveSection(
@@ -1400,8 +1383,6 @@ export class ImportSeaPlanningComponent implements OnInit {
 
       if (result && result.length > 0) {
         const contIds = result.map((r) => r.ContID).join(',');
-        console.log('Selected ContIDs:', contIds);
-        console.log(result);
 
         const payload = {
           JobId: result[0]?.JobID,
@@ -1409,9 +1390,6 @@ export class ImportSeaPlanningComponent implements OnInit {
           PrintType: 'Empty',
           CompanyID: this.CompanyId,
           AgentID: this.AgentID,
-          CompID: this.CompID,
-          BranchID: this.BranchID,
-          FinanceYear: this.FinanceYear,
         };
 
         this.agentService.fetchGeneralActionFile('Empty', payload).subscribe(
@@ -1443,10 +1421,7 @@ export class ImportSeaPlanningComponent implements OnInit {
     const payload = {
       JobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
-      CompID: this.CompID,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
-      FinanceYear: this.FinanceYear,
       Type: 'Import',
       MailOptions: this.selectedMailOption,
     };

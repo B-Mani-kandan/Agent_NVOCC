@@ -23,33 +23,6 @@
 </app-dynamic-gridview>
 
 <div class="container-fluid mt-4" *ngIf="isMailVisible">
-  <div class="row mb-3 align-items-end">
-    <div class="col-md-4">
-      <label for="mailOption" class="form-label fw-semibold">Mail Option</label>
-      <select
-        id="mailOption"
-        class="form-select"
-        [(ngModel)]="selectedMailOption"
-      >
-        <option *ngFor="let option of mailFields" [value]="option.value">
-          {{ option.label }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="col-md-8 d-flex justify-content-start gap-3">
-      <button
-        type="button"
-        *ngIf="mailBody"
-        class="btn btn-success btn-md px-4"
-        (click)="onSendMail()"
-      >
-        <i class="ri-mail-send-line me-1"></i> Send Mail
-      </button>
-    </div>
-  </div>
-
   <!-- Subject -->
   <div class="row mb-3">
     <div class="col-md-12">

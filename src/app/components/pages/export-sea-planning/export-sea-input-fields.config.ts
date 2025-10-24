@@ -31,12 +31,6 @@ export const GENERAL_FIELDS = [
     type: 'autocomplete',
     id: 'gen_Fpod',
   },
-  // {
-  //   label: 'Client Name',
-  //   type: 'autocomplete',
-  //   id: 'gen_ClientName',
-  //   validators: ['lettersOnly'],
-  // },
   {
     label: 'Shipper Name',
     type: 'autocomplete',
@@ -129,7 +123,7 @@ export const GENERAL_GRID = [
     payloadType: 'common',
   },
   {
-    label: 'Container No',
+    label: 'No Of Container',
     type: 'text',
     id: 'gen_ContainerNoGrid',
   },

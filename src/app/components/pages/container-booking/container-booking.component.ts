@@ -51,9 +51,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class ContainerBookingComponent implements OnInit {
   CompanyId: string | undefined;
-  CompID: string | undefined;
-  FinanceYear: any | undefined;
-  BranchID: any | undefined;
   ModifyJobId: any | undefined;
   JobId: any | undefined;
   VesselID: any | undefined;
@@ -144,12 +141,8 @@ export class ContainerBookingComponent implements OnInit {
         { emitEvent: false }
       );
     });
-    this.getBookingNo();
     this.getCurrentDate();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
-    this.CompID = localStorage.getItem('CompId') ?? undefined;
-    this.FinanceYear = localStorage.getItem('FinanceYear') ?? undefined;
-    this.BranchID = localStorage.getItem('BranchId') ?? undefined;
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
     this.IMPGENRAL = 'IMPGENERAL';
     this.fetchGridData('GENERAL');
@@ -214,9 +207,8 @@ export class ContainerBookingComponent implements OnInit {
   }
   getBookingNo(): void {
     const payload = {
-      CompanyID: 'FST2223005',
-      FinanceYear: '2025-2026',
-      BranchID: '1594',
+      CompanyID: this.CompanyId,
+      AgentID: this.AgentID,
     };
 
     this.agentService.NVOCC_Cont_GetBookingNo(payload).subscribe(
@@ -436,12 +428,6 @@ export class ContainerBookingComponent implements OnInit {
         CompanyId: this.CompanyId,
         AgentID: this.AgentID,
       },
-      client: {
-        InputVal: input,
-        CompanyID: this.CompanyId,
-        CompID: this.CompID,
-        AgentID: this.AgentID,
-      },
       EmptyYard: {
         InputVal: input,
         CompanyId: this.CompanyId,
@@ -579,8 +565,6 @@ export class ContainerBookingComponent implements OnInit {
     if (this.GridSelection === 'FirstGridData') {
       data = {
         CompanyID: this.CompanyId,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
         Nvocc_AgentID: this.AgentID,
         JobID: this.ModifyJobId,
         ContainerBookingID: '',
@@ -588,8 +572,6 @@ export class ContainerBookingComponent implements OnInit {
     } else {
       data = {
         CompanyID: this.CompanyId,
-        FinanceYear: this.FinanceYear,
-        BranchID: this.BranchID,
         Nvocc_AgentID: this.AgentID,
         ContainerBookingID: this.ModifyJobId,
         JobID: this.JobId,
@@ -637,8 +619,6 @@ export class ContainerBookingComponent implements OnInit {
       SavedJobID: this.JobId,
       ContainerID: action === 'Modify' ? this.ContainerID : '',
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
       EmptyName: genEmptyName,
       POL: Pol,
       POD: Pod,
@@ -714,9 +694,7 @@ export class ContainerBookingComponent implements OnInit {
     const payload = {
       EDIJobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
-      FinanceYear: this.FinanceYear,
     };
 
     this.agentService.fetchExpConvContainerGridData(tab, payload).subscribe(
@@ -731,7 +709,6 @@ export class ContainerBookingComponent implements OnInit {
         }
       },
       (error) => {
-        console.error('API Error:', error);
         this.gridData = [];
         this.displayedColumns = [];
         this.isGridVisible = false;
@@ -745,7 +722,6 @@ export class ContainerBookingComponent implements OnInit {
         'select',
         'BookingNo',
         'BookingDate',
-        'ClientName',
         'ShipperName',
         'Pol',
         'Pod',
@@ -758,8 +734,6 @@ export class ContainerBookingComponent implements OnInit {
     const payload = {
       EDIJobID: this.JobId,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
-      FinanceYear: this.FinanceYear,
       AgentID: this.AgentID,
     };
 
@@ -784,7 +758,6 @@ export class ContainerBookingComponent implements OnInit {
         }
       },
       (error) => {
-        console.error('API Error:', error);
         this.gridData = [];
         this.displayedColumns = [];
         this.currentActionMap = [];
@@ -798,9 +771,6 @@ export class ContainerBookingComponent implements OnInit {
       ContBookID: data.ID,
       CompanyID: this.CompanyId,
       AgentID: this.AgentID,
-      CompID: this.CompID,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
     };
 
     Swal.fire({
@@ -1106,8 +1076,6 @@ export class ContainerBookingComponent implements OnInit {
       ContainerID: this.ModifyJobId,
       JobID: this.JobId,
       CompanyID: this.CompanyId,
-      CompID: this.CompID,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
       MailOptions: this.selectedMailOption,
     };

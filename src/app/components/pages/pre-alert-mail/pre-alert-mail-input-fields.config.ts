@@ -12,4 +12,12 @@ export const GENERAL_FIELDS = [
     icon: 'ri-mail-line',
     function: 'onGenerateMail',
   },
+  {
+    id: 'btn_SendMail',
+    label: 'Send Mail',
+    type: 'button',
+    class: 'btn-success',
+    icon: 'ri-mail-send-line',
+    function: 'onSendMail',
+  },
 ];

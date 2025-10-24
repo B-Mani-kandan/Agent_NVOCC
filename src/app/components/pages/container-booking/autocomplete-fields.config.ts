@@ -7,12 +7,6 @@ export interface AutocompleteFieldConfig {
 
 export const AUTOCOMPLETE_FIELDS: AutocompleteFieldConfig[] = [
   {
-    field: 'Cont_gen_ClientName',
-    method: 'fetchClientSuggestions',
-    payloadType: 'client',
-    formType: 'ContgeneralForm',
-  },
-  {
     field: 'Cont_gen_ShipperName',
     method: 'fetchShipperSuggestions',
     payloadType: 'common',

@@ -379,7 +379,7 @@ export const HBL_FREIGHTGRID_FIELDS = [
     type: 'autocomplete',
     id: 'common_ChargeName',
     method: 'fetchChargeNameSuggestions',
-    payloadType: 'ChargeName',
+    payloadType: 'common',
   },
   {
     label: 'Freight Ton',

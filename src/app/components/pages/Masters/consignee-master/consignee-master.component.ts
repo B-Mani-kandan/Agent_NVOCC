@@ -39,10 +39,7 @@ import { MessageService } from 'primeng/api';
 })
 export class ConsigneeMasterComponent implements OnInit {
   CompanyId: string | undefined;
-  FinanceYear: any | undefined;
-  BranchID: any | undefined;
   ModifyConsigneeId: any | undefined;
-  CompID: any | undefined;
   AgentID: any | undefined;
   tabName: string = 'GENERAL';
   generalForm!: FormGroup;
@@ -68,9 +65,6 @@ export class ConsigneeMasterComponent implements OnInit {
     this.tabName = 'GENERAL';
     this.generalForm = this.createForm(this.generalFields);
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
-    this.CompID = localStorage.getItem('CompId') ?? undefined;
-    this.FinanceYear = localStorage.getItem('FinanceYear') ?? undefined;
-    this.BranchID = localStorage.getItem('BranchId') ?? undefined;
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
     this.IMPGENRAL = 'IMPGENERAL';
     this.setupAutocompleteListeners();
@@ -224,7 +218,6 @@ export class ConsigneeMasterComponent implements OnInit {
 
     const payload = {
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
     };
 
@@ -288,7 +281,6 @@ export class ConsigneeMasterComponent implements OnInit {
     const data = {
       Strmode: action,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
       Nvocc_AgentID: this.AgentID,
       ConsigneeID: action === 'Update' ? this.ModifyConsigneeId : '',
     };

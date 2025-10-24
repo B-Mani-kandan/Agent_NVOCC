@@ -34,12 +34,6 @@ export const GENERAL_FIELDS = [
     type: 'text',
     id: 'Cont_gen_LinerBokNo',
   },
-  // {
-  //   label: 'Client Name',
-  //   type: 'autocomplete',
-  //   id: 'Cont_gen_ClientName',
-  //   mandatory: true,
-  // },
   {
     label: 'Shipper Name',
     type: 'autocomplete',

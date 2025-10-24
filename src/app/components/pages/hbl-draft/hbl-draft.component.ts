@@ -60,9 +60,6 @@ import { LoaderComponent } from '../../layout/loader/loader.component';
 })
 export class HblDraftComponent implements OnInit {
   CompanyId: string | undefined;
-  CompID: string | undefined;
-  FinanceYear: any | undefined;
-  BranchID: any | undefined;
   AgentID: any | undefined;
   ModifyJobId: any | undefined;
   ModifyHBLID: any | undefined;
@@ -130,11 +127,7 @@ export class HblDraftComponent implements OnInit {
     this.setupAutocompleteListeners();
     this.PatchAdressValues();
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
-    this.CompID = localStorage.getItem('CompId') ?? undefined;
-    this.FinanceYear = localStorage.getItem('FinanceYear') ?? undefined;
-    this.BranchID = localStorage.getItem('BranchId') ?? undefined;
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
-    this.getJobNo();
     this.fetchGridData('GENERAL');
     this.IMPGENRAL = 'IMPGENERAL';
   }
@@ -276,8 +269,7 @@ export class HblDraftComponent implements OnInit {
   getJobNo(): void {
     const payload = {
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
+      AgentID: this.AgentID,
     };
 
     this.agentService.NVOCC_HBL_BLNo(payload).subscribe(
@@ -574,12 +566,6 @@ export class HblDraftComponent implements OnInit {
         CompanyId: this.CompanyId,
         AgentID: this.AgentID,
       },
-      ChargeName: {
-        InputVal: input,
-        CompanyId: this.CompanyId,
-        CompID: this.CompID,
-        AgentID: this.AgentID,
-      },
       ContainerNo: {
         InputVal: input,
         CompanyID: this.CompanyId,
@@ -732,9 +718,7 @@ export class HblDraftComponent implements OnInit {
       FileType: 'PDF',
       ViewOrMail: 'VIEW',
       CompanyID: this.CompanyId,
-      CompID: this.CompID,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
+      AgentID: this.AgentID,
     };
 
     Swal.fire({
@@ -787,9 +771,7 @@ export class HblDraftComponent implements OnInit {
     const payload = {
       JobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
-      FinanceYear: this.FinanceYear,
     };
 
     this.agentService.fetchHBLExPortConvertGridData(tab, payload).subscribe(
@@ -836,8 +818,6 @@ export class HblDraftComponent implements OnInit {
     const payload = {
       AgentID: this.AgentID,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
-      FinanceYear: this.FinanceYear,
     };
 
     this.agentService.fetchHBLAllDetails(tab, payload).subscribe(
@@ -1139,8 +1119,6 @@ export class HblDraftComponent implements OnInit {
 
     const baseData = {
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
       Nvocc_AgentID: localStorage.getItem('AgentID'),
       JobID: this.ModifyJobId,
       HBLID: this.ModifyHBLID,
@@ -1341,8 +1319,6 @@ export class HblDraftComponent implements OnInit {
     const payload = {
       HBLID: this.ModifyHBLID,
       CompanyID: this.CompanyId,
-      CompID: this.CompID,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
     };
 

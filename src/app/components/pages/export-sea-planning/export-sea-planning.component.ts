@@ -56,10 +56,7 @@ import { LoaderComponent } from '../../layout/loader/loader.component';
 })
 export class ExportSeaPlanningComponent implements OnInit {
   CompanyId: string | undefined;
-  FinanceYear: any | undefined;
-  BranchID: any | undefined;
   ModifyJobId: any | undefined;
-  CompID: any | undefined;
   AgentID: any | undefined;
   VesselID: any | undefined;
   ContainerID: any | undefined;
@@ -136,9 +133,6 @@ export class ExportSeaPlanningComponent implements OnInit {
     this.containerForm = this.createForm(this.containerFields);
     this.vesselForm = this.createForm(this.vesselFields);
     this.CompanyId = localStorage.getItem('CompanyID') ?? undefined;
-    this.CompID = localStorage.getItem('CompId') ?? undefined;
-    this.FinanceYear = localStorage.getItem('FinanceYear') ?? undefined;
-    this.BranchID = localStorage.getItem('BranchId') ?? undefined;
     this.AgentID = localStorage.getItem('AgentID') ?? undefined;
     this.IMPGENRAL = 'IMPGENERAL';
     this.setupAutocompleteListeners();
@@ -193,8 +187,7 @@ export class ExportSeaPlanningComponent implements OnInit {
   getJobNo(): void {
     const payload = {
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
+      AgentID: this.AgentID,
     };
 
     this.agentService.NVOCC_GetJobNo(payload).subscribe(
@@ -387,7 +380,6 @@ export class ExportSeaPlanningComponent implements OnInit {
       common: {
         InputVal: input,
         CompanyId: this.CompanyId,
-        CompID: this.CompID,
         AgentID: this.AgentID,
       },
       EmptyYard: {
@@ -530,9 +522,6 @@ export class ExportSeaPlanningComponent implements OnInit {
 
     const data = {
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
-      CompID: this.CompID,
       Nvocc_AgentID: this.AgentID,
       JobID: this.ModifyJobId,
     };
@@ -582,8 +571,6 @@ export class ExportSeaPlanningComponent implements OnInit {
       SavedJobID: this.ModifyJobId,
       ContainerID: action === 'Modify' ? this.ContainerID : '',
       CompanyID: this.CompanyId,
-      FinanceYear: this.FinanceYear,
-      BranchID: this.BranchID,
       POL: genPol,
       POD: genPod,
       gen_EmptyName: genEmptyName,
@@ -691,9 +678,6 @@ export class ExportSeaPlanningComponent implements OnInit {
       JobID: data.ID,
       AgentID: this.AgentID,
       CompanyID: this.CompanyId,
-      CompID: this.CompID,
-      BranchID: this.BranchID,
-      FinanceYear: this.FinanceYear,
     };
     this.agentService
       .NVOCC_UpdateVesselDeparture(payload)
@@ -708,7 +692,6 @@ export class ExportSeaPlanningComponent implements OnInit {
         }
       });
   }
-
   onExpContGridDataChange(data: any[]) {
     if (!this.latestExpContGridData) {
       this.latestExpContGridData = [];
@@ -741,9 +724,8 @@ export class ExportSeaPlanningComponent implements OnInit {
 
     const payload = {
       EDIJobID: this.ModifyJobId,
+      AgentID: this.AgentID,
       CompanyID: this.CompanyId,
-      BranchID: this.BranchID,
-      FinanceYear: this.FinanceYear,
     };
 
     if (this.tabName !== 'MAIL') {
@@ -1042,10 +1024,7 @@ export class ExportSeaPlanningComponent implements OnInit {
     const payload = {
       JobID: this.ModifyJobId,
       CompanyID: this.CompanyId,
-      CompID: this.CompID,
-      BranchID: this.BranchID,
       AgentID: this.AgentID,
-      FinanceYear: this.FinanceYear,
       Type: 'Export',
       MailOptions: this.selectedMailOption,
     };
