@@ -4,7 +4,7 @@ export const GENERAL_FIELDS = [
     type: 'text',
     id: 'shipper_Gen_PartyName',
     mandatory: true,
-    validators: ['lettersOnly'],
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Email ID',

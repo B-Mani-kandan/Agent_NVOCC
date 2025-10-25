@@ -6,3 +6,8 @@
 .main-content.collapsed {
   margin-left: 60px;
 }
+
+.main-content.no-sidebar {
+  margin-top: 4%;
+  margin-left: 0 !important;
+}

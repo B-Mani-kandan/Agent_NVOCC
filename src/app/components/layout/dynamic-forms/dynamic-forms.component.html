@@ -27,6 +27,7 @@
             autocomplete="off"
             [matAutocomplete]="auto"
             (keypress)="onKeyPress($event, field)"
+            (keydown)="onKeyDown($event, field)"
           />
           <mat-autocomplete
             #auto="matAutocomplete"

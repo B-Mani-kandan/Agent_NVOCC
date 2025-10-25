@@ -1,8 +1,18 @@
 <div id="layout-wrapper">
-  <app-sidebar (sidebarToggled)="adjustContent($event)"></app-sidebar>
+  <app-sidebar
+    *ngIf="showSidebar"
+    (sidebarToggled)="adjustContent($event)"
+  ></app-sidebar>
 
-  <div class="main-content" [ngClass]="{ collapsed: !isSidebarExpanded }">
-    <app-topbar> </app-topbar>
+  <div
+    class="main-content"
+    [ngClass]="{
+      collapsed: !isSidebarExpanded,
+      'no-sidebar': !showSidebar
+    }"
+  >
+    <app-topbar *ngIf="showSidebar"></app-topbar>
+
     <div class="page-content">
       <div class="container-fluid">
         <router-outlet></router-outlet>

@@ -88,6 +88,7 @@ export class CommonMasterComponent implements OnInit {
         'common_Gen_AccountName',
         'common_Gen_Address1',
         'common_Gen_Address2',
+        'common_Gen_Country',
       ],
     };
     return (fieldId: string) =>

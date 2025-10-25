@@ -84,6 +84,7 @@ export const IMP_GENERAL_FIELDS = [
     label: 'Inward Date',
     type: 'date',
     id: 'Imp_gen_InwardDate',
+    mandatory: true,
   },
   {
     label: 'DO Date',

@@ -4,6 +4,7 @@ export const GENERAL_FIELDS = [
     type: 'text',
     id: 'vessel_Gen_VesselName',
     mandatory: true,
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Vessel Code',

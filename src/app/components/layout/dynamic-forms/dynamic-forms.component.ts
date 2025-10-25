@@ -115,7 +115,7 @@ export class DynamicFormsComponent implements AfterViewInit, OnChanges {
 
     if (
       field.validators?.includes('lettersNumbersCommaDot') &&
-      !/^[a-zA-Z0-9 ,.@]$/.test(char)
+      !/^[a-zA-Z0-9 ,.@$#&*-]$/.test(char)
     ) {
       event.preventDefault();
       return;
@@ -170,5 +170,62 @@ export class DynamicFormsComponent implements AfterViewInit, OnChanges {
     if (field.function) {
       this.buttonClick.emit({ fieldId: field.id, action: field.function });
     }
+  }
+
+  onKeyDown(event: KeyboardEvent, field: any) {
+    if (event.key === 'Tab') {
+      const panelOpen = document.querySelector(
+        '.mat-mdc-autocomplete-panel, .mat-autocomplete-panel, .mat-mdc-autocomplete-panel-visible, .mat-autocomplete-panel-visible'
+      );
+      if (panelOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const activeOptEl = panelOpen.querySelector<HTMLElement>(
+          '.mat-mdc-option-active, .mat-option-active, .mat-mdc-option.mat-mdc-option-active, .mat-option.mat-active, .mat-mdc-option.mat-selected, .mat-option.mat-selected'
+        );
+
+        let value: string | null = null;
+
+        if (activeOptEl) {
+          value = (activeOptEl.textContent || '').trim();
+        }
+        if (!value) {
+          const firstOptEl = panelOpen.querySelector<HTMLElement>(
+            '.mat-mdc-option, .mat-option'
+          );
+          if (firstOptEl) value = (firstOptEl.textContent || '').trim();
+        }
+        if (!value) {
+          const options = this.getAutocompleteOptions(field.id) || [];
+          if (options.length) value = options[0];
+        }
+        if (value) {
+          this.formGroup.get(field.id)?.setValue(value, { emitEvent: false });
+          this.optionSelected.emit({ fieldId: field.id, value });
+        }
+        try {
+          if (this.autocomplete && this.autocomplete.panelOpen)
+            this.autocomplete.closePanel();
+        } catch (e) {
+          (event.target as HTMLElement)?.blur?.();
+        }
+        setTimeout(() => this.focusNextElement(event.target as HTMLElement), 0);
+      }
+    }
+  }
+
+  private focusNextElement(currentEl: HTMLElement | null) {
+    if (!currentEl) return;
+    const focusable = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        'input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => el.offsetParent !== null); // visible only
+
+    const idx = focusable.indexOf(currentEl);
+    const next =
+      focusable[idx + 1] ?? focusable.find((el, i) => i > idx) ?? null;
+    if (next) next.focus();
   }
 }

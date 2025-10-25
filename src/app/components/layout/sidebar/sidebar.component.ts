@@ -62,7 +62,6 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-
   sortMenuItems() {
     this.menuItems.sort((a, b) => a.position - b.position);
     this.menuItems.forEach((item) => {
@@ -74,14 +73,43 @@ export class SidebarComponent implements OnInit {
   }
 
   selectMenuItem(item: MenuItem) {
+    const parent = this.menuItems.find((menu) =>
+      menu.children?.some((child) => child.id === item.id)
+    );
+
+    // if (parent && parent.label === 'Masters' && item.route) {
+    //   const url = this.router.serializeUrl(
+    //     this.router.createUrlTree([item.route])
+    //   );
+    //   window.open(url, '_blank');
+    //   return;
+    // }
+
+    if (parent && parent.label === 'Masters' && item.route) {
+      const url = this.router.serializeUrl(
+        this.router.createUrlTree([item.route], {
+          queryParams: { noSidebar: true },
+        })
+      );
+      window.open(url, '_blank');
+      return;
+    }
+
     if (item.route) {
       this.router.navigate([item.route]);
     }
+
     this.menuItems.forEach((menuItem) => {
       menuItem.isActive = false;
       menuItem.children?.forEach((child) => (child.isActive = false));
     });
     item.isActive = true;
+
+    const isChildItem = parent !== undefined;
+    if (isChildItem) {
+      this.isExpanded = false;
+      this.sidebarToggled.emit(this.isExpanded);
+    }
   }
 
   filterMenuItems() {

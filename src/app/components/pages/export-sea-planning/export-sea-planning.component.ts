@@ -34,6 +34,7 @@ import {
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoaderComponent } from '../../layout/loader/loader.component';
 @Component({
@@ -41,11 +42,12 @@ import { LoaderComponent } from '../../layout/loader/loader.component';
   standalone: true,
   imports: [
     CommonModule,
-    TabPanelComponent,
     DynamicFormsComponent,
     DynamicGridviewComponent,
     DynamicGridAddDeleteComponent,
+    TabPanelComponent,
     ToastModule,
+    MatIconModule,
     FormsModule,
     LoaderComponent,
   ],

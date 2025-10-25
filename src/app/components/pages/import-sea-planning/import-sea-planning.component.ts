@@ -257,13 +257,13 @@ export class ImportSeaPlanningComponent implements OnInit {
   getMandatoryFields(templateId: string): (fieldId: string) => boolean {
     const mandatoryFields: Record<string, string[]> = {
       GENERAL: [
+        'Imp_gen_JobNo',
         'Imp_gen_Pol',
         'Imp_gen_Pod',
         'Imp_gen_Fpod',
         'Imp_gen_ItemDesc',
+        'Imp_gen_InwardDate',
       ],
-      CONTAINER: ['Imp_cont_ContainerSize', 'Imp_cont_ContainerNo'],
-      VESSEL: ['Imp_vess_VesselName'],
     };
     return (fieldId: string) =>
       mandatoryFields[templateId]?.includes(fieldId) || false;
@@ -486,16 +486,9 @@ export class ImportSeaPlanningComponent implements OnInit {
       Contsize = contsize;
       if (Contsize == '' || Contsize == null) {
         this.messageService.add({
-          severity: 'error',
+          severity: 'warn',
           summary: 'Failed',
           detail: 'Please Enter Container Size',
-        });
-      }
-      if (EmptyyardValue == '' || EmptyyardValue == null) {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Failed',
-          detail: 'Please Enter EmptyyardValue',
         });
       }
     }
@@ -729,7 +722,7 @@ export class ImportSeaPlanningComponent implements OnInit {
 
   fetchGridData(tab: string) {
     const columnMap: any = {
-      GENERAL: ['select', 'JobNo', 'JobDate', 'Pol', 'Pod'],
+      GENERAL: ['select', 'JobNo', 'JobDate', 'Pol', 'Pod', 'HblNo', 'MblNo'],
       CONTAINER: ['ContainerNo', 'ContainerSize'],
       VESSEL: ['POL', 'POD', 'VesselName', 'Eta', 'Etd'],
     };
@@ -761,7 +754,16 @@ export class ImportSeaPlanningComponent implements OnInit {
 
   fetchSearchGridData(tab: string) {
     const columnMap: any = {
-      GENERAL: ['select', 'JobNo', 'JobDate', 'Pol', 'Pod', 'actions'],
+      GENERAL: [
+        'select',
+        'JobNo',
+        'JobDate',
+        'Pol',
+        'Pod',
+        'HblNo',
+        'MblNo',
+        'actions',
+      ],
       CONTAINER: ['select', 'ContainerNo', 'ContainerSize'],
       VESSEL: ['select', 'POL', 'POD', 'VesselName', 'Eta', 'Etd'],
     };
@@ -1023,8 +1025,6 @@ export class ImportSeaPlanningComponent implements OnInit {
         if (!control?.value || control.value.toString().trim() === '') {
           control?.markAsTouched();
           allValid = false;
-
-          // take last part after underscore and push
           const parts = fieldId.split('_');
           missingFields.push(parts[parts.length - 1]);
         }

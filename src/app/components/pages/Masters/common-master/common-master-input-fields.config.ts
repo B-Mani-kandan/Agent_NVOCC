@@ -4,7 +4,7 @@ export const GENERAL_FIELDS = [
     type: 'text',
     id: 'common_Gen_AccountName',
     mandatory: true,
-    validators: ['lettersOnly'],
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Address 1',

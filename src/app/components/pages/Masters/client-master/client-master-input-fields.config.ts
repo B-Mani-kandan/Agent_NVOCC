@@ -4,7 +4,7 @@ export const GENERAL_FIELDS = [
     type: 'text',
     id: 'client_Gen_AccountName',
     mandatory: true,
-    validators: ['lettersOnly'],
+    validators: ['lettersNumbersCommaDot'],
   },
   {
     label: 'Registered No',

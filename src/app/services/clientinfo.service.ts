@@ -33,11 +33,10 @@ export class ClientinfoService {
   ) {}
 
   getClientInfo(siteUrl: string): Observable<ClientInfo> {
-    let apiUrl = localStorage.getItem('ClientViewApiUrl') || '';
+    let apiUrl = siteUrl || '';
     if (!apiUrl.startsWith('http') && apiUrl) {
       apiUrl = 'https://' + apiUrl;
     }
-    console.log(siteUrl, 'client info');
     return this.http.post<ClientInfo>(
       `${apiUrl}/ServiceNVOC/Nvocc_GetClientInfo.ashx`,
       { SiteURL: siteUrl }
@@ -46,7 +45,6 @@ export class ClientinfoService {
 
   getClientViewUrl(siteUrl: string): Observable<ClientViewURL> {
     const body = { SiteURL: siteUrl };
-    console.log(this.viewApiUrl, body, 'client View');
     return this.http.post<ClientViewURL>(this.viewApiUrl, body);
   }
 }
